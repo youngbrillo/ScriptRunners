@@ -18,11 +18,19 @@ function onSceneStart()
 		y = math.random(-50, 50);
 
 		av = math.random(-60, 60);
-		e.AngularVelocity = av;
 
+
+		e.AngularVelocity = av;
+		e.mat:SetTextureByAlias("CHECKER");
 		--e.velocity:set(x, y);
 		gameObjects[name] = e;
 		gameObjects[name].velocity:set(x, y);
+
+		
+		x = math.random(-10, 10);
+		y = math.random(-10, 10);
+		e.mat.uv_scroll:set(x, y);
+
 
 	end
 

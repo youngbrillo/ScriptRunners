@@ -7,7 +7,8 @@
 #include <map>
 #include <imgui.h>
 #include <LuaBridge/LuaBridge.h>
-
+#include "GlobalManager.h"
+#include "TextureManager.h"
 template<typename T>
 struct VectorWrapper
 {
@@ -72,7 +73,11 @@ namespace LSE
 		Texture2D texture = Texture2D{ 1, 1, 1 };
 		Color color = RAYWHITE;
 		Rectangle source = { 0, 0, 1, 1 };
-
+		Vector2 uv_scroll = { 0, 0 };
+		void SetTextureByAlias(const char* alias) {
+			this->texture = TextureManager::Instance()->GetTexture(alias);
+			this->source = { 0, 0, (float)texture.width, (float)texture.height };
+		}
 		void SetTexture(Texture2D t)
 		{
 			texture = t;
@@ -97,7 +102,14 @@ namespace LSE
 				{
 					color = ColorFromNormalized(a);
 				}
+				int tid = texture.id;
+				if (ImGui::InputInt("textureID", &tid)) texture.id = tid;
+				ImGui::SliderFloat2("Uv scroll", &uv_scroll.x, -20, 20.0f);
 
+				ImGui::SliderFloat("x", &source.x, -texture.width, texture.width);
+				ImGui::SliderFloat("y", &source.y, -texture.height, texture.height);
+				ImGui::SliderFloat("width", &source.width, -texture.width, texture.width);
+				ImGui::SliderFloat("height", &source.height, -texture.height, texture.height);
 				ImGui::TreePop();
 			}
 
@@ -164,7 +176,9 @@ namespace LSE
 			if (transform.angle > 360.0f) transform.angle = -360.0f;
 			if (transform.angle < -360.0f) transform.angle = 360.0f;
 
-
+			if (!this->visible) return;
+			mat.source.x += mat.uv_scroll.x * dt;
+			mat.source.y += mat.uv_scroll.y * dt;
 		};
 		void Draw()
 		{
@@ -189,6 +203,7 @@ namespace LSE
 				transform.Debug();
 				mat.Debug();
 				ImGui::SliderFloat2("Velocity", &velocity.x, -50.0f, 50.0f);
+				ImGui::SliderFloat("Angle Velocity", &AngularVelocity, -90.0f, 90.0f);
 				ImGui::SliderFloat("Angle Velocity", &AngularVelocity, -90.0f, 90.0f);
 				ImGui::TreePop();
 			}
@@ -232,10 +247,12 @@ namespace LSE
 					.endClass()
 				// Material
 					.beginClass<LSE::Material>("Material")
-								.addFunction("SetTexture",& LSE::Material::SetTexture)
+								.addFunction("SetTexture", &LSE::Material::SetTexture)
+								.addFunction("SetTextureByAlias",& LSE::Material::SetTextureByAlias)
 								.addFunction("SetColor", &LSE::Material::SetColor)
 								.addFunction("SetColorVec", &LSE::Material::SetColorVec)
 								.addData("source", &LSE::Material::source)
+								.addData("uv_scroll", &LSE::Material::uv_scroll)
 					.endClass()
 				// GameObject
 					.beginClass<LSE::GameObject>("GameObject")
@@ -283,17 +300,6 @@ public:
 	std::map<std::string, std::string> scenes;
 	std::map<std::string, Texture2D> textures;
 public:
-	LuaSceneTemplate()
-		: Scene()
-		, L(NULL)
-		, gameObjects({})
-		, scenes({})
-	{
-		scenes["Default"] = "Assets/Scripts/TemplateScene.lua";
-		LSE::GameObject::owner = &this->gameObjects;
-		LoadScript(scenes["Default"], "onSceneStart");
-	}
-
 	LuaSceneTemplate(const char* scriptPath, const char* startFunctionName)
 		: Scene()
 		, L(NULL)
@@ -302,6 +308,8 @@ public:
 	{
 		scenes["Default"] = scriptPath;
 		LSE::GameObject::owner = &this->gameObjects;
+		GlobalManager::Set();
+
 		LoadScript(scenes["Default"], startFunctionName);
 	}
 	~LuaSceneTemplate()
@@ -311,6 +319,8 @@ public:
 		L = NULL;
 		LSE::GameObject::owner = NULL;
 		gameObjects.vec.clear();
+		GlobalManager::Reset();
+
 	}
 	void LoadScript(std::string path, const char* startFunctionName)
 	{
@@ -338,7 +348,7 @@ public:
 	}
 	void unloadScript(const char* functionName)
 	{
-		LSE::GameObject::Extend(L);
+		//LSE::GameObject::Extend(L);
 
 		luabridge::LuaRef func = luabridge::getGlobal(L, functionName);
 		try {
@@ -353,16 +363,18 @@ public:
 
 	virtual void Draw()
 	{
+		//GlobalManager::Draw();
 		for (auto&& object : gameObjects.vec) object->Draw();
+		GlobalManager::CanvasDraw();
 	}
 	virtual void Update(const float& deltaTime)
 	{
 		for (auto&& object : gameObjects.vec) object->Update(deltaTime);
+		GlobalManager::Update(deltaTime);
 
 	}
 	virtual void FixedUpdate(const float& timeStep)
 	{
-
 	}
 
 	virtual void Debug()
@@ -375,6 +387,6 @@ public:
 
 	}
 
-	static Scene* Create() { return new LuaSceneTemplate(); }
+	static Scene* Create() { return new LuaSceneTemplate("Assets/Scripts/TemplateScene.lua", "onSceneStart"); }
 };
 static int scene000 = RegisterScene("Template", "Lua: box drawing", LuaSceneTemplate::Create);

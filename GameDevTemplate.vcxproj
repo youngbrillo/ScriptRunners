@@ -135,6 +135,7 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="box2dScene.cpp" />
+    <ClCompile Include="GlobalManager.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -181,12 +182,15 @@
     <ClCompile Include="Lua\lvm.c" />
     <ClCompile Include="Lua\lzio.c" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Manager.cpp" />
     <ClCompile Include="RaylibTemplateScene.cpp" />
     <ClCompile Include="rlImGui.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
+    <ClInclude Include="GlobalManager.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_glfw.h" />
@@ -225,6 +229,7 @@
     <ClInclude Include="Lua\lundump.h" />
     <ClInclude Include="Lua\lvm.h" />
     <ClInclude Include="Lua\lzio.h" />
+    <ClInclude Include="Manager.h" />
     <ClInclude Include="sajson.h" />
     <ClInclude Include="Inspector.h" />
     <ClInclude Include="IOHandler.h" />
@@ -232,9 +237,11 @@
     <ClInclude Include="RenderPipeline.h" />
     <ClInclude Include="rlImGui.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="TextureManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\TemplateScene.lua" />
+    <None Include="Scripts\Manager\TextureManager.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

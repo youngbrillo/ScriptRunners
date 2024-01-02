@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <cassert>
 #include "rlImGui.h"
+#include "GlobalManager.h"
 
 App* App::Instance = NULL;
 void App::Start(const char* Title, const char* settings_path, const char* icon_path)
@@ -25,6 +26,7 @@ void App::End()
 {
     std::cout << "Closing Project" << std::endl;
 	CloseWindow();
+	GlobalManager::End();
 	delete Instance;
 	Instance = NULL;
 }
@@ -70,6 +72,7 @@ void App::Initialize(const char* settings_path)
 		sceneManager.scene_to_globalIndex[GlobalSceneList[i].name] = i;
 	}
 
+	GlobalManager::Begin();
 	startScene(sceneManager.currentSceneId);
 }
 void FrameData::Advance()
@@ -263,6 +266,8 @@ void App::DebugSettings()
 
 
 }
+
+
 void App::DebugComponents()
 {
 	if (ImGui::BeginTabBar("ControlTabs", ImGuiTabBarFlags_None))
@@ -328,7 +333,7 @@ void App::DebugComponents()
 			}
 			ImGui::EndTabItem();
 		}
-
+		GlobalManager::Debug("Global Manager");
 		ImGui::EndTabBar();
 	}
 }

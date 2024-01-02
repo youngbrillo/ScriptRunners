@@ -28,6 +28,9 @@
     <Filter Include="Scenes\Template Scenes">
       <UniqueIdentifier>{c52467ee-1c8f-4e6f-ba80-50f51e9992fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Managers">
+      <UniqueIdentifier>{f5f74aa0-f2ce-4bd5-a39a-1daae78214c7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -183,6 +186,15 @@
     <ClCompile Include="imgui\imgui_widgets.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="GlobalManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Manager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -323,10 +335,20 @@
     <ClInclude Include="imgui\imstb_truetype.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
+    <ClInclude Include="Manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\TemplateScene.lua">
       <Filter>Scripts</Filter>
     </None>
+    <None Include="Scripts\Manager\TextureManager.lua" />
   </ItemGroup>
 </Project>
