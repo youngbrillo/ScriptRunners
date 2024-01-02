@@ -84,9 +84,11 @@ void FrameData::Advance()
 void App::AdvanceFrame()
 {
 	fData.Advance();
+	mPauseSettings.BeginFrame(winSettings.state);
 	this->Update(fData.deltaTime);
 	this->Render();
 	this->PollEvents();
+	mPauseSettings.EndFrame(winSettings.state, fData.deltaTime);
 }
 
 void App::Update(const float& deltaTime)
@@ -148,6 +150,8 @@ void App::PollEvents()
 	{
 		this->winSettings.state = this->winSettings.state == AppState_Play ? AppState_FullPause : AppState_Play;
 	}
+
+	this->mPauseSettings.PollEvents(winSettings.state);
 }
 
 void App::startScene(int index)
@@ -157,7 +161,7 @@ void App::startScene(int index)
 	{
 		delete currentScene;
 		currentScene = NULL;
-		this->SaveSettings("./Configs/window.ini");
+		this->SaveSettings("./Configs/window.json");
 	}
 
 	if (GlobalSceneCount > 0 && index > -1 && index < GlobalSceneCount)
@@ -179,20 +183,30 @@ void App::Debug()
 
 	ImGui::Begin(TextFormat("%s Debug", winSettings.title.c_str()));
 
+	this->DebugSettings();
+	this->DebugComponents();
+
+	ImGui::End();
+	rlImGuiEnd();
+}
+static const char* state_names[AppState_::AppState_PartialPause + 1] = { "Play",  "Full Pause", "Fixed Pause" };
+void App::DebugSettings()
+{
+	//DRAW FRAMERATE
 	ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	//MODIFY THE WINDOW COLOR
 	Vector4 winColor = ColorNormalize(winSettings.color);
 	if (ImGui::ColorEdit4("Window Clear Color", &winColor.x))
 	{
 		winSettings.color = ColorFromNormalized(winColor);
 	}
+	//MODIFY WINDOW SETTINGS TODO: MOVE TO A MENU ITEM IN THE INSPECTOR
 	if (ImGui::TreeNode("configs"))
 	{
-		//ImGui::Checkbox("Auto Save", &window.autoSave);
-
+		ImGui::Checkbox("Auto Save", &winSettings.autoSave);
 		bool fs0 = ImGui::Checkbox("resizeable", &winSettings.resizeable);
 		bool fs1 = ImGui::Checkbox("undecorated", &winSettings.undecorated);
 		bool fs2 = ImGui::Checkbox("transparent", &winSettings.transparent);
-
 		if (fs0 || fs1 || fs2)
 		{
 			ClearWindowState(winSettings.getFlags());
@@ -203,10 +217,54 @@ void App::Debug()
 	}
 	if (ImGui::Button("Save Settings"))
 	{
-		//this->Save();
+		this->SaveSettings("./Configs/window.json");
 	}
 
-	
+	ImVec2 button_sz = ImVec2(-1, 0);
+	ImVec2 button_sz_2 = ImVec2(0, 0);
+
+	ImGui::SliderFloat("step limit", &mPauseSettings.stepTime, 0.01f, 0.25f);
+	int elem = winSettings.state;
+
+	if (ImGui::SliderInt("State", &elem, AppState_Play, AppState_PartialPause, state_names[winSettings.state]))
+	{
+		winSettings.state = (AppState_)elem;
+	}
+	bool isPaused = winSettings.state != AppState_Play;
+	const char* pause_status = isPaused? "Play (P)" : "Pause (P)";
+	if (ImGui::Button(pause_status, button_sz_2))
+	{
+		winSettings.state = isPaused ? AppState_Play : AppState_FullPause;
+	}
+	if (isPaused)
+	{
+		ImGui::SameLine();
+		if (ImGui::Button("Step (])", button_sz_2))
+		{
+			mPauseSettings.inStep = true;
+		}
+	}
+	if (ImGui::Button("Restart (LCTRL + R)", button_sz))
+	{
+		this->sceneManager.restart = true;
+	}
+
+	if (ImGui::Button("Quit (Q)", button_sz))
+	{
+		winSettings.quit = true;
+	}
+
+	if (ImGui::Button(this->inspector.menu_visible ? "Hide Menu (F1)" : "Display Menu (F1)", button_sz))
+	{
+		this->inspector.menu_visible = !this->inspector.menu_visible;
+	}
+
+
+
+
+}
+void App::DebugComponents()
+{
 	if (ImGui::BeginTabBar("ControlTabs", ImGuiTabBarFlags_None))
 	{
 		if (ImGui::BeginTabItem("Controls"))
@@ -273,8 +331,6 @@ void App::Debug()
 
 		ImGui::EndTabBar();
 	}
-	ImGui::End();
-	rlImGuiEnd();
 }
 #include "JsonHandler.h"
 

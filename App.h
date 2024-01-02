@@ -19,14 +19,44 @@ struct FrameData
 
 	void Advance();
 };
-
 enum AppState_
 {
-	AppState_Play = 0, 
+	AppState_Play = 0,
 	AppState_FullPause,
 	AppState_PartialPause
 };
 
+struct PauseSettings
+{
+	float stepTime = 0.1f;
+	float stepProg = 0.0f;
+	bool inStep = false;
+	bool quit = false;
+	bool restart = false;
+	int pause_key = KEY_P;
+	int ctrl_key = KEY_LEFT_CONTROL;
+	int step_key = KEY_RIGHT_BRACKET;
+
+	void BeginFrame(AppState_& state) { if (inStep) { state = AppState_Play; } }
+	void EndFrame(AppState_& state, const float& dt){
+		if(inStep && state == AppState_Play && stepProg < stepTime){
+			stepProg += dt;
+			if (stepProg >= stepTime)
+			{
+				stepProg = 0.0f;
+				inStep = false;
+				state = AppState_FullPause;
+			}
+		} 
+	}
+	void PollEvents(AppState_& state)
+	{
+		if (IsKeyReleased(step_key) && state != AppState_Play)
+		{
+			this->inStep = true;
+		}
+	}
+};
 struct WindowSettings
 {
 	int width = 800;
@@ -37,6 +67,13 @@ struct WindowSettings
 	bool undecorated = false;
 	bool resizeable = true;
 	bool transparent = false;
+
+	int exitKey = KEY_ESCAPE;
+	bool quit = false;
+	bool restart_scene = false;
+	AppState_ state = AppState_Play;
+	bool autoSave = true;
+
 	int getFlags()
 	{
 		int flags = 0;
@@ -45,12 +82,6 @@ struct WindowSettings
 		if (transparent) flags = flags | FLAG_WINDOW_TRANSPARENT;
 		return flags;
 	}
-
-	int exitKey = KEY_ESCAPE;
-	bool quit = false;
-	bool restart_scene = false;
-	AppState_ state = AppState_Play;
-	bool autoSave = true;
 	void debug();
 };
 
@@ -79,6 +110,8 @@ private:
 	void PollEvents();
 	void startScene(int index);
 	void Debug();
+	void DebugSettings();
+	void DebugComponents();
 	void LoadSettings(const char* inifilepath);
 	void SaveSettings(const char* inifilepath);
 	static App* Instance;
@@ -87,7 +120,7 @@ private:
 	WindowSettings winSettings;
 	Inspector inspector;
 	SceneManager sceneManager;
-	
+	PauseSettings mPauseSettings;
 	Scene* currentScene;
 };
 
