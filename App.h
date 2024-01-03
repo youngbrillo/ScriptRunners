@@ -99,6 +99,10 @@ public:
 	static void Run();
 	static void End();
 	static App* Get();
+	static Scene* GetCurrentScene() { return Get()->currentScene; }
+	static void QuitApp() { Get()->winSettings.quit = true; }
+	static AppState_ GetState() { return Get()->winSettings.state; }
+	static AppState_ SetState(AppState_ s) { return Get()->winSettings.state = s; }
 private:
 	App();
 	~App();
