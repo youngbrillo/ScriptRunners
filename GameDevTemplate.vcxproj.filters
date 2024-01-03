@@ -198,6 +198,9 @@
     <ClCompile Include="Breakout.cpp">
       <Filter>Scenes\Template Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="Snake.cpp">
+      <Filter>Scenes\Template Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">

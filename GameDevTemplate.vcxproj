@@ -187,6 +187,7 @@
     <ClCompile Include="RaylibTemplateScene.cpp" />
     <ClCompile Include="rlImGui.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="Snake.cpp" />
     <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
