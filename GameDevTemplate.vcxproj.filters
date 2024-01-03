@@ -195,7 +195,7 @@
     <ClCompile Include="TextureManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="PongGame.cpp">
+    <ClCompile Include="Breakout.cpp">
       <Filter>Scenes\Template Scenes</Filter>
     </ClCompile>
   </ItemGroup>
@@ -345,6 +345,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TextureManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Breakout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
