@@ -184,6 +184,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="Breakout.cpp" />
+    <ClCompile Include="MIssleCommander.cpp" />
     <ClCompile Include="RaylibTemplateScene.cpp" />
     <ClCompile Include="rlImGui.cpp" />
     <ClCompile Include="Scene.cpp" />
