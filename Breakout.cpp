@@ -1,5 +1,5 @@
 #include "Breakout.h"
-
+#include "App.h"
 //player ///////////////////////////////////////////////////////////////////////////
 //       ///////////////////////////////////////////////////////////////////////////
 //       ///////////////////////////////////////////////////////////////////////////
@@ -217,7 +217,7 @@ void BreakoutScene::Draw()
             index++;
         }
 
-        if (false) DrawText("GAME PAUSED", GetScreenWidth() / 2 - MeasureText("GAME PAUSED", 40) / 2, GetScreenHeight() / 2 - 40, 40, GRAY);
+        if (App::GetState() != AppState_Play) DrawText("GAME PAUSED", GetScreenWidth() / 2 - MeasureText("GAME PAUSED", 40) / 2, GetScreenHeight() / 2 - 40, 40, GRAY);
     }
     else DrawText("PRESS [ENTER] TO PLAY AGAIN", GetScreenWidth() / 2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN", 20) / 2, GetScreenHeight() / 2 - 50, 20, GRAY);
 
