@@ -400,18 +400,19 @@ void MissleCommanderScene::PollEvents()
 
 
     if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){ fire1 = true;}
-    if(IsMouseButtonPressed(MOUSE_MIDDLE_BUTTON)){ fire1 = true;}
-    if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) { fire1 = true; }
+    if(IsMouseButtonPressed(MOUSE_MIDDLE_BUTTON)){ fire2 = true;}
+    if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) { fire3 = true; }
 }
 void MissleCommanderScene::UpdateOutgoingFire()
 {
-    static int interceptorNumber = 0;
+    int interceptorNumber = 0;
     int launcherShooting = 0;
 
     if (fire1) launcherShooting = 1;
     if (fire2) launcherShooting = 2;
     if (fire3) launcherShooting = 3;
 
+    interceptorNumber = launcherShooting;
     if (launcherShooting > 0 && launcher[launcherShooting - 1].active)
     {
         float module;
