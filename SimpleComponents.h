@@ -94,14 +94,16 @@ namespace test
 		static void Extend(lua_State* L);
 	};
 
-	struct Rigidbody
+	class Rigidbody
 	{
+	public:
+		Rigidbody();
+		~Rigidbody();
 		b2BodyDef bodyDef;
 		b2Body* body = NULL;
 		bool enabled = false;
 		b2FixtureDef mainFixureDef;
 		b2Fixture* mainFixure;
-		void clear();
 		void Debug(const char* title = "RigidBody");
 		void SetBody(b2World* world, const test::Transform& t);
 		b2Fixture* SetFixture(b2FixtureDef, int type, Vector2 t);
@@ -125,43 +127,4 @@ namespace test
 
 	//	return true;
 	//}
-}
-
-inline void test::Rigidbody::SetBody(b2World* world, const test::Transform& t)
-{
-	bodyDef.position = b2Vec2(t.position.x, t.position.y);
-	bodyDef.angle = t.angle * DEG2RAD;
-	if (!!body) { world->DestroyBody(body); }
-	body = world->CreateBody(&bodyDef);
-	mainFixure = SetFixture(mainFixureDef, t.shape_type, t.size);
-	enabled = true;
-}
-
-inline b2Fixture* test::Rigidbody::SetFixture(b2FixtureDef, int type, Vector2 t)
-{
-	b2FixtureDef fd = mainFixureDef;
-
-	switch (type)
-	{
-	case B2_SHAPE_TYPE_BOX:
-	{
-		b2PolygonShape shape;
-		shape.SetAsBox(t.x, t.y);
-		fd.shape = &shape;
-		return body->CreateFixture(&fd);
-	}
-
-	case B2_SHAPE_TYPE_CIRCLE:
-	{
-		b2CircleShape shape;
-		shape.m_radius = t.x;
-		fd.shape = &shape;
-		return body->CreateFixture(&fd);
-	}
-	case B2_SHAPE_TYPE_EDGE:
-	default:
-		break;
-	}
-
-	return NULL;
 }

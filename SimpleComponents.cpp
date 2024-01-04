@@ -11,17 +11,61 @@ void test::Material::SetTextureByAlias(const char* alias)
 
 static const char* bodyTypeNames[b2BodyType::b2_dynamicBody + 1] = { "Static",  "Kinematic", "Dynamic" };
 
-void test::Rigidbody::clear()
+test::Rigidbody::Rigidbody()
+	: body(NULL)
+	, mainFixure(NULL)
+{
+}
+
+test::Rigidbody::~Rigidbody()
 {
 	if (this->isEnabled())
 	{
 		b2World* w = body->GetWorld();
-		if(!!w) w->DestroyBody(body);
+		if (!!w) w->DestroyBody(body);
 	}
 	body = NULL;
 	mainFixure = NULL;
 }
 
+ void test::Rigidbody::SetBody(b2World* world, const test::Transform& t)
+{
+	bodyDef.position = b2Vec2(t.position.x, t.position.y);
+	bodyDef.angle = t.angle * DEG2RAD;
+	if (!!body) { world->DestroyBody(body); }
+	body = world->CreateBody(&bodyDef);
+	mainFixure = SetFixture(mainFixureDef, t.shape_type, t.size);
+	enabled = true;
+}
+
+ b2Fixture* test::Rigidbody::SetFixture(b2FixtureDef, int type, Vector2 t)
+{
+	b2FixtureDef fd = mainFixureDef;
+
+	switch (type)
+	{
+	case B2_SHAPE_TYPE_BOX:
+	{
+		b2PolygonShape shape;
+		shape.SetAsBox(t.x, t.y);
+		fd.shape = &shape;
+		return body->CreateFixture(&fd);
+	}
+
+	case B2_SHAPE_TYPE_CIRCLE:
+	{
+		b2CircleShape shape;
+		shape.m_radius = t.x;
+		fd.shape = &shape;
+		return body->CreateFixture(&fd);
+	}
+	case B2_SHAPE_TYPE_EDGE:
+	default:
+		break;
+	}
+
+	return NULL;
+}
 void test::Rigidbody::Debug(const char* title)
 {
 	if (!this->isEnabled())return;
@@ -106,6 +150,7 @@ void test::Transform::Extend(lua_State* L)
 			.addData("size", &test::Transform::size)
 			.addData("origin", &test::Transform::origin)
 			.addData("angle", &test::Transform::angle)
+			.addData("shape_type", &test::Transform::shape_type)
 		.endClass()
 		.endNamespace();
 }

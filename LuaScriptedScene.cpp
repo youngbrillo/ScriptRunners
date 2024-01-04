@@ -13,6 +13,7 @@ class LuaSceneTemplate : public Scene
 {
 public: 
 	lua_State* L;
+	//std::vector<std::shared_ptr<test::Node>> SceneNodes;
 	std::vector<test::Node*> SceneNodes;
 public:
 	LuaSceneTemplate(const char* scriptPath, const char* startFunctionName)
@@ -30,6 +31,11 @@ public:
 		lua_close(L);
 		L = NULL;
 		test::Node::instanceContainer = NULL;
+		for (auto&& n : SceneNodes)
+		{
+			delete n;
+			n = NULL;
+		}
 		SceneNodes.clear();
 		GlobalManager::Reset();
 
@@ -83,7 +89,16 @@ public:
 	}
 	virtual void Update(const float& deltaTime)
 	{
-		for (auto&& object : SceneNodes) object->Update(deltaTime);
+		//for (auto&& object : SceneNodes) object->Update(deltaTime);
+		auto it = SceneNodes.begin();
+		while (it != SceneNodes.end())
+		{
+			(*it)->Update(deltaTime);
+			if ((*it)->canDestroy) 
+				it = SceneNodes.erase(it);
+			else 
+				it++;
+		}
 		GlobalManager::Update(deltaTime);
 
 	}

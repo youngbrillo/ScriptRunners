@@ -1,6 +1,7 @@
 #pragma once
 #include "SimpleComponents.h"
 #include <vector>
+#include <memory>
 namespace test
 {
 	class Node
@@ -28,7 +29,9 @@ namespace test
 
 	public:
 		static void Extend(lua_State* L);
+		//static std::vector<std::shared_ptr<test::Node>>* instanceContainer;
 		static std::vector<test::Node*>* instanceContainer;
 	};
+
 }
 
