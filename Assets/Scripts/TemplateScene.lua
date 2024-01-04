@@ -1,5 +1,12 @@
 
 function onSceneStart()
+	print("Revamped lua scripted scene!");
+	onSceneStart2();
+
+end
+
+
+function onSceneStart2()
 	print("Hello from LUA!! we will be making some nodes today!")
 
 	gameObjects = {};
@@ -11,8 +18,8 @@ function onSceneStart()
 		size = size + math.random();
 
 		local name = "cube" .. i;
-		local e = LSE.GameObject(name, x, y, size, size);
-		e.mat:SetColorVec(math.random(), math.random(), math.random(), 0.66);
+		local e = test.Node(name, x, y, size, size);
+		e.material:SetColorVec(math.random(), math.random(), math.random(), 0.66);
 		e.transform.angle = math.random(-360, 360)
 		x = math.random(-50, 50);
 		y = math.random(-50, 50);
@@ -21,7 +28,7 @@ function onSceneStart()
 
 
 		e.AngularVelocity = av;
-		e.mat:SetTextureByAlias("CHECKER");
+		e.material:SetTextureByAlias("CHECKER");
 		--e.velocity:set(x, y);
 		gameObjects[name] = e;
 		gameObjects[name].velocity:set(x, y);
@@ -29,7 +36,7 @@ function onSceneStart()
 		
 		x = math.random(-10, 10);
 		y = math.random(-10, 10);
-		e.mat.uv_scroll:set(x, y);
+		e.material.uv_scroll:set(x, y);
 
 
 	end

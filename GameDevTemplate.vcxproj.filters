@@ -31,6 +31,12 @@
     <Filter Include="Source Files\Managers">
       <UniqueIdentifier>{f5f74aa0-f2ce-4bd5-a39a-1daae78214c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\App Utilities">
+      <UniqueIdentifier>{3dda008b-2cc3-49e0-b99e-4c2bcb2b4544}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Simple Components">
+      <UniqueIdentifier>{1d0370c9-e6cb-49b8-a8f0-fed351eed7a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -40,9 +46,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Inspector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RaylibTemplateScene.cpp">
@@ -205,7 +208,16 @@
       <Filter>Scenes\Template Scenes</Filter>
     </ClCompile>
     <ClCompile Include="AppSettings.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\App Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Inspector.cpp">
+      <Filter>Source Files\App Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleComponents.cpp">
+      <Filter>Source Files\Simple Components</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleNode.cpp">
+      <Filter>Source Files\Simple Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -360,6 +372,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AppSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleComponents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

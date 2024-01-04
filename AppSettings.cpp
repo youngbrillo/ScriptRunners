@@ -55,10 +55,6 @@ static const char* state_names[AppState_::AppState_PartialPause + 1] = { "Play",
 
 void AppSettings::Debug()
 {
-	ImGui::Checkbox("quit", &quit);
-	ImGui::Checkbox("restart", &restart);
-	ImGui::Checkbox("autoSave", &autoSave);
-
 	//DRAW FRAMERATE
 	ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	//MODIFY THE WINDOW COLOR
