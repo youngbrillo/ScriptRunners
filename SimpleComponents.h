@@ -30,6 +30,16 @@ namespace test
 			return r;
 		}
 
+		Rectangle Rect() const
+		{
+			Rectangle r;
+			r.x = position.x -  origin.x;
+			r.y = position.y -  origin.y;
+			r.width = size.x;
+			r.height = size.y;
+			return r;
+		}
+
 		void Debug(const char* title = "Transform", bool inScreenSpace = true)
 		{
 			if (ImGui::TreeNode(title))

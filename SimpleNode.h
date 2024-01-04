@@ -15,6 +15,13 @@ namespace test
 		void FixedUpdate(const float& deltaTime);
 		void Debug(bool inScreenSpace);
 
+		void ListenForCollisions()
+		{
+			if (!!collisionContainer)
+			{
+				collisionContainer->emplace_back(this);
+			}
+		}
 	public:
 		std::string name = "simple node";
 		bool visible = true;
@@ -31,6 +38,7 @@ namespace test
 		static void Extend(lua_State* L);
 		//static std::vector<std::shared_ptr<test::Node>>* instanceContainer;
 		static std::vector<test::Node*>* instanceContainer;
+		static std::vector<test::Node*>* collisionContainer;
 	};
 
 }

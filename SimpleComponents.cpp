@@ -223,11 +223,11 @@ void test::Transform::Extend(lua_State* L)
 
  static std::pair<bool, Vector2> CheckCollisionCircle(Vector2 position, Vector2 speed, float radius, const test::Transform& b, const float& deltaTime)
  {
-	 std::pair<bool, Vector2> pair(false, Vector2{0.0f, 0.0f});
+	 std::pair<bool, Vector2> pair(false, speed);
 
 	 bool result = false;
 
-	 bool contact = CheckCollisionCircleRec(position, radius, b.Destination());
+	 bool contact = CheckCollisionCircleRec(position, radius, b.Rect());
 	 if (!contact) return pair;
 
 
@@ -260,6 +260,7 @@ void test::Transform::Extend(lua_State* L)
 	 else if (hit_right && !isTravelingRight)
 		 pair.second.x *= -1;
 
+	 pair.first = hit_below || hit_above || hit_left || hit_right;
 	 return pair;
  }
  

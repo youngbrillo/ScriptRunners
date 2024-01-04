@@ -3,6 +3,7 @@
 
 //std::vector<std::shared_ptr<test::Node>>* test::Node::instanceContainer = NULL;
 std::vector<test::Node*>* test::Node::instanceContainer = NULL;
+std::vector<test::Node*>* test::Node::collisionContainer = NULL;
 
 test::Node::Node(std::string NAME, float x, float y, float w, float h)
 	: name(NAME)
@@ -149,6 +150,7 @@ void test::Node::Extend(lua_State* L)
 		.addData("rigidbody", &test::Node::rigidbody)
 		.addData("velocity", &test::Node::velocity)
 		.addData("AngularVelocity", &test::Node::AngularVelocity)
+		.addFunction("ListenForCollisions", &test::Node::ListenForCollisions)
 		.endClass()
 		.beginClass<NodeWrapper>("Node")
 			.addConstructor<void(*)()>()

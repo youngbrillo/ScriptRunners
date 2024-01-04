@@ -15,6 +15,8 @@ public:
 	lua_State* L;
 	//std::vector<std::shared_ptr<test::Node>> SceneNodes;
 	std::vector<test::Node*> SceneNodes;
+	std::vector<test::Node*> collidingNodes;
+
 public:
 	LuaSceneTemplate(const char* scriptPath, const char* startFunctionName)
 		: Scene()
@@ -23,6 +25,7 @@ public:
 	{
 		GlobalManager::Set();
 		test::Node::instanceContainer = &this->SceneNodes;
+		test::Node::collisionContainer = &this->collidingNodes;
 		LoadScript(scriptPath, startFunctionName);
 	}
 	~LuaSceneTemplate()
@@ -31,6 +34,9 @@ public:
 		lua_close(L);
 		L = NULL;
 		test::Node::instanceContainer = NULL;
+		test::Node::collisionContainer = NULL;
+		collidingNodes.clear();
+
 		for (auto&& n : SceneNodes)
 		{
 			delete n;
@@ -80,7 +86,6 @@ public:
 		}
 
 	}
-
 	virtual void Draw()
 	{
 		//GlobalManager::Draw();
@@ -89,13 +94,44 @@ public:
 	}
 	virtual void Update(const float& deltaTime)
 	{
-		//for (auto&& object : SceneNodes) object->Update(deltaTime);
+
 		auto it = SceneNodes.begin();
 		while (it != SceneNodes.end())
 		{
-			(*it)->Update(deltaTime);
-			if ((*it)->canDestroy) 
+			auto i = (*it);
+			auto jt = collidingNodes.begin();
+			while (jt != collidingNodes.end())
+			{
+				auto j = (*jt);
+				if (j->canDestroy) 
+					jt = collidingNodes.erase(jt);
+				else if (i == j) jt++;
+				else
+				{
+					auto pair = test::CheckCollision(j->transform, j->velocity, i->transform, deltaTime);
+					if (pair.first)
+					{
+						luabridge::LuaRef func = luabridge::getGlobal(L, "onSimpleCollision");
+						try {
+							func(j, i, pair.second.x, pair.second.y);
+						}
+						catch (luabridge::LuaException const& e) {
+							printf("%s\n", e.what());
+						}
+
+					}
+					jt++;
+				}
+				
+			}
+
+				
+			i->Update(deltaTime);
+			if (i->canDestroy) {
 				it = SceneNodes.erase(it);
+				delete i;
+				i = NULL;
+			}
 			else 
 				it++;
 		}
@@ -107,7 +143,21 @@ public:
 		for (auto&& object : SceneNodes) object->FixedUpdate(timeStep);
 
 	}
+	virtual void PollEvents() override
+	{
+		int key = GetKeyPressed();
+		if (key == KEY_NULL) return;
 
+		luabridge::LuaRef func = luabridge::getGlobal(L, "onKeyPress");
+		try {
+			func(key);
+		}
+		catch (luabridge::LuaException const& e) {
+			printf("%s\n", e.what());
+		}
+
+
+	}
 	virtual void Debug()
 	{
 		if (ImGui::TreeNode(TextFormat("Game Objects: %d", SceneNodes.size())))

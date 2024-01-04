@@ -38,7 +38,7 @@ void AppSettings::Poll()
 
 	if (IsKeyReleased(pause_key))
 	{
-		if (state == AppState_Play ? AppState_FullPause : AppState_Play);
+		state = state == AppState_Play ? AppState_FullPause : AppState_Play;
 	}
 
 	if (IsKeyReleased(exitKey))
