@@ -5,7 +5,7 @@
 #include "App.h"
 int main()
 {
-    App::Start("Template Project", "Configs/window.json", NULL);
+    App::Start();
     App::Run();
     App::End();
 }

@@ -204,6 +204,9 @@
     <ClCompile Include="MIssleCommander.cpp">
       <Filter>Scenes\Template Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="AppSettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -354,6 +357,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Breakout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AppSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

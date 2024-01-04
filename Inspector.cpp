@@ -1,5 +1,6 @@
 #include "Inspector.h"
 #include "App.h"
+#include "AppSettings.h"
 #include <imgui.h>
 Inspector::Inspector()
 	: menu_visible(true)
@@ -12,20 +13,20 @@ Inspector::~Inspector()
 {
 }
 
-void Inspector::Render(WindowSettings* settings, SceneManager* sm, GameObjectManager* gom)
+void Inspector::Render(AppSettings* settings, SceneManager* sm, GameObjectManager* gom)
 {
 	if (!this->menu_visible) return;
 
 	if (ImGui::BeginMainMenuBar())
 	{
 		InspectWindows(settings);
-		InspectScenes(sm);
+		InspectScenes(sm, settings);
 		InspectObjects(gom);
 
 		ImGui::EndMainMenuBar();
 	}
 
-	if(view_demo) ImGui::ShowDemoWindow(&view_demo);
+	if(this->view_demo) ImGui::ShowDemoWindow(&this->view_demo);
 }
 
 void Inspector::poll()
@@ -37,16 +38,18 @@ void Inspector::poll()
 
 }
 
-void Inspector::InspectWindows(WindowSettings* settings)
+void Inspector::InspectWindows(AppSettings* settings)
 {
 	if (ImGui::BeginMenu("File"))
 	{
 		ImGui::MenuItem("New", NULL, false, false);
 		if (ImGui::MenuItem("Open", "Ctrl+O", false, false)) {}
-		if (ImGui::MenuItem("Save", "Ctrl+S", false, false)) {}
+		if (ImGui::MenuItem("Save", "Ctrl+S")) {
+			if (settings) settings->SaveData();
+		}
 		if (ImGui::MenuItem("Save As..", NULL, false, false)) {}
 		if (ImGui::MenuItem("Restart", "Ctrl+R", false, true)) { 
-			if(settings) settings->restart_scene = true; 
+			if(settings) settings->restart = true; 
 		}
 
 		ImGui::Separator();
@@ -59,14 +62,14 @@ void Inspector::InspectWindows(WindowSettings* settings)
 		if (ImGui::MenuItem(view_demo ?"Hide Demo": "View Demo", NULL, view_demo)){
 			this->view_demo = !this->view_demo;
 		}
-		settings->debug();
+		settings->Debug();
 
 		ImGui::EndMenu();
 	}
 
 }
 
-void Inspector::InspectScenes(SceneManager* sm)
+void Inspector::InspectScenes(SceneManager* sm, AppSettings* s)
 {
 	if (ImGui::BeginMenu("Scenes"))
 	{
@@ -78,10 +81,12 @@ void Inspector::InspectScenes(SceneManager* sm)
 				{
 					for (auto&& scene : cat.second)
 					{
-						if (ImGui::MenuItem(scene.c_str(), TextFormat("id: %d", sm->scene_to_globalIndex[scene]), sm->scene_to_globalIndex[scene] == sm->currentSceneId))
+						if (ImGui::MenuItem(scene.c_str(), TextFormat("id: %d", sm->scene_to_globalIndex[scene]), sm->scene_to_globalIndex[scene] == s->lastScene_id))
 						{
-							sm->currentSceneId = sm->scene_to_globalIndex[scene];
-							sm->restart = true;
+							s->lastScene_id = sm->scene_to_globalIndex[scene];
+							s->last_scene_name = scene;
+							s->last_scene_cat = cat.first;
+							s->restart = true;
 						}
 					}
 					ImGui::EndMenu();
@@ -94,7 +99,7 @@ void Inspector::InspectScenes(SceneManager* sm)
 
 void Inspector::InspectObjects(GameObjectManager* objectManager)
 {
-	if (ImGui::BeginMenu("Scenes"))
+	if (ImGui::BeginMenu("Game Objects"))
 	{
 
 		ImGui::EndMenu();

@@ -134,6 +134,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="AppSettings.cpp" />
     <ClCompile Include="box2dScene.cpp" />
     <ClCompile Include="GlobalManager.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
@@ -193,6 +194,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
+    <ClInclude Include="AppSettings.h" />
     <ClInclude Include="Breakout.h" />
     <ClInclude Include="GlobalManager.h" />
     <ClInclude Include="imgui\imconfig.h" />
