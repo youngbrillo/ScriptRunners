@@ -127,4 +127,6 @@ namespace test
 
 	//	return true;
 	//}
+
+	std::pair<bool, Vector2> CheckCollision(const Transform& a, const Vector2& aSpeed, const Transform& b, const float& dt);
 }

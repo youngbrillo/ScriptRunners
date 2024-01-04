@@ -218,3 +218,55 @@ void test::Transform::Extend(lua_State* L)
 		.addFunction("GetScreenHeight", GetScreenHeight)
 	.endNamespace();
  }
+
+
+
+ static std::pair<bool, Vector2> CheckCollisionCircle(Vector2 position, Vector2 speed, float radius, const test::Transform& b, const float& deltaTime)
+ {
+	 std::pair<bool, Vector2> pair(false, Vector2{0.0f, 0.0f});
+
+	 bool result = false;
+
+	 bool contact = CheckCollisionCircleRec(position, radius, b.Destination());
+	 if (!contact) return pair;
+
+
+	 float ballTop = position.y - radius;
+	 float ballBottom = position.y + radius;
+	 float ballLeft = position.x - radius;
+	 float ballRight = position.x + radius;
+
+	 float brickTop = b.position.y - b.size.y / 2;
+	 float brickBottom = b.position.y + b.size.y / 2;
+	 float brickLeft = b.position.x - b.size.x / 2;
+	 float brickRight = b.position.x + b.size.x / 2;
+
+
+	 bool hit_below = ((ballTop <= brickBottom) && (ballTop > brickBottom + speed.y * deltaTime));
+	 bool hit_above = ballBottom <= brickTop && (ballBottom < (brickTop + speed.y * deltaTime));
+	 bool hit_left = ballRight >= brickLeft && (ballRight < brickLeft + speed.x * deltaTime);
+	 bool hit_right = ballLeft <= ballRight && (ballLeft > brickLeft + speed.x * deltaTime);
+
+	 bool isFalling = speed.y > 0;
+	 bool isTravelingRight = speed.x > 0;
+
+	 result = contact;
+	 if (hit_below && !isFalling)
+		 pair.second.y *= -1;
+	 else if (hit_above && isFalling)
+		 pair.second.y *= -1;
+	 else if (hit_left && isTravelingRight)
+		 pair.second.x *= -1;
+	 else if (hit_right && !isTravelingRight)
+		 pair.second.x *= -1;
+
+	 return pair;
+ }
+ 
+
+
+
+ std::pair<bool, Vector2> test::CheckCollision(const Transform& a, const Vector2& aSpeed, const Transform& b, const float& dt)
+ {
+	 return CheckCollisionCircle(a.position, aSpeed, a.size.x, b, dt);
+ }
