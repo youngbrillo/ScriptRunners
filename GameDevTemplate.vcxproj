@@ -186,6 +186,7 @@
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="Breakout.cpp" />
     <ClCompile Include="MIssleCommander.cpp" />
+    <ClCompile Include="RayExtend.cpp" />
     <ClCompile Include="RaylibTemplateScene.cpp" />
     <ClCompile Include="rlImGui.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -239,6 +240,7 @@
     <ClInclude Include="Lua\lvm.h" />
     <ClInclude Include="Lua\lzio.h" />
     <ClInclude Include="Manager.h" />
+    <ClInclude Include="RayExtend.h" />
     <ClInclude Include="sajson.h" />
     <ClInclude Include="Inspector.h" />
     <ClInclude Include="IOHandler.h" />
@@ -252,7 +254,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\TemplateScene.lua" />
-    <None Include="Scripts\DrawingScene.lua" />
+    <None Include="Scripts\BreakoutScene.lua" />
     <None Include="Scripts\Manager\TextureManager.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

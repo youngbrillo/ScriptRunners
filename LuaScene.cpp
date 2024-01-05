@@ -181,8 +181,8 @@ bool LuaScene::CallLuaFunctionFloat(lua_State* L, const char* funcName, float va
 
 
 static Scene* TemplateScene() { return LuaScene::Create("Assets/Scripts/TemplateScene.lua", "onSceneStart"); }
-static Scene* DrawingScene() { return LuaScene::Create("Scripts/DrawingScene.lua"); }
+static Scene* BreakoutLuaScene() { return LuaScene::Create("Scripts/BreakoutScene.lua"); }
 
 
-static int scene000 = RegisterScene("Template", "Lua: Breakout", TemplateScene);
-static int scene001 = RegisterScene("Template", "Lua: Draw", DrawingScene);
+static int scene000 = RegisterScene("Template: Lua", "Lua: Draw", TemplateScene);
+static int scene001 = RegisterScene("Template: Lua", "Lua: Breakout", BreakoutLuaScene);

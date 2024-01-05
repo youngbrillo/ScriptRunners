@@ -219,6 +219,9 @@
     <ClCompile Include="SimpleNode.cpp">
       <Filter>Source Files\Simple Components</Filter>
     </ClCompile>
+    <ClCompile Include="RayExtend.cpp">
+      <Filter>Source Files\Simple Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -383,13 +386,18 @@
     <ClInclude Include="LuaScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RayExtend.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\TemplateScene.lua">
       <Filter>Scripts</Filter>
     </None>
-    <None Include="Scripts\Manager\TextureManager.lua" />
-    <None Include="Scripts\DrawingScene.lua">
+    <None Include="Scripts\BreakoutScene.lua">
+      <Filter>Scripts</Filter>
+    </None>
+    <None Include="Scripts\Manager\TextureManager.lua">
       <Filter>Scripts</Filter>
     </None>
   </ItemGroup>
