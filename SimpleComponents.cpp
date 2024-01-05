@@ -180,21 +180,7 @@ void test::Transform::Extend(lua_State* L)
 
 
 #include "SimpleNode.h"
-
- static void DrawRectangleHex(float x, float y, float w, float h, unsigned int hex)
- {
-	 DrawRectangleV({ x, y }, { w, h }, GetColor(hex));
- }
-
- static void DrawCircleHex(float x, float y, float r, unsigned int hex)
- {
-	 DrawCircleV({ x, y }, r, GetColor(hex));
- }
-
- static void DrawLineHex(float x, float y, float x1, float y1, unsigned int hex)
- {
-	 DrawLineV({x, y}, {x1, y1}, GetColor(hex));
- }
+#include "RayExtend.h"
 
  void test::ExtendAll(lua_State* L)
  {
@@ -202,7 +188,7 @@ void test::Transform::Extend(lua_State* L)
 	 test::Transform::Extend(L);
 	 test::Rigidbody::Extend(L);
 	 test::Node::Extend(L);
-
+	 ERaylib::Extend(L);
 	 luabridge::getGlobalNamespace(L)
 	//Rectangle
 	.beginClass<Rectangle>("Rectangle")
@@ -228,14 +214,8 @@ void test::Transform::Extend(lua_State* L)
 		.addData("id", &Texture2D::id)
 		.addData("width", &Texture2D::width)
 		.addData("height", &Texture2D::height)
-	.endClass()
-	.beginNamespace("Raylib")
-		.addFunction("GetScreenWidth", GetScreenWidth)
-		.addFunction("GetScreenHeight", GetScreenHeight)
-		.addFunction("DrawRectangle", DrawRectangleHex)
-		.addFunction("DrawCircle", DrawCircleHex)
-		.addFunction("DrawLine", DrawLineHex)
-	.endNamespace();
+	.endClass();
+
  }
 
 
