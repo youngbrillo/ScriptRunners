@@ -514,9 +514,11 @@ public:
 
 	virtual void PollEvents() override {
 		Box2dBaseScene::PollEvents();
+
+
 		if (IsKeyDown(KEY_A))
 		{
-			m_spring1->SetMotorSpeed(m_speed);
+			m_spring1->SetMotorSpeed(-m_speed);
 
 		}
 		if (IsKeyDown(KEY_S))
@@ -526,7 +528,7 @@ public:
 		}
 		if (IsKeyDown(KEY_D))
 		{
-			m_spring1->SetMotorSpeed(-m_speed);
+			m_spring1->SetMotorSpeed(m_speed);
 		}
 	};
 	virtual void Update(const float& dt) override
