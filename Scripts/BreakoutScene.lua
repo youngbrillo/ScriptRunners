@@ -51,7 +51,15 @@ function onSceneStart()
 	gFontColor = 0xFFFFFFFF
 	padding = 10
 
-	Scene.Inspect("padding", "gFontSize", "gString")
+	gStringObject = 
+	{
+		text = "hello world",
+		position = {x = 25, y = 25},
+		fontSize = 40,
+		spacing = 1.0
+	}
+
+	Scene.Inspect("padding", "gFontSize", "gString", "gStringObject")
 end
 
 

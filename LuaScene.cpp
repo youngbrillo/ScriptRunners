@@ -193,6 +193,72 @@ bool LuaScene::CallLuaFunctionFloat(lua_State* L, const char* funcName, float va
 	}
 }
 #include "App.h"
+
+namespace luaVar
+{
+	struct ITable : public luaVar::iVar
+	{
+		ITable() : iVar(),key("Empty") {};
+		ITable(const char* k) : iVar(), key(k) {};
+		const char* key;
+		std::vector<std::shared_ptr<luaVar::iVar>> mFields;
+
+		virtual void Inspect(lua_State* L)
+		{
+			if (ImGui::TreeNode(key))
+			{
+				for (auto&& field : mFields)
+				{
+					field->Inspect(L);
+				}
+				ImGui::TreePop();
+			}
+		}
+	};
+
+}
+
+std::shared_ptr<luaVar::iVar> GetVariable(lua_State* L, const char* key, luabridge::LuaRef ref)
+{
+	std::shared_ptr<luaVar::iVar> q;
+
+	if (ref.isBool())
+	{
+		bool v = ref.cast<bool>();
+		q = std::make_shared<luaVar::Ibool>(key, v);
+	}
+	else if (ref.isNumber())
+	{
+		float v = ref.cast<float>();
+		 q = std::make_shared<luaVar::INumber>(key, v);
+	}
+	else if (ref.isString())
+	{
+		const char* v = ref.cast<const char*>();
+		q = std::make_shared<luaVar::IString>(key, v);
+	}
+	else if (ref.isTable())
+	{
+		std::shared_ptr<luaVar::ITable> qq = std::make_shared<luaVar::ITable>(key);
+
+		luabridge::Iterator i = luabridge::Iterator(ref);
+		while (!i.isNil())
+		{
+			const char* k = i.key().cast<const char*>();
+
+			std::shared_ptr<luaVar::iVar> j = GetVariable(L, k, i.value());
+			qq->mFields.emplace_back(j);
+			++i;
+
+			q = qq;
+		}
+
+
+	}
+	return q;
+}
+
+
 int LuaScene::assignInspector(lua_State* L)
 {
 	int top = lua_gettop(L); int count = 1;
@@ -202,31 +268,7 @@ int LuaScene::assignInspector(lua_State* L)
 	{
 		const char* key = lua_tostring(L, count++);
 		luabridge::LuaRef ref = luabridge::getGlobal(L, key);
-		if (ref.isBool())
-		{
-			bool v = ref.cast<bool>();
-			std::shared_ptr<luaVar::Ibool> q = std::make_shared<luaVar::Ibool>(key, v);
-			scene->m_inspectors[key] = q;
-		}
-		else if (ref.isNumber())
-		{
-			float v = ref.cast<float>();
-			std::shared_ptr<luaVar::INumber> q = std::make_shared<luaVar::INumber>(key, v);
-			scene->m_inspectors[key] = q;
-		}
-		else if (ref.isString())
-		{
-			const char* v = ref.cast<const char*>();
-			std::shared_ptr<luaVar::IString> q = std::make_shared<luaVar::IString>(key, v);
-			scene->m_inspectors[key] = q;
-		}
-		else if (ref.isTable())
-		{
-
-		}
-		else if (ref.isNil())
-		{
-		}
+		scene->m_inspectors[key] = GetVariable(L, key, ref);
 	}
 
 	return 0;
