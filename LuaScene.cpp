@@ -275,9 +275,9 @@ int LuaScene::assignInspector(lua_State* L)
 }
 
 
-static Scene* TemplateScene() { return LuaScene::Create("Assets/Scripts/TemplateScene.lua", "onSceneStart"); }
-static Scene* BreakoutLuaScene() { return LuaScene::Create("Scripts/BreakoutScene.lua"); }
+static Scene* TemplateScene() { return LuaScene::Create("Scripts/Scenes/demoScene.lua", "onSceneStart"); }
+static Scene* BreakoutLuaScene() { return LuaScene::Create("Scripts/Scenes/BreakoutScene.lua"); }
 
 
-static int scene000 = RegisterScene("Template: Lua", "Lua: Draw", TemplateScene);
-static int scene001 = RegisterScene("Template: Lua", "Lua: Breakout", BreakoutLuaScene);
+static int scene000 = RegisterScene("Lua", "lua Demo", TemplateScene);
+static int scene001 = RegisterScene("Lua", "lua Breakout", BreakoutLuaScene);

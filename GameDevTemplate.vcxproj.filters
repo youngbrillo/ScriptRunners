@@ -37,6 +37,9 @@
     <Filter Include="Source Files\Simple Components">
       <UniqueIdentifier>{1d0370c9-e6cb-49b8-a8f0-fed351eed7a2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scripts\Scenes">
+      <UniqueIdentifier>{aabc8ba2-3180-4812-8389-5a617ff1de62}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -391,14 +394,17 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Scripts\TemplateScene.lua">
-      <Filter>Scripts</Filter>
-    </None>
-    <None Include="Scripts\BreakoutScene.lua">
-      <Filter>Scripts</Filter>
-    </None>
     <None Include="Scripts\Manager\TextureManager.lua">
       <Filter>Scripts</Filter>
+    </None>
+    <None Include="Scripts\Scenes\demoScene.lua">
+      <Filter>Scripts\Scenes</Filter>
+    </None>
+    <None Include="Scripts\BreakoutScene.lua">
+      <Filter>Scripts\Scenes</Filter>
+    </None>
+    <None Include="Scripts\Scenes\BreakoutScene.lua">
+      <Filter>Scripts\Scenes</Filter>
     </None>
   </ItemGroup>
 </Project>

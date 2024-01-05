@@ -1,4 +1,7 @@
 
+local Demo = {}
+
+
 
 function onSceneStart()
 	print("Hello from LUA!! we will be making some nodes today!")
@@ -40,3 +43,10 @@ function createCheckeredNodes( limit )
 	end
 end
 
+
+function Demo.CreateCheckeredNodes( limit )
+	createCheckeredNodes(limit);
+end
+
+
+return Demo;
