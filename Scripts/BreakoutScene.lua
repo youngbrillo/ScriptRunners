@@ -13,8 +13,10 @@ Circle_Shape = 1;
 Line_Shape = 2;
 
 
+
 function onSceneStart()
 	local _width = Raylib.GetScreenWidth() * 0.1;
+	
 	objs["Player"] = 
 	{
 		name = "Player",
@@ -43,6 +45,13 @@ function onSceneStart()
 	GenerateObjects(5, 20, {x = Raylib.GetScreenWidth() / 20, y = 40 }, 25, 0x555555ff, 0xffffffff)
 
 	print("number of objects: ".. #objs)
+
+	gString = "some cool value!"
+	gFontSize = 20.0;
+	gFontColor = 0xFFFFFFFF
+	padding = 10
+
+	Scene.Inspect("padding", "gFontSize", "gString")
 end
 
 
@@ -66,6 +75,8 @@ function Draw()
 	end
 
 	DrawLife(Player().life)
+	local vx, vy = Raylib.MeasureText(gString, gFontSize)
+	Raylib.DrawText(gString, Raylib.GetScreenWidth() - (vx + padding), Raylib.GetScreenHeight() - (vy + padding), gFontSize, gFontColor)
 end
 
 
@@ -236,6 +247,8 @@ function handleCollisionBrick(brick , key)
 	then
 		--print("Destroy this brick!!")
 		objs[key] = nil;
+		Ball().speed.x = Ball().speed.x * -1;
+		Ball().speed.y = Ball().speed.y * -1;
 	end
 end
 

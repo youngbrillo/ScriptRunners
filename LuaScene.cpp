@@ -3,27 +3,30 @@
 #include <lua.hpp>
 #include <vector>
 #include <LuaBridge/LuaBridge.h>
-#include <imgui.h>
 #include "RenderPipeline.h"
 #include "SimpleComponents.h"
 #include "SimpleNode.h"
 #include "GlobalManager.h"
 
+LuaScene* LuaScene::Instance = NULL;
 
 LuaScene::LuaScene(const char* script, const char* startFunction)
 	: Scene()
 	, L(NULL)
 	, SceneNodes({})
+	, collidingNodes({})
 {
 	GlobalManager::Set();
 	test::Node::instanceContainer = &this->SceneNodes;
 	test::Node::collisionContainer = &this->collidingNodes;
+	LuaScene::Instance = this;
 	loadScript(script, startFunction);
 }
 LuaScene::~LuaScene()
 {
 	unloadScript();
 	lua_close(L);
+	LuaScene::Instance = NULL;
 	L = NULL;
 	test::Node::instanceContainer = NULL;
 	test::Node::collisionContainer = NULL;
@@ -51,6 +54,11 @@ void LuaScene::loadScript(const char* script, const char* startFunction)
 	if (rv == LUA_OK)
 	{
 		test::ExtendAll(L);
+		luabridge::getGlobalNamespace(L)
+			.beginNamespace("Scene")
+			.addCFunction("Inspect", assignInspector)
+			.endNamespace();
+
 		LuaScene::CallLuaFunction(L, startFunction);
 
 	}
@@ -151,6 +159,12 @@ void LuaScene::Debug()
 		for (auto&& object : SceneNodes) object->Debug(true);
 		ImGui::TreePop();
 	}
+
+	for (auto&& n : m_inspectors)
+	{
+		n.second->Inspect(L);
+	}
+
 }
 
 bool LuaScene::CallLuaFunction(lua_State* L, const char* funcName)
@@ -177,6 +191,45 @@ bool LuaScene::CallLuaFunctionFloat(lua_State* L, const char* funcName, float va
 		printf("error in '%s'\t%s\n", funcName, e.what());
 		return false;
 	}
+}
+#include "App.h"
+int LuaScene::assignInspector(lua_State* L)
+{
+	int top = lua_gettop(L); int count = 1;
+	LuaScene* scene = LuaScene::Instance;
+
+	while (count <= top)
+	{
+		const char* key = lua_tostring(L, count++);
+		luabridge::LuaRef ref = luabridge::getGlobal(L, key);
+		if (ref.isBool())
+		{
+			bool v = ref.cast<bool>();
+			luaVar::Ibool* q = new luaVar::Ibool(key, v);
+			scene->m_inspectors[key] = q;
+		}
+		else if (ref.isNumber())
+		{
+			float v = ref.cast<float>();
+			luaVar::INumber* q = new luaVar::INumber(key, v);
+			scene->m_inspectors[key] = q;
+		}
+		else if (ref.isString())
+		{
+			const char* v = ref.cast<const char*>();
+			luaVar::IString* q = new luaVar::IString(key, v);
+			scene->m_inspectors[key] = q;
+		}
+		else if (ref.isTable())
+		{
+
+		}
+		else if (ref.isNil())
+		{
+		}
+	}
+
+	return 0;
 }
 
 
