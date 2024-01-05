@@ -180,6 +180,22 @@ void test::Transform::Extend(lua_State* L)
 
 
 #include "SimpleNode.h"
+
+ static void DrawRectangleHex(float x, float y, float w, float h, unsigned int hex)
+ {
+	 DrawRectangleV({ x, y }, { w, h }, GetColor(hex));
+ }
+
+ static void DrawCircleHex(float x, float y, float r, unsigned int hex)
+ {
+	 DrawCircleV({ x, y }, r, GetColor(hex));
+ }
+
+ static void DrawLineHex(float x, float y, float x1, float y1, unsigned int hex)
+ {
+	 DrawLineV({x, y}, {x1, y1}, GetColor(hex));
+ }
+
  void test::ExtendAll(lua_State* L)
  {
 	 test::Material::Extend(L);
@@ -216,6 +232,9 @@ void test::Transform::Extend(lua_State* L)
 	.beginNamespace("Raylib")
 		.addFunction("GetScreenWidth", GetScreenWidth)
 		.addFunction("GetScreenHeight", GetScreenHeight)
+		.addFunction("DrawRectangle", DrawRectangleHex)
+		.addFunction("DrawCircle", DrawCircleHex)
+		.addFunction("DrawLine", DrawLineHex)
 	.endNamespace();
  }
 

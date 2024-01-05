@@ -75,6 +75,7 @@ function createBreakOut()
 				e.material:SetColorVec(80/255, 80/255, 80/255, 1.0)
 
 			end
+			e.material:SetTextureByAlias("CHECKER");
 
 			e.transform.shape_type = 0;
 

@@ -54,7 +54,7 @@
     <ClCompile Include="box2dScene.cpp">
       <Filter>Scenes\Template Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="LuaScriptedScene.cpp">
+    <ClCompile Include="LuaScene.cpp">
       <Filter>Scenes\Template Scenes</Filter>
     </ClCompile>
     <ClCompile Include="JsonHandler.cpp">
@@ -380,11 +380,17 @@
     <ClInclude Include="SimpleNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LuaScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Scripts\TemplateScene.lua">
       <Filter>Scripts</Filter>
     </None>
     <None Include="Scripts\Manager\TextureManager.lua" />
+    <None Include="Scripts\DrawingScene.lua">
+      <Filter>Scripts</Filter>
+    </None>
   </ItemGroup>
 </Project>
