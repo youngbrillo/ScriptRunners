@@ -173,5 +173,6 @@ void AppSettings::SaveData()
 
 void AppSettings::AutoSave()
 {
+	if (autoSave) SaveData();
 }
 
