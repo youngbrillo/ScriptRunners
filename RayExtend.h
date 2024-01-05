@@ -32,7 +32,6 @@ namespace ERaylib
 		return CheckCollisionRecs(Rectangle{ x1, y1, w1, h1}, Rectangle{ x2, y2, w2, h2 });
 	}
 
-
 	void Extend(lua_State* L);
 }
 
