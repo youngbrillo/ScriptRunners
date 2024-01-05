@@ -5,7 +5,7 @@
 #include <LuaBridge/LuaBridge.h>
 #include <string>
 #include "imgui_string_wrap_extension.h"
-
+#include <memory>
 namespace test { class Node; }
 
 namespace luaVar
@@ -88,7 +88,7 @@ public:
 	bool canDraw = true;
 
 
-	std::map<const char*, luaVar::iVar*> m_inspectors;
+	std::map<const char*, std::shared_ptr<luaVar::iVar>> m_inspectors;
 
 	static LuaScene* Instance;
 };

@@ -205,19 +205,19 @@ int LuaScene::assignInspector(lua_State* L)
 		if (ref.isBool())
 		{
 			bool v = ref.cast<bool>();
-			luaVar::Ibool* q = new luaVar::Ibool(key, v);
+			std::shared_ptr<luaVar::Ibool> q = std::make_shared<luaVar::Ibool>(key, v);
 			scene->m_inspectors[key] = q;
 		}
 		else if (ref.isNumber())
 		{
 			float v = ref.cast<float>();
-			luaVar::INumber* q = new luaVar::INumber(key, v);
+			std::shared_ptr<luaVar::INumber> q = std::make_shared<luaVar::INumber>(key, v);
 			scene->m_inspectors[key] = q;
 		}
 		else if (ref.isString())
 		{
 			const char* v = ref.cast<const char*>();
-			luaVar::IString* q = new luaVar::IString(key, v);
+			std::shared_ptr<luaVar::IString> q = std::make_shared<luaVar::IString>(key, v);
 			scene->m_inspectors[key] = q;
 		}
 		else if (ref.isTable())
