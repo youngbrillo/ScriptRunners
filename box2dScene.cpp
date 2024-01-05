@@ -11,10 +11,10 @@ public:
 	Rayb2Draw()
 		:b2Draw()
 		, e_shape(true)
-		, e_joint(true)
-		, e_aabb(true)
-		, e_pair(true)
-		, e_centerOfMass(true)
+		, e_joint(false)
+		, e_aabb(false)
+		, e_pair(false)
+		, e_centerOfMass(false)
 	{
 		setInternalFlags();
 	}
@@ -296,6 +296,8 @@ public:
 	{
 		Gravity.y = -10.0f;
 		world->SetGravity(Gravity);
+		camera.mCamera.zoom = 10.0f;
+		camera.mCamera.rotation = 180;
 		b2Body* ground = NULL;
 		{
 			b2BodyDef bd;
@@ -562,6 +564,7 @@ public:
 	{
 		int e_count = 20;
 		b2Timer timer;
+		camera.mCamera.zoom = 10.0f;
 
 		{
 			float a = 0.5f;
@@ -572,7 +575,7 @@ public:
 			int32 N = 200;
 			int32 M = 10;
 			b2Vec2 position;
-			position.y = 0.0f;
+			position.y = 1.0f;
 			for (int32 j = 0; j < M; ++j)
 			{
 				position.x = -N * a;
@@ -593,14 +596,15 @@ public:
 			b2PolygonShape shape;
 			shape.SetAsBox(a, a);
 
-			b2Vec2 x(-7.0f, 0.75f);
+			b2Vec2 x(-7.0f, 0);
 			b2Vec2 y;
 			b2Vec2 deltaX(0.5625f, 1.25f);
 			b2Vec2 deltaY(1.125f, 0.0f);
 
 			for (int32 i = 0; i < e_count; ++i)
 			{
-				y = -x;
+				y = x;
+				y.y *= -1;
 
 				for (int32 j = i; j < e_count; ++j)
 				{
