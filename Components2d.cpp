@@ -123,7 +123,7 @@ void ECS::Camera2d::Update()
 void ECS::Camera2d::HandleInputs()
 {
 	if (ImGui::GetIO().WantCaptureMouse) return;
-
+	input.Poll();
 	this->PanCamera();
 	//handle zoom
 	int zOff = GetMouseWheelMove();

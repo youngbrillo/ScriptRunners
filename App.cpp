@@ -97,7 +97,8 @@ void App::Update(const float& deltaTime)
 	fData.hertz_progress += deltaTime;
 
 	if (!!currentScene) currentScene->Update(deltaTime);
-	
+	GlobalManager::Update(deltaTime);
+
 
 	if (fData.hertz_progress >= fData.hertz_target)
 	{
@@ -119,6 +120,7 @@ void App::Render()
 	BeginDrawing();
 	ClearBackground(settings.window_color);
 	if (!!currentScene) currentScene->Draw();
+	GlobalManager::CanvasDraw();
 	Debug();
 	EndDrawing();
 }
@@ -145,14 +147,16 @@ void App::startScene(int index)
 		delete currentScene;
 		currentScene = NULL;
 		settings.AutoSave();
+		GlobalManager::Reset();
 	}
 
 	if (GlobalSceneCount > 0 && index > -1 && index < GlobalSceneCount)
 	{
+		GlobalManager::Set();
 		this->currentScene = GlobalSceneList[index].creationFunction();
 	}
-
 	settings.state = AppState_Play;
+	this->currentScene->Initialize();
 }
 
 

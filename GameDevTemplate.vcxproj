@@ -188,6 +188,7 @@
     <ClCompile Include="Breakout.cpp" />
     <ClCompile Include="MIssleCommander.cpp" />
     <ClCompile Include="Node2d.cpp" />
+    <ClCompile Include="PlatformingParagonScene.cpp" />
     <ClCompile Include="RayExtend.cpp" />
     <ClCompile Include="RaylibTemplateScene.cpp" />
     <ClCompile Include="rlImGui.cpp" />

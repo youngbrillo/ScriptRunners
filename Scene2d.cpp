@@ -37,7 +37,7 @@ void Scene2d::Update(const float& deltaTime)
 void Scene2d::FixedUpdate(const float& timeStep)
 {
 	for (auto&& node : Nodes) node->FixedUpdate(timeStep);
-	if (tryUpdate) tryUpdate = Scene2d::CallLuaFunctionf(L, "tryUpdate", timeStep);
+	if (tryUpdate) tryUpdate = Scene2d::CallLuaFunctionf(L, "Update", timeStep);
 }
 
 void Scene2d::Draw()
@@ -49,6 +49,8 @@ void Scene2d::Draw()
 	EndMode2D();
 		for (auto&& node : Nodes) node->UIDraw();
 		if (tryUIDraw) tryUIDraw = Scene2d::CallLuaFunction(L, "UIDraw");
+
+
 }
 
 void Scene2d::Debug()
@@ -104,7 +106,11 @@ void Scene2d::InitScript(const char* path)
 		ERaylib::Extend(L);
 		Scene2d::CallLuaFunction(L, "onSceneStart");
 	}
-
+	else {
+		printf("LuaScripted Scene found an Error on load:\n\t%s\n", lua_tostring(L, -1));
+		lua_close(L);
+		L = NULL;
+	}
 }
 
 bool Scene2d::CallLuaFunction(lua_State* L, const char* funcName)

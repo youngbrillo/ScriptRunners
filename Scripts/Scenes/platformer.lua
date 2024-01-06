@@ -7,9 +7,9 @@ function onSceneStart()
 	print("Hello! Please Get the Player!");
 	Ground = {
 		x = 0, 
-		y = Raylib.GetScreenHeight() - 50.0, 
-		w = Raylib.GetScreenWidth(), 
-		h = Raylib.GetScreenHeight() - 50.0,
+		y = 40, 
+		w = 100, 
+		h = 40,
 		color = 0x00ff00ff
 	}
 	--[[
@@ -22,11 +22,11 @@ function onSceneStart()
 	local width = Raylib.GetScreenWidth()
 	local height = Raylib.GetScreenHeight()
 	envElements = {
-        { x = 0,	y = 0,	 w=1000, h=400	, blocking =0, color = LIGHTGRAY },
-        { x = 0,	y = 400, w=1000, h=200	, blocking =1, color = GRAY },
-        { x = 300,	y = 200, w=400,  h=10   , blocking =1, color = GRAY },
-        { x = 250,	y = 300, w=100,  h=10   , blocking =1, color = GRAY },
-        { x = 650,	y = 300, w=100,  h=10   , blocking =1, color = GRAY }
+        { x = 00,	y = 00,	w=100,  h=40 , blocking =false,color = LIGHTGRAY },
+        { x = 00,	y = 40,	w=100,  h=20 , blocking =true, color = GRAY },
+        { x = 30,	y = 20, w=040,  h=01 , blocking =true, color = GRAY },
+        { x = 25,	y = 30, w=010,  h=01 , blocking =true, color = GRAY },
+        { x = 65,	y = 30, w=010,  h=01 , blocking =true, color = GRAY }
 	}
 end
 function onSceneEnd() end

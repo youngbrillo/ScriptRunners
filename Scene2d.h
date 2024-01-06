@@ -10,7 +10,7 @@ class Scene2d : public Scene
 {
 public:
     Scene2d(const char* path);
-    ~Scene2d();
+    virtual ~Scene2d();
     virtual void Initialize() override;
     virtual void Update(const float& deltaTime);
     virtual void FixedUpdate(const float& timeStep);

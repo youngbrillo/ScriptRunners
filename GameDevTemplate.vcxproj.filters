@@ -246,6 +246,9 @@
     <ClCompile Include="Scene2d.cpp">
       <Filter>Scenes\base</Filter>
     </ClCompile>
+    <ClCompile Include="PlatformingParagonScene.cpp">
+      <Filter>Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">

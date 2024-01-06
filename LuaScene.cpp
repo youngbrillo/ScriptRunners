@@ -6,7 +6,6 @@
 #include "RenderPipeline.h"
 #include "SimpleComponents.h"
 #include "SimpleNode.h"
-#include "GlobalManager.h"
 
 LuaScene* LuaScene::Instance = NULL;
 
@@ -16,7 +15,6 @@ LuaScene::LuaScene(const char* script, const char* startFunction)
 	, SceneNodes({})
 	, collidingNodes({})
 {
-	GlobalManager::Set();
 	test::Node::instanceContainer = &this->SceneNodes;
 	test::Node::collisionContainer = &this->collidingNodes;
 	LuaScene::Instance = this;
@@ -38,7 +36,6 @@ LuaScene::~LuaScene()
 		n = NULL;
 	}
 	SceneNodes.clear();
-	GlobalManager::Reset();
 
 }
 void LuaScene::loadScript(const char* script, const char* startFunction)
@@ -76,7 +73,6 @@ void LuaScene::Draw()
 
 	//GlobalManager::Draw();
 	for (auto&& object : SceneNodes) object->Draw();
-	GlobalManager::CanvasDraw();
 	if(canDraw)
 		canDraw = LuaScene::CallLuaFunction(L, "Draw");
 
@@ -84,7 +80,6 @@ void LuaScene::Draw()
 void LuaScene::Update(const float& deltaTime)
 {
 	updateObjects(deltaTime);
-	GlobalManager::Update(deltaTime);
 }
 
 void LuaScene::updateObjects(const float& deltaTime)
@@ -277,9 +272,9 @@ int LuaScene::assignInspector(lua_State* L)
 
 static Scene* TemplateScene() { return LuaScene::Create("Scripts/Scenes/demoScene.lua", "onSceneStart"); }
 static Scene* BreakoutLuaScene() { return LuaScene::Create("Scripts/Scenes/BreakoutScene.lua"); }
-static Scene* PlatformerScene() { return LuaScene::Create("Scripts/Scenes/platformer.lua"); }
+//static Scene* PlatformerScene() { return LuaScene::Create("Scripts/Scenes/platformer.lua"); }
 
 
 static int scene000 = RegisterScene("Lua", "lua Demo", TemplateScene);
 static int scene001 = RegisterScene("Lua", "lua Breakout", BreakoutLuaScene);
-static int scene002 = RegisterScene("Lua", "lua Platformer", PlatformerScene);
+//static int scene002 = RegisterScene("Lua", "lua Platformer", PlatformerScene);
