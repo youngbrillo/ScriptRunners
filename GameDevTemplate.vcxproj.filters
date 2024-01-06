@@ -34,11 +34,20 @@
     <Filter Include="Source Files\App Utilities">
       <UniqueIdentifier>{3dda008b-2cc3-49e0-b99e-4c2bcb2b4544}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Simple Components">
-      <UniqueIdentifier>{1d0370c9-e6cb-49b8-a8f0-fed351eed7a2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Scripts\Scenes">
       <UniqueIdentifier>{aabc8ba2-3180-4812-8389-5a617ff1de62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Components">
+      <UniqueIdentifier>{31aa4cac-034e-46a1-8a0c-87bd2972a2fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Components\Simple Components">
+      <UniqueIdentifier>{1d0370c9-e6cb-49b8-a8f0-fed351eed7a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Components\2d">
+      <UniqueIdentifier>{96c758b3-a659-4605-ba73-f7b0431aa89e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scenes\base">
+      <UniqueIdentifier>{b273c536-4a48-437c-ba51-fc21b1d9d2aa}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -217,16 +226,25 @@
       <Filter>Source Files\App Utilities</Filter>
     </ClCompile>
     <ClCompile Include="SimpleComponents.cpp">
-      <Filter>Source Files\Simple Components</Filter>
+      <Filter>Source Files\Components\Simple Components</Filter>
     </ClCompile>
     <ClCompile Include="SimpleNode.cpp">
-      <Filter>Source Files\Simple Components</Filter>
+      <Filter>Source Files\Components\Simple Components</Filter>
     </ClCompile>
     <ClCompile Include="RayExtend.cpp">
-      <Filter>Source Files\Simple Components</Filter>
+      <Filter>Source Files\Components\Simple Components</Filter>
     </ClCompile>
     <ClCompile Include="platformerScene.cpp">
       <Filter>Scenes\Template Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Components2d.cpp">
+      <Filter>Source Files\Components\2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Node2d.cpp">
+      <Filter>Source Files\Components\2d</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene2d.cpp">
+      <Filter>Scenes\base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -393,6 +411,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RayExtend.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Components2d.h">
+      <Filter>Source Files\Components\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="Node2d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

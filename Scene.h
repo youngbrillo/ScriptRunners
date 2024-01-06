@@ -5,6 +5,7 @@ class Scene
 public:
 	Scene() {};
 	virtual ~Scene() {};
+	virtual void Initialize() {};
 	virtual void Update(const float& deltaTime) = 0;
 	virtual void FixedUpdate(const float& timeStep) = 0;
 	virtual void Draw() = 0;
