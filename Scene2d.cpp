@@ -1,9 +1,8 @@
 #include "Scene2d.h"
 #include <imgui_string_wrap_extension.h>
 #include <LuaBridge/LuaBridge.h>
-#include "RayExtend.h"
 #include "App.h"
-
+#include "Extentions2d.h"
 Scene2d::Scene2d(const char* path)
 	: scriptPath(path)
 	, L(NULL)
@@ -78,6 +77,16 @@ Scene2d* Scene2d::Instance()
 	return m;
 }
 #include <algorithm>
+ECS::Node2d* Scene2d::CreateNode2d(const char* name)
+{
+	auto n = std::make_shared<ECS::Node2d>(name);
+	Nodes.emplace_back(n);
+	return n.get();
+}
+ECS::Node2d* Scene2d::iCreateNode2d(const char* name)
+{
+	return Instance()->CreateNode2d(name);
+}
 void Scene2d::removeDeadNodes()
 {
 	Nodes.erase(
@@ -103,7 +112,7 @@ void Scene2d::InitScript(const char* path)
 	int rv = luaL_dofile(L, path);
 	if (rv == LUA_OK)
 	{
-		ERaylib::Extend(L);
+		this->Extend(L);
 		Scene2d::CallLuaFunction(L, "onSceneStart");
 	}
 	else {
@@ -153,4 +162,19 @@ bool Scene2d::CallLuaFunctioni(lua_State* L, const char* funcName, int v)
 		printf("error in '%s'\t%s\n", funcName, e.what());
 		return false;
 	}
+}
+
+void Scene2d::Extend(lua_State* L)
+{
+	auto getCameraFunction = std::function<Camera2D* (void)>([]() {return &Scene2d::Instance()->camera.cam; });
+	ECS::ExtendAll(L);
+	luabridge::getGlobalNamespace(L)
+		.beginNamespace("App")
+		.addFunction("GetCamera", getCameraFunction)
+		.addFunction("Quit", App::QuitApp)
+		.addFunction("RestartScene", App::RestartScene)
+		.endNamespace()
+		.beginNamespace("Scene")
+			.addFunction("CreateNode2d", Scene2d::iCreateNode2d)
+		.endNamespace();
 }

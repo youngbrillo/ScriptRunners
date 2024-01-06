@@ -36,6 +36,7 @@ public:
 	static App* Get();
 	static Scene* GetCurrentScene() { return Get()->currentScene; }
 	static void QuitApp() { Get()->settings.quit = true; }
+	static void RestartScene() { Get()->settings.restart = true; }
 	static AppState_ GetState() { return Get()->settings.state; }
 	static AppState_ SetState(AppState_ s) { return Get()->settings.state = s; }
 private:

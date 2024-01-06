@@ -17,6 +17,15 @@ Rectangle ECS::Transform::Rect() const
 		size.y 
 	};
 }
+void ECS::Transform::Center()
+{
+	this->Align(0.5f, 0.5f);
+}
+void ECS::Transform::Align(float x, float y)
+{
+	origin.x = size.x * x;
+	origin.y = size.y * y;
+}
 
 void ECS::Transform::Debug(const char* title)
 {
@@ -26,8 +35,8 @@ void ECS::Transform::Debug(const char* title)
 		ImGui::InputFloat("y", &position.y, 1.0f, 10.0f);
 		ImGui::InputFloat("width", &size.x, 1.0f, 10.0f);
 		ImGui::InputFloat("height", &size.y, 1.0f, 10.0f);
-		ImGui::SliderFloat("origin.x", &origin.x, size.x, size.x);
-		ImGui::SliderFloat("origin.y", &origin.y, size.y, size.y);
+		ImGui::SliderFloat("origin.x", &origin.x, -size.x, size.x);
+		ImGui::SliderFloat("origin.y", &origin.y, -size.y, size.y);
 		ImGui::SliderFloat("rotation", &rotation, -360, 360);
 
 		ImGui::TreePop();

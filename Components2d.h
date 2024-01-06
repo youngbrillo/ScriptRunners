@@ -19,6 +19,8 @@ namespace ECS
 
 		Rectangle Destination() const;
 		Rectangle Rect() const;
+		void Center();
+		void Align(float x, float y);
 		void Debug(const char* title = "Transform");
 
 	};

@@ -249,6 +249,9 @@
     <ClCompile Include="PlatformingParagonScene.cpp">
       <Filter>Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="Extentions2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -424,6 +427,9 @@
     </ClInclude>
     <ClInclude Include="Node2d.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Extentions2d.h">
+      <Filter>Source Files\Components\2d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

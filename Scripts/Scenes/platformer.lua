@@ -4,11 +4,14 @@ Player = {}
 LIGHTGRAY = 0xC8C8C8FF
 GRAY = 0x828282FF
 function onSceneStart()
+
+	envSpan = 100;
+	envHeight = 40;
 	print("Hello! Please Get the Player!");
 	Ground = {
 		x = 0, 
 		y = 40, 
-		w = 100, 
+		w = envSpan, 
 		h = 40,
 		color = 0x00ff00ff
 	}
@@ -22,12 +25,23 @@ function onSceneStart()
 	local width = Raylib.GetScreenWidth()
 	local height = Raylib.GetScreenHeight()
 	envElements = {
-        { x = 00,	y = 00,	w=100,  h=40 , blocking =false,color = LIGHTGRAY },
-        { x = 00,	y = 40,	w=100,  h=20 , blocking =true, color = GRAY },
+       -- { x = 00,	y = 00,	w=envSpan,  h=envHeight , blocking =false,color = LIGHTGRAY },
+        { x = 00,	y = envHeight,	w=envSpan,  h=20 , blocking =true, color = GRAY },
         { x = 30,	y = 20, w=040,  h=01 , blocking =true, color = GRAY },
         { x = 25,	y = 30, w=010,  h=01 , blocking =true, color = GRAY },
         { x = 65,	y = 30, w=010,  h=01 , blocking =true, color = GRAY }
 	}
+
+
+
+	App.GetCamera().zoom = 8;
+	App.GetCamera().target:set(envSpan * 0.5, envHeight - 10);
+
+	local p = Scene.CreateNode2d("Player");
+	p.transform.size.x = envSpan;
+	p.transform.size.y = envHeight;
+	p.transform:Align(0, 0);
+	p.material:SetColor(LIGHTGRAY)
 end
 function onSceneEnd() end
 function Update(dt) 
