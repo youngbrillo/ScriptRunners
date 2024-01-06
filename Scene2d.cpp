@@ -3,6 +3,8 @@
 #include <LuaBridge/LuaBridge.h>
 #include "App.h"
 #include "Extentions2d.h"
+#include "TextureManager.h"
+
 Scene2d::Scene2d(const char* path)
 	: scriptPath(path)
 	, L(NULL)
@@ -68,7 +70,7 @@ void Scene2d::PollEvents()
 	camera.HandleInputs();
 	for (auto&& node : Nodes) node->Poll();
 	int key_pressed = GetKeyPressed();
-	if (tryPoll && key_pressed != KEY_NULL) tryPoll = Scene2d::CallLuaFunctioni(L, "UIDraw", key_pressed);
+	if (tryPoll && key_pressed != KEY_NULL) tryPoll = Scene2d::CallLuaFunctioni(L, "onKeyPress", key_pressed);
 }
 
 Scene2d* Scene2d::Instance()
@@ -168,6 +170,7 @@ void Scene2d::Extend(lua_State* L)
 {
 	auto getCameraFunction = std::function<Camera2D* (void)>([]() {return &Scene2d::Instance()->camera.cam; });
 	ECS::ExtendAll(L);
+	TextureManager::Extend(L);
 	luabridge::getGlobalNamespace(L)
 		.beginNamespace("App")
 		.addFunction("GetCamera", getCameraFunction)

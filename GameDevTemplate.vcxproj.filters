@@ -49,6 +49,9 @@
     <Filter Include="Scenes\base">
       <UniqueIdentifier>{b273c536-4a48-437c-ba51-fc21b1d9d2aa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scripts\components">
+      <UniqueIdentifier>{94220ffa-b1e3-42ca-a2c9-fa2350da39ce}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -446,7 +449,7 @@
       <Filter>Scripts\Scenes</Filter>
     </None>
     <None Include="Scripts\Scenes\Player.lua">
-      <Filter>Scripts\Scenes</Filter>
+      <Filter>Scripts\components</Filter>
     </None>
   </ItemGroup>
 </Project>

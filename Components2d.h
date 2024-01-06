@@ -32,7 +32,7 @@ namespace ECS
 		Rectangle source = { 0, 0, 1, 1 };
 		shape_ shape = shape_Rectangle;
 		Vector2 uv_scroll = { 0, 0 };
-
+		void Update(const float& dt);
 		void SetTexture(const char* alias);
 		void SetTextureT(Texture2D t);
 		void SetColorH(unsigned int hex);

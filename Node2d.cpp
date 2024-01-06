@@ -18,8 +18,8 @@ ECS::Node2d::~Node2d()
 void ECS::Node2d::Update(const float& deltaTime)
 {
 	if (!enabled) return;
-
 	transform.position = Vector2Add(transform.position, Vector2Scale(direction, speed * deltaTime));
+	material.Update(deltaTime);
 }
 
 void ECS::Node2d::FixedUpdate(const float& timestep)

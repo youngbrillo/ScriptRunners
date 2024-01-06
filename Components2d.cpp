@@ -44,6 +44,16 @@ void ECS::Transform::Debug(const char* title)
 }
 
 // MATERIAL //////////////////////////////////////////////
+void ECS::Material::Update(const float& dt)
+{
+	source.x += uv_scroll.x * dt;
+	source.y += uv_scroll.y * dt;
+
+	if (source.x > texture.width * 2) source.x = texture.width * -2;
+	if (source.y > texture.height * 2) source.y = texture.width * -2;
+	if (source.x < texture.width * -2) source.x = texture.width * 2;
+	if (source.y < texture.height * -2) source.y = texture.width * 2;
+}
 void ECS::Material::SetTexture(const char* alias)
 {
 	this->SetTextureT(TextureManager::Instance()->GetTexture(alias));
@@ -65,6 +75,7 @@ void ECS::Material::SetColorf(float r, float g, float b, float a)
 {
 	this->SetColorV(Vector4{ r, g, b, a });
 }
+static const char* shapeNames[ECS::shape_edge + 1] = { "BOX", "CIRCLE", "EDGE" };
 
 void ECS::Material::Debug(const char* title )
 {
@@ -75,6 +86,10 @@ void ECS::Material::Debug(const char* title )
 		{
 			color = ColorFromNormalized(a);
 		}
+
+		int s = shape;
+		if (ImGui::SliderInt("Shape", &s, 0, ECS::shape_edge, shapeNames[shape])) shape = (ECS::shape_)s;
+
 		int tid = texture.id;
 		if (ImGui::InputInt("textureID", &tid)) texture.id = tid;
 		ImGui::SliderFloat2("Uv scroll", &uv_scroll.x, -20, 20.0f);
