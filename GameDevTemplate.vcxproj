@@ -193,6 +193,7 @@
     <ClCompile Include="SimpleComponents.cpp" />
     <ClCompile Include="SimpleNode.cpp" />
     <ClCompile Include="Snake.cpp" />
+    <ClCompile Include="platformerScene.cpp" />
     <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -255,8 +256,9 @@
   <ItemGroup>
     <None Include="Scripts\Scenes\BreakoutScene.lua" />
     <None Include="Scripts\Scenes\demoScene.lua" />
-    <None Include="Scripts\BreakoutScene.lua" />
     <None Include="Scripts\Manager\TextureManager.lua" />
+    <None Include="Scripts\Scenes\platformer.lua" />
+    <None Include="Scripts\Scenes\Player.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
