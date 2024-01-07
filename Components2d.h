@@ -22,7 +22,7 @@ namespace ECS
 		Rectangle Rect() const;
 		void Center();
 		void Align(float x, float y);
-		void Debug(const char* title = "Transform");
+		bool Debug(const char* title = "Transform");
 
 	};
 
@@ -41,11 +41,27 @@ namespace ECS
 		void SetColorf(float r, float g, float b, float a);
 		void Debug(const char* title = "Material");
 	};
-#if false
-	struct RigidBody
+	class RigidBody
 	{
+	public:
+		RigidBody();
+		~RigidBody();
+
+		bool enabled() const { return body != NULL; };
+		b2Body* SetBody(b2World* world, const ECS::Transform& t, int shape);
+		b2Fixture* createFixture(b2FixtureDef fixtureDefinition, const ECS::Transform& t, int shape);
+
+
+		void Debug(const char* title = "Rigidbody");
+
+		b2Body* body = NULL;
+		b2Fixture* fixture = NULL;
+
+		b2BodyDef bdyDef;
+		b2FixtureDef fixDef;
 
 	};
+#if false
 
 	struct Script
 	{

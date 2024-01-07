@@ -20,10 +20,10 @@ namespace ECS
 		bool enabled, visible, alive;
 		ECS::Transform transform;
 		ECS::Material material;
+		ECS::RigidBody rigidbody;
+		
 		float speed;
 		Vector2 direction;
-
 		bool solid;
-
 	};
 }

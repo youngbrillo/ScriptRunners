@@ -26,6 +26,12 @@ void ECS::Node2d::Update(const float& deltaTime)
 void ECS::Node2d::FixedUpdate(const float& timestep)
 {
 	if (!enabled) return;
+	if (!rigidbody.enabled()) return;
+
+	transform.position.x = rigidbody.body->GetPosition().x;
+	transform.position.y = rigidbody.body->GetPosition().y;
+	transform.rotation = rigidbody.body->GetAngle() * RAD2DEG;
+
 }
 
 void ECS::Node2d::Draw()
@@ -81,8 +87,13 @@ void ECS::Node2d::inspect()
 	ImGui::Checkbox("visible", &visible);
 	ImGui::Checkbox("solid", &solid);
 
-	transform.Debug();
+	if (transform.Debug() && rigidbody.enabled())
+	{
+		rigidbody.SetBody(rigidbody.body->GetWorld(), transform,(int) material.shape);
+	}
 	material.Debug();
+	rigidbody.Debug();
+
 	ImGui::SliderFloat("speed", &speed, 0, 30);
 	ImGui::SliderFloat2("direction", &direction.x, -1, 1);
 

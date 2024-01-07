@@ -64,7 +64,7 @@ void Scene2d::Draw()
 	BeginMode2D(camera.cam);
 		for (auto&& node : Nodes) node->Draw();
 		if (tryDraw) tryDraw = Scene2d::CallLuaFunction(L, "Draw");
-
+		world->DebugDraw();
 	EndMode2D();
 		for (auto&& node : Nodes) node->UIDraw();
 		if (tryUIDraw) tryUIDraw = Scene2d::CallLuaFunction(L, "UIDraw");

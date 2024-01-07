@@ -27,20 +27,23 @@ void ECS::Transform::Align(float x, float y)
 	origin.y = size.y * y;
 }
 
-void ECS::Transform::Debug(const char* title)
+bool ECS::Transform::Debug(const char* title)
 {
+	int res = 0;
 	if (ImGui::TreeNode(title))
 	{
-		ImGui::InputFloat("x", &position.x, 1.0f, 10.0f);
-		ImGui::InputFloat("y", &position.y, 1.0f, 10.0f);
-		ImGui::InputFloat("width", &size.x, 1.0f, 10.0f);
-		ImGui::InputFloat("height", &size.y, 1.0f, 10.0f);
-		ImGui::SliderFloat("origin.x", &origin.x, -size.x, size.x);
-		ImGui::SliderFloat("origin.y", &origin.y, -size.y, size.y);
-		ImGui::SliderFloat("rotation", &rotation, -360, 360);
+		if (ImGui::InputFloat("x", &position.x, 1.0f, 10.0f)) res++;
+		if (ImGui::InputFloat("y", &position.y, 1.0f, 10.0f)) res++;
+		if (ImGui::InputFloat("width", &size.x, 1.0f, 10.0f)) res++;
+		if (ImGui::InputFloat("height", &size.y, 1.0f, 10.0f)) res++;
+		if (ImGui::SliderFloat("origin.x", &origin.x, -size.x, size.x)) res++;
+		if (ImGui::SliderFloat("origin.y", &origin.y, -size.y, size.y)) res++;
+		if (ImGui::SliderFloat("rotation", &rotation, -360, 360)) res++;
 
 		ImGui::TreePop();
 	}
+
+	return res > 0;
 }
 
 // MATERIAL //////////////////////////////////////////////
@@ -290,6 +293,88 @@ void ECS::Box2dDraw::Debug(const char* title)
 		{
 			this->setInternalFlags();
 		}
+
+		ImGui::TreePop();
+	}
+}
+
+// RIGIDBODY /////////////////////////////////////////////////
+
+
+ECS::RigidBody::RigidBody()
+	: body(NULL)
+{
+}
+
+ECS::RigidBody::~RigidBody()
+{
+	if (body != NULL)
+	{
+		body->GetWorld()->DestroyBody(this->body);
+	}
+	body = NULL;
+	fixture = NULL;
+}
+
+
+b2Body* ECS::RigidBody::SetBody(b2World* world, const ECS::Transform& t, int shape)
+{
+	if (body != NULL)
+	{
+		body->DestroyFixture(fixture);
+		fixture = NULL;
+		world->DestroyBody(body);
+	}
+	bdyDef.position.Set(t.position.x, t.position.y);
+	body = world->CreateBody(&bdyDef);
+	fixture = createFixture(fixDef, t, shape);
+
+	return body;
+}
+
+b2Fixture* ECS::RigidBody::createFixture(b2FixtureDef fixtureDefinition, const ECS::Transform& t, int shape)
+{
+
+	b2Fixture* fix = NULL;
+	switch (shape)
+	{
+	case shape_Rectangle:
+	{
+		b2PolygonShape shape;
+		shape.SetAsBox(t.size.x, t.size.y, b2Vec2{ t.origin.x, t.origin.y }, t.rotation * DEG2RAD);
+		fixtureDefinition.shape = &shape;
+		fix = body->CreateFixture(&fixtureDefinition);
+	}
+	break;
+	case shape_Circle:
+	{
+
+		b2CircleShape shape;
+		shape.m_radius = t.size.x;
+		fixtureDefinition.shape = &shape;
+		fix = body->CreateFixture(&fixtureDefinition);
+	}
+	break;
+	case shape_edge:
+	{
+		b2EdgeShape shape;
+		shape.m_vertex1 = b2Vec2{ t.position.x, t.position.y };
+		shape.m_vertex2 = b2Vec2{ t.size.x, t.size.y };
+		fixtureDefinition.shape = &shape;
+		fix = body->CreateFixture(&fixtureDefinition);
+	}
+	break;
+	default:
+		break;
+	}
+	return fix;
+}
+
+void ECS::RigidBody::Debug(const char* title)
+{
+	if (ImGui::TreeNode(title))
+	{
+
 
 		ImGui::TreePop();
 	}
