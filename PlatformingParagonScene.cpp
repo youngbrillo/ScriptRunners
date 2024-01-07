@@ -1,14 +1,21 @@
 #include "Scene2d.h"
-
+#include "PlatformerController.h"
 class PlatformingParagonScene : Scene2d
 {
 public:
 	PlatformingParagonScene(const char* Path);// : Scene2d(Path) {};
 	~PlatformingParagonScene();
 
+    virtual void Initialize() override;
 
-   static Scene* Create(const char* path) { return new Scene2d(path); }
+    //virtual void Update(const float& deltaTime);
+    //virtual void FixedUpdate(const float& timeStep);
+    //virtual void Draw();
+    //virtual void Debug() override;
+    //virtual void PollEvents() override;
 
+
+   static Scene* Create(const char* path) { return new PlatformingParagonScene(path); }
 };
 
 PlatformingParagonScene::PlatformingParagonScene(const char* Path)
@@ -18,6 +25,12 @@ PlatformingParagonScene::PlatformingParagonScene(const char* Path)
 
 PlatformingParagonScene::~PlatformingParagonScene()
 {
+}
+void PlatformingParagonScene::Initialize()
+{
+    Scene2d::Initialize();
+    //std::shared_ptr<ECS::Node2d> player = std::make_shared<ECS::PlatformerController>();
+    Nodes.emplace_back(std::make_shared<ECS::PlatformerController>(&Nodes));
 }
 
 static Scene* GenPlatformer() { return PlatformingParagonScene::Create("Scripts/Scenes/platformer.lua"); }

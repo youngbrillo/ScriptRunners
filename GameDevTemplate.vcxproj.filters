@@ -253,6 +253,9 @@
       <Filter>Scenes</Filter>
     </ClCompile>
     <ClCompile Include="Extentions2d.cpp">
+      <Filter>Source Files\Components\2d</Filter>
+    </ClCompile>
+    <ClCompile Include="PlatformerController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -433,6 +436,9 @@
     </ClInclude>
     <ClInclude Include="Extentions2d.h">
       <Filter>Source Files\Components\2d</Filter>
+    </ClInclude>
+    <ClInclude Include="PlatformerController.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

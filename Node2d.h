@@ -8,12 +8,13 @@ namespace ECS
 		Node2d(const char* name);
 		~Node2d();
 			
-		void Update(const float& deltaTime);
-		void FixedUpdate(const float& timestep);
-		void Draw();
-		void UIDraw();
-		void Poll();
+		virtual void Update(const float& deltaTime);
+		virtual void FixedUpdate(const float& timestep);
+		virtual void Draw();
+		virtual void UIDraw();
+		virtual void Poll();
 		void Inspect();
+		virtual void inspect();
 	public:
 		const char* Name = "Node";
 		bool enabled, visible, alive;
@@ -21,5 +22,8 @@ namespace ECS
 		ECS::Material material;
 		float speed;
 		Vector2 direction;
+
+		bool solid;
+
 	};
 }

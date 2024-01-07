@@ -117,6 +117,7 @@ void ECS::KeyInput::Debug(const char* title)
 		ImGui::Checkbox("just_pressed", &just_pressed);
 		ImGui::Checkbox("just_released", &just_released);
 		ImGui::Checkbox("isDown", &isDown);
+		ImGui::Checkbox("canDefer", &canDefer);
 
 		ImGui::TreePop();
 	}

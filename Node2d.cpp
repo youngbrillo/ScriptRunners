@@ -8,6 +8,7 @@ ECS::Node2d::Node2d(const char* name)
 	, visible(true)
 	, speed(1.0f)
 	, direction({0.0f, 0.0f})
+	, solid(true)
 {
 }
 
@@ -67,15 +68,22 @@ void ECS::Node2d::Inspect()
 
 	if (ImGui::TreeNode(Name))
 	{
-		ImGui::Checkbox("alive", &alive);
-		ImGui::Checkbox("enabled", &enabled);
-		ImGui::Checkbox("visible", &visible);
-
-		transform.Debug();
-		material.Debug();
-		ImGui::SliderFloat("speed", &speed, 0, 30);
-		ImGui::SliderFloat2("direction", &direction.x, -1, 1);
-
+		ImGui::PushItemWidth(250.0f);
+		this->inspect();
 		ImGui::TreePop();
 	}
+}
+
+void ECS::Node2d::inspect()
+{
+	ImGui::Checkbox("alive", &alive);
+	ImGui::Checkbox("enabled", &enabled);
+	ImGui::Checkbox("visible", &visible);
+	ImGui::Checkbox("solid", &solid);
+
+	transform.Debug();
+	material.Debug();
+	ImGui::SliderFloat("speed", &speed, 0, 30);
+	ImGui::SliderFloat2("direction", &direction.x, -1, 1);
+
 }

@@ -189,6 +189,7 @@
     <ClCompile Include="Breakout.cpp" />
     <ClCompile Include="MIssleCommander.cpp" />
     <ClCompile Include="Node2d.cpp" />
+    <ClCompile Include="PlatformerController.cpp" />
     <ClCompile Include="PlatformingParagonScene.cpp" />
     <ClCompile Include="RayExtend.cpp" />
     <ClCompile Include="RaylibTemplateScene.cpp" />
@@ -249,6 +250,7 @@
     <ClInclude Include="Lua\lzio.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="Node2d.h" />
+    <ClInclude Include="PlatformerController.h" />
     <ClInclude Include="RayExtend.h" />
     <ClInclude Include="sajson.h" />
     <ClInclude Include="Inspector.h" />

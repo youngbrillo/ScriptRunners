@@ -62,11 +62,15 @@ namespace ECS
 #endif
 	struct KeyInput
 	{
+		KeyInput() {};
+		KeyInput(int k) { key = k;}
 		int key = KEY_NULL;
 		bool just_pressed = false;
 		bool just_released = false;
 		bool isDown = false;
+		bool canDefer = false;
 		virtual bool Poll() {
+			if (canDefer) return false;
 			just_pressed = IsKeyPressed(key);
 			just_released = IsKeyReleased(key);
 			isDown = IsKeyDown(key);

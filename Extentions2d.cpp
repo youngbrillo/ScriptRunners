@@ -105,6 +105,7 @@ namespace ECS
 			.addData("visible", &ECS::Node2d::visible)
 			.addData("direction", &ECS::Node2d::direction)
 			.addData("speed", &ECS::Node2d::speed)
+			.addData("solid", &ECS::Node2d::solid)
 			.endClass()
 			.endNamespace();
 	}
