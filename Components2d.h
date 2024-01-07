@@ -1,6 +1,7 @@
 #pragma once
 #include "RenderPipeline.h"
 #include <lua.hpp>
+#include <box2d/box2d.h>
 
 namespace ECS
 {
@@ -107,5 +108,47 @@ namespace ECS
 		Camera2D	cam;
 		Vector2		startPos;
 		MouseInput	input;
+	};
+
+
+
+	class Box2dDraw : public b2Draw
+	{
+	public:
+		bool e_shape, e_joint, e_aabb, e_pair, e_centerOfMass;
+	public:
+		Box2dDraw()
+			:b2Draw()
+			, e_shape(true)
+			, e_joint(false)
+			, e_aabb(false)
+			, e_pair(false)
+			, e_centerOfMass(false)
+		{
+			setInternalFlags();
+		}
+		~Box2dDraw() {
+
+		}
+		void setInternalFlags()
+		{
+			int flags = 0;
+			if (e_shape) flags += b2Draw::e_shapeBit;
+			if (e_joint) flags += b2Draw::e_jointBit;
+			if (e_aabb) flags += b2Draw::e_aabbBit;
+			if (e_pair) flags += b2Draw::e_pairBit;
+			if (e_centerOfMass) flags += b2Draw::e_centerOfMassBit;
+
+			this->SetFlags(flags);
+		}
+		virtual void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color);
+		virtual void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color);
+		virtual void DrawCircle(const b2Vec2& center, float radius, const b2Color& color);
+		virtual void DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2& axis, const b2Color& color);
+		virtual void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color);
+		virtual void DrawTransform(const b2Transform& xf);
+		virtual void DrawPoint(const b2Vec2& p, float size, const b2Color& color);
+
+		void Debug(const char* title = "Ray b2Draw");
 	};
 }

@@ -16,6 +16,8 @@ ECS::PlatformerController::PlatformerController(std::vector<std::shared_ptr<ECS:
 	walk_acceleration *= 10.0f;
 	walk_decceleration *= 10.0f;
 	jump_height = 10.0f;
+	transform.size = Vector2{ 1, 2 };
+	transform.Align(0.5, 1);
 }
 
 ECS::PlatformerController::~PlatformerController()
@@ -25,10 +27,6 @@ ECS::PlatformerController::~PlatformerController()
 
 void ECS::PlatformerController::Update(const float& deltaTime)
 {
-	if (findGroundCollison(transform.position.x, transform.position.y, deltaTime))
-	{
-		this->grounded = true;
-	}
 	Node2d::Update(deltaTime);
 }
 
@@ -36,6 +34,10 @@ void ECS::PlatformerController::FixedUpdate(const float& timestep)
 {
 	Node2d::FixedUpdate(timestep);
 
+	if (findGroundCollison(transform.position.x, transform.position.y, timestep))
+	{
+		this->grounded = true;
+	}
 	this->proccessMovement(timestep);
 	vk_up.canDefer = false;
 	vk_left.canDefer = false;
@@ -138,7 +140,7 @@ void ECS::PlatformerController::inspect()
 
 bool ECS::PlatformerController::findGroundCollison(float x, float y, const float& dt)
 {
-	if (!!container) return false;
+	if (!!container == false) return false;
 	bool result = false;
 	for (auto&& element : *container)
 	{

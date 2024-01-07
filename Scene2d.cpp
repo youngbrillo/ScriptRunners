@@ -12,7 +12,15 @@ Scene2d::Scene2d(const char* path)
 	, tryDraw(true)
 	, tryUIDraw(true)
 	, tryPoll(true)
+	, world(NULL)
+	, b2drawer()
+	, boxMouse(NULL)
+	, Gravity(0.0f, 10.0f)
 {
+	world = new b2World(Gravity);
+	world->SetDebugDraw(&b2drawer);
+	boxMouse = new Box2dMouse(world);
+
 }
 
 Scene2d::~Scene2d()
@@ -22,6 +30,12 @@ Scene2d::~Scene2d()
 	}
 	L = NULL;
 	Nodes.clear();
+
+
+	delete world;
+	world = NULL;
+	delete boxMouse;
+	boxMouse = NULL;
 }
 
 void Scene2d::Initialize()
@@ -31,12 +45,16 @@ void Scene2d::Initialize()
 
 void Scene2d::Update(const float& deltaTime)
 {
+	boxMouse->Update(deltaTime, world);
 	for (auto&& node : Nodes) node->Update(deltaTime);
 	removeDeadNodes();
 }
 
 void Scene2d::FixedUpdate(const float& timeStep)
 {
+	world->Step(timeStep, 6, 8);
+	boxMouse->FixedUpdate(timeStep, world);
+
 	for (auto&& node : Nodes) node->FixedUpdate(timeStep);
 	if (tryUpdate) tryUpdate = Scene2d::CallLuaFunctionf(L, "Update", timeStep);
 }
@@ -56,7 +74,10 @@ void Scene2d::Draw()
 
 void Scene2d::Debug()
 {
+	if (ImGui::SliderFloat2("Gravity", &Gravity.x, -20.0f, 20.0f)) world->SetGravity(Gravity);
 	camera.Debug();
+	boxMouse->Debug(world);
+	b2drawer.Debug();
 	if (ImGui::TreeNode("Nodes"))
 	{
 		for (auto&& node : Nodes) node->Inspect();
@@ -68,6 +89,8 @@ void Scene2d::Debug()
 void Scene2d::PollEvents()
 {
 	camera.HandleInputs();
+	boxMouse->HandleInput(camera.cam, world);
+
 	for (auto&& node : Nodes) node->Poll();
 	int key_pressed = GetKeyPressed();
 	if (tryPoll && key_pressed != KEY_NULL) tryPoll = Scene2d::CallLuaFunctioni(L, "onKeyPress", key_pressed);

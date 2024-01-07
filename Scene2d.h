@@ -5,6 +5,8 @@
 #include <vector>
 #include <lua.hpp>
 #include <memory>
+#include "BoxMouse.h"
+#include <box2d/box2d.h>
 
 class Scene2d : public Scene
 {
@@ -39,5 +41,11 @@ protected:
     static bool CallLuaFunctioni(lua_State* L, const char* funcName, int v);
 
     static void Extend(lua_State* L);
+public:
+    b2World* world;
+    ECS::Box2dDraw b2drawer;
+    Box2dMouse* boxMouse;
+    b2Vec2 Gravity;
+
 };
 

@@ -136,6 +136,7 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="AppSettings.cpp" />
     <ClCompile Include="box2dScene.cpp" />
+    <ClCompile Include="BoxMouse.cpp" />
     <ClCompile Include="Components2d.cpp" />
     <ClCompile Include="Extentions2d.cpp" />
     <ClCompile Include="GlobalManager.cpp" />
@@ -205,6 +206,7 @@
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="AppSettings.h" />
+    <ClInclude Include="BoxMouse.h" />
     <ClInclude Include="Breakout.h" />
     <ClInclude Include="Extentions2d.h" />
     <ClInclude Include="GlobalManager.h" />

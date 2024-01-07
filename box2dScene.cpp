@@ -57,32 +57,7 @@ public:
 	}
 	/// Draw a solid closed polygon provided in CCW order.
 	virtual void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) {
-		//b2Color fillColor(0.5f * color.r, 0.5f * color.g, 0.5f * color.b, 0.5f);
-		Color _color = Color{ (unsigned char)(color.r * 255), (unsigned char)(color.g * 255), (unsigned char)(color.b * 255), (unsigned char)(color.a * 255) };
-
-		rlBegin(RL_TRIANGLES);
-
-		rlColor4ub(_color.r, _color.g, _color.b, _color.a);
-		for (int32 i = 1; i < vertexCount - 1; ++i)
-		{
-			rlVertex2f(vertices[0].x, vertices[0].y);
-			rlVertex2f(vertices[i].x, vertices[i].y);
-			rlVertex2f(vertices[i + 1].x, vertices[i + 1].y);
-		}
-		rlEnd();
-
-		rlBegin(RL_LINES);
-		rlColor4ub(_color.r, _color.g, _color.b, _color.a);
-		b2Vec2 p1 = vertices[vertexCount - 1];
-		for (int32 i = 0; i < vertexCount; ++i)
-		{
-			b2Vec2 p2 = vertices[i];
-
-			rlVertex2f(p1.x, p1.y);
-			rlVertex2f(p2.x, p2.y);
-
-			p1 = p2;
-		}
+		
 		rlEnd();
 	}
 	/// Draw a circle.

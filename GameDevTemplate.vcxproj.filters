@@ -258,6 +258,9 @@
     <ClCompile Include="PlatformerController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BoxMouse.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -438,6 +441,9 @@
       <Filter>Source Files\Components\2d</Filter>
     </ClInclude>
     <ClInclude Include="PlatformerController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BoxMouse.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
