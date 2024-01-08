@@ -1,10 +1,13 @@
 #include "PlatformerController.h"
 #include <imgui.h>
 #include <string>
+#include "Scene2d.h"
 
 ECS::PlatformerController::PlatformerController(std::vector<std::shared_ptr<ECS::Node2d>>* ref)
 	: Node2d("Player Controller")
+#if USING_ADVANCED_TECHNIQUE
 	, container(ref)
+#endif
 	, grounded(false)
 	, vk_up(KEY_UP)
 	, vk_left(KEY_LEFT)
@@ -12,17 +15,23 @@ ECS::PlatformerController::PlatformerController(std::vector<std::shared_ptr<ECS:
 	, vk_right(KEY_RIGHT)
 {
 	speed = 1.0f;
-	clamp_walk *= 10.0f;
-	walk_acceleration *= 10.0f;
-	walk_decceleration *= 10.0f;
-	jump_height = 10.0f;
+
 	transform.size = Vector2{ 1, 2 };
-	transform.Align(0.5, 1);
+	transform.Align(0.5, 0.5);
+
+	rigidbody.fixDef.density = 1.0f;
+	rigidbody.bdyDef.type = b2BodyType::b2_dynamicBody;
+	rigidbody.bdyDef.fixedRotation = true;
+
+	rigidbody.SetBody(Scene2d::Instance()->world, this->transform, this->material.shape);
+	
 }
 
 ECS::PlatformerController::~PlatformerController()
 {
+#if USING_ADVANCED_TECHNIQUE
 	container = NULL;
+#endif
 }
 
 void ECS::PlatformerController::Update(const float& deltaTime)
@@ -34,11 +43,16 @@ void ECS::PlatformerController::FixedUpdate(const float& timestep)
 {
 	Node2d::FixedUpdate(timestep);
 
+#if USING_ADVANCED_TECHNIQUE
 	if (findGroundCollison(transform.position.x, transform.position.y, timestep))
 	{
 		this->grounded = true;
 	}
+
 	this->proccessMovement(timestep);
+#else
+	HandleMovement(timestep);
+#endif
 	vk_up.canDefer = false;
 	vk_left.canDefer = false;
 	vk_down.canDefer = false;
@@ -86,6 +100,7 @@ void ECS::PlatformerController::Poll()
 void ECS::PlatformerController::inspect()
 {
 	Node2d::inspect();
+	ImGui::Checkbox("grounded", &grounded);
 	if (ImGui::TreeNode("Helper"))
 	{
 		ImGui::Checkbox("visible", &helper_on.visible);
@@ -103,11 +118,12 @@ void ECS::PlatformerController::inspect()
 	}
 	if (ImGui::TreeNode("Controls"))
 	{
-		ImGui::InputFloat("clamp_walk", &clamp_walk, 1.0f, 10.0f);
-		ImGui::InputFloat("clamp_fall_speed", &clamp_fall_speed, 1.0f, 10.0f);
-		ImGui::InputFloat("walk_acceleration", &walk_acceleration, 1.0f, 10.0f);
-		ImGui::InputFloat("walk_decceleration", &walk_decceleration , 1.0f, 10.0f);
-		ImGui::InputFloat("jump_height", &jump_height, 1.0f, 10.0f);
+		ImGui::InputFloat("clamp_walk", &p.clamp_walk, 1.0f, 10.0f);
+		ImGui::InputFloat("clamp_fall_speed", &p.clamp_fall_speed, 1.0f, 10.0f);
+		ImGui::InputFloat("walk_acceleration", &p.walk_acceleration, 1.0f, 10.0f);
+		ImGui::InputFloat("walk_decceleration", &p.walk_decceleration, 1.0f, 10.0f);
+		ImGui::InputFloat("jump_height", &p.jump_height, 1.0f, 10.0f);
+#if USING_ADVANCED_TECHNIQUE
 		ImGui::Checkbox("jump_early_end", &jump_early_end);
 		ImGui::InputFloat("current_h_speed", &current_h_speed, 1.0f, 10.0f);
 		ImGui::InputFloat("current_v_speed", &current_v_speed, 1.0f, 10.0f);
@@ -115,7 +131,6 @@ void ECS::PlatformerController::inspect()
 		ImGui::InputFloat("fall_speed_min", &fall_speed_min , 1.0f, 10.0f);
 		ImGui::InputFloat("fall_speed_max", &fall_speed_max, 1.0f, 10.0f);
 
-		ImGui::Checkbox("grounded", &grounded);
 		ImGui::Checkbox("touched_ground_since_last_jump", &touched_ground_since_last_jump);
 
 		ImGui::InputInt("grounded_frames_ago", &grounded_frames_ago, 10, 100);
@@ -128,6 +143,10 @@ void ECS::PlatformerController::inspect()
 		ImGui::Checkbox("at_apex", &at_apex);
 		ImGui::InputFloat("speed_for_apex", &speed_for_apex, 1.0f, 10.0f);
 
+#else
+
+#endif
+
 		ImGui::TreePop();
 	}
 
@@ -137,6 +156,7 @@ void ECS::PlatformerController::inspect()
 	vk_down.Debug("vk_down");
 
 }
+#if USING_ADVANCED_TECHNIQUE
 
 bool ECS::PlatformerController::findGroundCollison(float x, float y, const float& dt)
 {
@@ -148,13 +168,6 @@ bool ECS::PlatformerController::findGroundCollison(float x, float y, const float
 			continue;
 
 		Rectangle rect = element->transform.Rect();
-#if false
-		Rectangle rect1 = this->transform.Rect();
-		if (CheckCollisionRecs(rect, rect1))
-		{
-
-		}
-#else
 		if (element->solid &&
 			rect.x <= x &&
 			rect.x + rect.width >= x &&
@@ -165,11 +178,12 @@ bool ECS::PlatformerController::findGroundCollison(float x, float y, const float
 			result = true;
 			break;
 		}
-#endif
 	}
 
 	return result;
 }
+#endif
+#if USING_ADVANCED_TECHNIQUE
 
 bool ECS::PlatformerController::place_free(float x, float y)
 {
@@ -188,6 +202,7 @@ bool ECS::PlatformerController::place_free(float x, float y)
 
 	return result;
 }
+#endif
 
 template <class T>
 T clamp(const T& v, const T& min, const T& max)
@@ -196,7 +211,7 @@ T clamp(const T& v, const T& min, const T& max)
 	else if (v > max) return max;
 	else return v;
 }
-
+#if USING_ADVANCED_TECHNIQUE
 void ECS::PlatformerController::proccessMovement(const float& DT)
 {
 	float move_to_x = transform.position.x;
@@ -212,8 +227,8 @@ void ECS::PlatformerController::proccessMovement(const float& DT)
 
 	if (a > 0 or d > 0) { // they are moving left / right
 
-		current_h_speed += (d - a) * (walk_acceleration * DT);
-		current_h_speed = clamp(current_h_speed, -(clamp_walk * DT), (clamp_walk * DT));
+		current_h_speed += (d - a) * (p.walk_acceleration * DT);
+		current_h_speed = clamp(current_h_speed, -(p.clamp_walk * DT), (p.clamp_walk * DT));
 	}
 	else { // not moving 
 		//slow them down 
@@ -245,9 +260,9 @@ void ECS::PlatformerController::proccessMovement(const float& DT)
 	current_v_speed += (fall_speed / DT);
 
 	// max fall speed 
-	if (current_v_speed > clamp_fall_speed and helper_on.clamp_fall_speed) {
-		current_v_speed = clamp_fall_speed;
-		//trigger_helper(helper.clamp_fall_speed)
+	if (current_v_speed > p.clamp_fall_speed and helper_on.p.clamp_fall_speed) {
+		current_v_speed = p.clamp_fall_speed;
+		//trigger_helper(helper.p.clamp_fall_speed)
 	}
 
 
@@ -274,7 +289,7 @@ void ECS::PlatformerController::proccessMovement(const float& DT)
 
 	// DO THE JUMP
 	if (use_w and can_jump) {
-		current_v_speed = -(jump_height);
+		current_v_speed = -(p.jump_height);
 		touched_ground_since_last_jump = false;
 		jump_early_end = false;
 
@@ -312,14 +327,14 @@ void ECS::PlatformerController::proccessMovement(const float& DT)
 	{
 		if (landed_frames_ago < 6) { // just hit the ground this frame
 			if (a && current_h_speed > 0) { // you are moving one direction but pressing the button for other way 
-				move_to_x -= clamp_walk; // ability to instantly change direction when landing 
-				current_h_speed = -clamp_walk;
+				move_to_x -= p.clamp_walk; // ability to instantly change direction when landing 
+				current_h_speed = -p.clamp_walk;
 				//trigger_helper(helper.sticky_feet)
 			}
 
 			if (d && current_h_speed < 0) { // you are moving one direction but pressing the button for other way 
-				move_to_x += clamp_walk; // ability to instantly change direction when landing 
-				current_h_speed = clamp_walk;
+				move_to_x += p.clamp_walk; // ability to instantly change direction when landing 
+				current_h_speed = p.clamp_walk;
 				//trigger_helper(helper.sticky_feet)
 			}
 		}
@@ -422,10 +437,10 @@ void ECS::PlatformerController::proccessMovement(const float& DT)
 	}
 	// touched wall
 	if (current_h_speed > 0 and !place_free(transform.position.x + 1, transform.position.y)) {
-		current_h_speed = 0;
+current_h_speed = 0;
 	}
 	else if (current_h_speed < 0 and !place_free(transform.position.x - 1, transform.position.y)) {
-		current_h_speed = 0;
+	current_h_speed = 0;
 	}
 
 	this->direction = Vector2{ current_h_speed, current_v_speed };
@@ -473,10 +488,63 @@ void ECS::PlatformerController::proccessMovement(const float& DT)
 		if (at_apex) {
 			record_line_colour[record_frame] = c_blue
 		}
-	if (current_v_speed >= clamp_fall_speed - 0.5) {
+	if (current_v_speed >= p.clamp_fall_speed - 0.5) {
 		record_line_colour[record_frame] = c_red
 	}
 	*/
+
+
+}
+#endif
+void ECS::PlatformerController::HandleMovement(const float& delta)
+{
+	bool w = vk_up.just_pressed;
+	bool w_end = vk_up.just_released;
+	int a = vk_left.isDown ? 1 : 0;
+	int s = vk_down.isDown ? 1 : 0;
+	int d = vk_right.isDown ? 1 : 0;
+
+	rayCaster.evaluate(rigidbody.body, transform.size.x, transform.size.y);
+	this->grounded = rayCaster.contact;
+
+	b2Vec2 force = b2Vec2_zero;
+	b2Vec2 clvelocity = rigidbody.body->GetLinearVelocity();
+	bool force_is_impuluse = true;
+	bool take_the_easy_way_out = true;
+	if (grounded)
+	{
+		if (a > 0 or d > 0) { // they are moving left / right
+
+			force.x = d - a * p.walk_acceleration;
+			//current_h_speed += (d - a) * (p.walk_acceleration * DT);
+			//current_h_speed = clamp(current_h_speed, -(p.clamp_walk * DT), (p.clamp_walk * DT));
+		}
+		else { // not moving 
+			//slow them down 
+			
+			if (take_the_easy_way_out)
+			{
+				clvelocity.x = 0.0f;
+				rigidbody.body->SetLinearVelocity(clvelocity);
+			}
+			else if (clvelocity.x > 1) {
+				force.x = -1 * p.walk_decceleration;
+				force_is_impuluse = false;
+			}
+			else if (clvelocity.y < -1) {
+				force.x = p.walk_decceleration;
+				force_is_impuluse = false;
+			}
+		}
+	}
+
+	if (abs(clvelocity.x) < p.clamp_walk)
+	{
+		if (force_is_impuluse)
+			rigidbody.body->ApplyLinearImpulseToCenter(force, true);
+		else 
+			rigidbody.body->ApplyForceToCenter(force, true);
+	}
 
 
 }

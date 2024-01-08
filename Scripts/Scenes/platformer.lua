@@ -54,7 +54,7 @@ function GenEnvironment2()
         { x = 0,	y = 5, w=040,  h=1 , blocking =true, color = GRAY , hasShadow = true, dynamic = false},
         { x = 30,	y = 10, w=010,  h=1 , blocking =true, color = GRAY , hasShadow = true,dynamic = false},
         { x = -30,	y = 10, w=010,  h=1 , blocking =true, color = GRAY , hasShadow = true,dynamic = false },
-        { x = 0,	y = -5, w=010,  h=1 , blocking =true, color = 0xff0000ff , hasShadow = true,dynamic = true }
+        { x = 0,	y = -7, w=010,  h=1 , blocking =true, color = 0xff0000ff , hasShadow = true, dynamic = false }
 	}
 	for k, v in ipairs(elements) do
 		local e = Scene.CreateNode2d("platform: ".. k);
