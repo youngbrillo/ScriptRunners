@@ -317,6 +317,16 @@ ECS::RigidBody::~RigidBody()
 }
 
 
+int ECS::RigidBody::configureBodyDef(lua_State* L)
+{
+	return 0;
+}
+
+int ECS::RigidBody::configureFixtureDef(lua_State* L)
+{
+	return 0;
+}
+
 b2Body* ECS::RigidBody::SetBody(b2World* world, const ECS::Transform& t, int shape)
 {
 	if (body != NULL)
@@ -334,14 +344,18 @@ b2Body* ECS::RigidBody::SetBody(b2World* world, const ECS::Transform& t, int sha
 
 b2Fixture* ECS::RigidBody::createFixture(b2FixtureDef fixtureDefinition, const ECS::Transform& t, int shape)
 {
+	return this->createFixtureEx(fixtureDefinition, b2Vec2{ t.size.x, t.size.y }, { t.position.x, t.position.y }, shape);
+}
 
+b2Fixture* ECS::RigidBody::createFixtureEx(b2FixtureDef fixtureDefinition, b2Vec2 v1, b2Vec2 v2, int shape)
+{
 	b2Fixture* fix = NULL;
 	switch (shape)
 	{
 	case shape_Rectangle:
 	{
 		b2PolygonShape shape;
-		shape.SetAsBox(t.size.x, t.size.y, b2Vec2{ t.origin.x, t.origin.y }, t.rotation * DEG2RAD);
+		shape.SetAsBox(v1.x, v1.y, v2, 0.0f);
 		fixtureDefinition.shape = &shape;
 		fix = body->CreateFixture(&fixtureDefinition);
 	}
@@ -350,7 +364,7 @@ b2Fixture* ECS::RigidBody::createFixture(b2FixtureDef fixtureDefinition, const E
 	{
 
 		b2CircleShape shape;
-		shape.m_radius = t.size.x;
+		shape.m_radius = v1.x;
 		fixtureDefinition.shape = &shape;
 		fix = body->CreateFixture(&fixtureDefinition);
 	}
@@ -358,8 +372,8 @@ b2Fixture* ECS::RigidBody::createFixture(b2FixtureDef fixtureDefinition, const E
 	case shape_edge:
 	{
 		b2EdgeShape shape;
-		shape.m_vertex1 = b2Vec2{ t.position.x, t.position.y };
-		shape.m_vertex2 = b2Vec2{ t.size.x, t.size.y };
+		shape.m_vertex1 = v1;
+		shape.m_vertex2 = v2;
 		fixtureDefinition.shape = &shape;
 		fix = body->CreateFixture(&fixtureDefinition);
 	}
@@ -374,8 +388,86 @@ void ECS::RigidBody::Debug(const char* title)
 {
 	if (ImGui::TreeNode(title))
 	{
+		int res = 0;
+		if (ImGui::TreeNode("Body Def"))
+		{
+			if (ImGui::Checkbox("fixedRotation", &bdyDef.fixedRotation) && this->enabled()) { body->SetFixedRotation(bdyDef.fixedRotation); }
+			if (ImGui::SliderFloat("angle", &bdyDef.angle, -2 * PI, 2 * PI) && this->enabled()) { body->SetTransform(body->GetTransform().p, bdyDef.angle); }
+			if (ImGui::InputFloat2("linearVelocity", &bdyDef.linearVelocity.x) && this->enabled()) { body->SetLinearVelocity(bdyDef.linearVelocity); }
+			if (ImGui::InputFloat("angularVelocity", &bdyDef.angularVelocity, 0.5f, 5.0f) && this->enabled()) { body->SetAngularVelocity(bdyDef.angularVelocity); }
+			if (ImGui::SliderFloat("linearDamping", &bdyDef.linearDamping, 0.0f, 1.0f) && this->enabled()) { body->SetLinearDamping(bdyDef.linearDamping); }
+			if (ImGui::SliderFloat("angularDamping", &bdyDef.angularDamping, 0.0f, 1.0f) && this->enabled()) { body->SetAngularDamping(bdyDef.angularDamping); }
+			if (ImGui::SliderFloat("gravityScale", &bdyDef.gravityScale, 0.0f, 10.0f) && this->enabled()) { body->SetGravityScale(bdyDef.gravityScale); }
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Fixture Def"))
+		{
+			ImGui::Checkbox("isSensor", &fixDef.isSensor);
+			ImGui::SliderFloat("Friction", &fixDef.friction, 0.0f, 1.0f);
+			ImGui::SliderFloat("restitution", &fixDef.restitution, 0.0f, 1.0f);
+			ImGui::SliderFloat("restitutionThreshold", &fixDef.restitutionThreshold, 0.0f, 1.0f);
+			ImGui::SliderFloat("density", &fixDef.density, 0.0f, 10.0f);
+			ImGui::SliderInt("Shape", &this->shape, 0, ECS::shape_edge, shapeNames[shape]);
+
+			ImGui::InputFloat2("v1", &v1.x);
+			ImGui::InputFloat2("v2", &v2.x);
 
 
+			if (!this->enabled()) ImGui::BeginDisabled();
+			bool a = ImGui::Button("Add Fixture");
+			if (a) {
+				createFixtureEx(fixDef, v1, v2, shape);
+			}
+			if (!this->enabled()) ImGui::EndDisabled();
+
+			ImGui::TreePop();
+		}
 		ImGui::TreePop();
+	}
+}
+
+
+
+// LUA HELPERS ///////////////////////////////////////////////////////////////////////////////////////////////////////
+#include <LuaBridge/LuaBridge.h>
+bool ECS::CallLuaFunction(lua_State* L, const char* funcName)
+{
+	if (L == NULL) return false;
+	try {
+		luabridge::LuaRef func = luabridge::getGlobal(L, funcName);
+		func();
+		return true;
+	}
+	catch (luabridge::LuaException const& e) {
+		printf("error in '%s'\t%s\n", funcName, e.what());
+		return false;
+	}
+}
+
+bool ECS::CallLuaFunctionf(lua_State* L, const char* funcName, float v)
+{
+	if (L == NULL) return false;
+	try {
+		luabridge::LuaRef func = luabridge::getGlobal(L, funcName);
+		func(v);
+		return true;
+	}
+	catch (luabridge::LuaException const& e) {
+		printf("error in '%s'\t%s\n", funcName, e.what());
+		return false;
+	}
+}
+
+bool ECS::CallLuaFunctioni(lua_State* L, const char* funcName, int v)
+{
+	if (L == NULL) return false;
+	try {
+		luabridge::LuaRef func = luabridge::getGlobal(L, funcName);
+		func(v);
+		return true;
+	}
+	catch (luabridge::LuaException const& e) {
+		printf("error in '%s'\t%s\n", funcName, e.what());
+		return false;
 	}
 }

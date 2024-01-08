@@ -40,9 +40,6 @@
     <Filter Include="Source Files\Components">
       <UniqueIdentifier>{31aa4cac-034e-46a1-8a0c-87bd2972a2fc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Components\Simple Components">
-      <UniqueIdentifier>{1d0370c9-e6cb-49b8-a8f0-fed351eed7a2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Components\2d">
       <UniqueIdentifier>{96c758b3-a659-4605-ba73-f7b0431aa89e}</UniqueIdentifier>
     </Filter>
@@ -67,9 +64,6 @@
       <Filter>Scenes\Template Scenes</Filter>
     </ClCompile>
     <ClCompile Include="box2dScene.cpp">
-      <Filter>Scenes\Template Scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="LuaScene.cpp">
       <Filter>Scenes\Template Scenes</Filter>
     </ClCompile>
     <ClCompile Include="JsonHandler.cpp">
@@ -228,15 +222,6 @@
     <ClCompile Include="Inspector.cpp">
       <Filter>Source Files\App Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="SimpleComponents.cpp">
-      <Filter>Source Files\Components\Simple Components</Filter>
-    </ClCompile>
-    <ClCompile Include="SimpleNode.cpp">
-      <Filter>Source Files\Components\Simple Components</Filter>
-    </ClCompile>
-    <ClCompile Include="RayExtend.cpp">
-      <Filter>Source Files\Components\Simple Components</Filter>
-    </ClCompile>
     <ClCompile Include="platformerScene.cpp">
       <Filter>Scenes\Template Scenes</Filter>
     </ClCompile>
@@ -256,9 +241,12 @@
       <Filter>Source Files\Components\2d</Filter>
     </ClCompile>
     <ClCompile Include="PlatformerController.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="BoxMouse.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="RayExtend.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -414,15 +402,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AppSettings.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SimpleComponents.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SimpleNode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LuaScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RayExtend.h">

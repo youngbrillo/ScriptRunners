@@ -31,21 +31,19 @@ public:
     std::vector<std::shared_ptr<ECS::Node2d>> Nodes;
     bool tryUpdate, tryDraw, tryUIDraw, tryPoll;
 
-    ECS::Node2d* CreateNode2d(const char* name);
-    static ECS::Node2d* iCreateNode2d(const char* name);
-protected:
-    void removeDeadNodes();
-    void InitScript(const char* path);
-    static bool CallLuaFunction(lua_State* L, const char* funcName);
-    static bool CallLuaFunctionf(lua_State* L, const char* funcName, float v);
-    static bool CallLuaFunctioni(lua_State* L, const char* funcName, int v);
-
-    static void Extend(lua_State* L);
-public:
     b2World* world;
     ECS::Box2dDraw b2drawer;
     Box2dMouse* boxMouse;
     b2Vec2 Gravity;
+
+protected:
+    ECS::Node2d* CreateNode2d(const char* name);
+    static ECS::Node2d* iCreateNode2d(const char* name);
+
+    static b2World* GetWorld() { return Instance()->world; }
+    void removeDeadNodes();
+    void InitScript(const char* path);
+    static void Extend(lua_State* L);
 
 };
 

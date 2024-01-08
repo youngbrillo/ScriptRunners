@@ -56,18 +56,18 @@ void Scene2d::FixedUpdate(const float& timeStep)
 	boxMouse->FixedUpdate(timeStep, world);
 
 	for (auto&& node : Nodes) node->FixedUpdate(timeStep);
-	if (tryUpdate) tryUpdate = Scene2d::CallLuaFunctionf(L, "Update", timeStep);
+	if (tryUpdate) tryUpdate = ECS::CallLuaFunctionf(L, "Update", timeStep);
 }
 
 void Scene2d::Draw()
 {
 	BeginMode2D(camera.cam);
 		for (auto&& node : Nodes) node->Draw();
-		if (tryDraw) tryDraw = Scene2d::CallLuaFunction(L, "Draw");
+		if (tryDraw) tryDraw = ECS::CallLuaFunction(L, "Draw");
 		world->DebugDraw();
 	EndMode2D();
 		for (auto&& node : Nodes) node->UIDraw();
-		if (tryUIDraw) tryUIDraw = Scene2d::CallLuaFunction(L, "UIDraw");
+		if (tryUIDraw) tryUIDraw = ECS::CallLuaFunction(L, "UIDraw");
 
 
 }
@@ -93,7 +93,7 @@ void Scene2d::PollEvents()
 
 	for (auto&& node : Nodes) node->Poll();
 	int key_pressed = GetKeyPressed();
-	if (tryPoll && key_pressed != KEY_NULL) tryPoll = Scene2d::CallLuaFunctioni(L, "onKeyPress", key_pressed);
+	if (tryPoll && key_pressed != KEY_NULL) tryPoll = ECS::CallLuaFunctioni(L, "onKeyPress", key_pressed);
 }
 
 Scene2d* Scene2d::Instance()
@@ -106,7 +106,7 @@ ECS::Node2d* Scene2d::CreateNode2d(const char* name)
 {
 	auto n = std::make_shared<ECS::Node2d>(name);
 	Nodes.emplace_back(n);
-	return n.get();
+	return Nodes[Nodes.size() - 1].get();
 }
 ECS::Node2d* Scene2d::iCreateNode2d(const char* name)
 {
@@ -127,7 +127,7 @@ void Scene2d::removeDeadNodes()
 void Scene2d::InitScript(const char* path)
 {
 	if (L != NULL) {
-		Scene2d::CallLuaFunction(L, "onSceneEnd");
+		ECS::CallLuaFunction(L, "onSceneEnd");
 		lua_close(L);
 		L = NULL;
 	}
@@ -138,54 +138,12 @@ void Scene2d::InitScript(const char* path)
 	if (rv == LUA_OK)
 	{
 		this->Extend(L);
-		Scene2d::CallLuaFunction(L, "onSceneStart");
+		ECS::CallLuaFunction(L, "onSceneStart");
 	}
 	else {
 		printf("LuaScripted Scene found an Error on load:\n\t%s\n", lua_tostring(L, -1));
 		lua_close(L);
 		L = NULL;
-	}
-}
-
-bool Scene2d::CallLuaFunction(lua_State* L, const char* funcName)
-{
-	if (L == NULL) return false;
-	try {
-		luabridge::LuaRef func = luabridge::getGlobal(L, funcName);
-		func();
-		return true;
-	}
-	catch (luabridge::LuaException const& e) {
-		printf("error in '%s'\t%s\n", funcName, e.what());
-		return false;
-	}
-}
-
-bool Scene2d::CallLuaFunctionf(lua_State* L, const char* funcName, float v)
-{
-	if (L == NULL) return false;
-	try {
-		luabridge::LuaRef func = luabridge::getGlobal(L, funcName);
-		func(v);
-		return true;
-	}
-	catch (luabridge::LuaException const& e) {
-		printf("error in '%s'\t%s\n", funcName, e.what());
-		return false;
-	}
-}
-
-bool Scene2d::CallLuaFunctioni(lua_State* L, const char* funcName, int v)
-{
-	if (L == NULL) return false;
-	try {
-		luabridge::LuaRef func = luabridge::getGlobal(L, funcName);
-		func(v);
-		return true;
-	}
-	catch (luabridge::LuaException const& e) {
-		printf("error in '%s'\t%s\n", funcName, e.what());
-		return false;
 	}
 }
 
@@ -202,5 +160,6 @@ void Scene2d::Extend(lua_State* L)
 		.endNamespace()
 		.beginNamespace("Scene")
 			.addFunction("CreateNode2d", Scene2d::iCreateNode2d)
+			.addFunction("GetWorld", GetWorld)
 		.endNamespace();
 }

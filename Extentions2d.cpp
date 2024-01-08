@@ -73,6 +73,42 @@ namespace ECS
 			.endClass()
 			.endNamespace();
 	}
+	static void ExtendRigidBody(lua_State* L) {
+
+		auto getType = std::function<int(const b2BodyDef*)>([](const b2BodyDef* bd) { return  (int)bd->type; });
+		auto setType = std::function<void(b2BodyDef*, int)>([](b2BodyDef* bd, int v) { bd->type = (b2BodyType)v;});
+		auto setGravity = std::function<void(b2World*, float, float)>([](b2World* w, float x, float y) { w->SetGravity(b2Vec2{ x, y }); });
+		 
+		luabridge::getGlobalNamespace(L)
+			.beginClass<b2BodyDef>("b2BodyDef")
+			.addData("angle", &b2BodyDef::angle)
+			.addData("angularVelocity", &b2BodyDef::angularVelocity)
+			.addData("linearDamping", &b2BodyDef::linearDamping)
+			.addData("angularDamping", &b2BodyDef::angularDamping)
+			.addData("gravityScale", &b2BodyDef::gravityScale)
+			.addProperty("type", getType, setType)
+			.endClass()
+			.beginClass<b2FixtureDef>("b2FixtureDef")
+			.addData("friction", &b2FixtureDef::friction)
+			.addData("restitution", &b2FixtureDef::restitution)
+			.addData("restitutionThreshold", &b2FixtureDef::restitutionThreshold)
+			.addData("density", &b2FixtureDef::density)
+			.addData("isSensor", &b2FixtureDef::isSensor)
+			.endClass()
+			.beginClass<b2World>("b2World")
+				.addFunction("SetGravity", setGravity)	
+			.endClass()
+			.beginNamespace("ECS")
+			.beginClass<ECS::RigidBody>("RigidBody")
+				.addFunction("configureBodyDef", &ECS::RigidBody::configureBodyDef)
+				.addFunction("configureFixtureDef", &ECS::RigidBody::configureFixtureDef)
+				.addFunction("enabled", &ECS::RigidBody::enabled)
+				.addFunction("SetBody", &ECS::RigidBody::SetBody)
+				.addData("bdyDef", &ECS::RigidBody::bdyDef)
+				.addData("fixDef", &ECS::RigidBody::fixDef)
+			.endClass()
+			.endNamespace();
+	}
 	void ExtendInput(lua_State* L) {
 		luabridge::getGlobalNamespace(L)
 			.beginNamespace("ECS")
@@ -114,6 +150,7 @@ namespace ECS
 void ECS::ExtendAll(lua_State* L){
 	ECS::ExtendRayLib(L);
 	ECS::ExtendTransform(L);
+	ECS::ExtendRigidBody(L);
 	ECS::ExtendMaterial(L);
 	ECS::ExtendInput(L);
 	ECS::ExtendNode2d(L);

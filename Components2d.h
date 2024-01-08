@@ -48,10 +48,11 @@ namespace ECS
 		~RigidBody();
 
 		bool enabled() const { return body != NULL; };
+		int configureBodyDef(lua_State* L);
+		int configureFixtureDef(lua_State* L);
 		b2Body* SetBody(b2World* world, const ECS::Transform& t, int shape);
 		b2Fixture* createFixture(b2FixtureDef fixtureDefinition, const ECS::Transform& t, int shape);
-
-
+		b2Fixture* createFixtureEx(b2FixtureDef fixtureDefinition, b2Vec2 v1, b2Vec2 v2, int shape);
 		void Debug(const char* title = "Rigidbody");
 
 		b2Body* body = NULL;
@@ -59,7 +60,9 @@ namespace ECS
 
 		b2BodyDef bdyDef;
 		b2FixtureDef fixDef;
-
+		int shape = 0; //used for dynamically adding fixtures in the inspector
+		b2Vec2 v1 = b2Vec2(0.0f, 0.0f);
+		b2Vec2 v2 = b2Vec2(1.0f, 1.0f);
 	};
 #if false
 
@@ -167,4 +170,9 @@ namespace ECS
 
 		void Debug(const char* title = "Ray b2Draw");
 	};
+
+	bool CallLuaFunction(lua_State* L, const char* funcName);
+	bool CallLuaFunctionf(lua_State* L, const char* funcName, float v);
+	bool CallLuaFunctioni(lua_State* L, const char* funcName, int v);
+	
 }
