@@ -344,7 +344,7 @@ b2Body* ECS::RigidBody::SetBody(b2World* world, const ECS::Transform& t, int sha
 
 b2Fixture* ECS::RigidBody::createFixture(b2FixtureDef fixtureDefinition, const ECS::Transform& t, int shape)
 {
-	return this->createFixtureEx(fixtureDefinition, b2Vec2{ t.size.x, t.size.y }, { t.position.x, t.position.y }, shape);
+	return this->createFixtureEx(fixtureDefinition, b2Vec2{ t.size.x * 0.5f, t.size.y * 0.5f }, { 0.5f- t.origin.x / t.size.x , 0.5f-t.origin.y/t.size.y }, shape);
 }
 
 b2Fixture* ECS::RigidBody::createFixtureEx(b2FixtureDef fixtureDefinition, b2Vec2 v1, b2Vec2 v2, int shape)
@@ -355,6 +355,7 @@ b2Fixture* ECS::RigidBody::createFixtureEx(b2FixtureDef fixtureDefinition, b2Vec
 	case shape_Rectangle:
 	{
 		b2PolygonShape shape;
+		shape.SetAsBox(v1.x, v1.y);
 		shape.SetAsBox(v1.x, v1.y, v2, 0.0f);
 		fixtureDefinition.shape = &shape;
 		fix = body->CreateFixture(&fixtureDefinition);
@@ -384,6 +385,8 @@ b2Fixture* ECS::RigidBody::createFixtureEx(b2FixtureDef fixtureDefinition, b2Vec
 	return fix;
 }
 
+static const char* b2BodyTypeNames[] = { "Static", "Kinematic", "Dynamic" };
+
 void ECS::RigidBody::Debug(const char* title)
 {
 	if (ImGui::TreeNode(title))
@@ -398,6 +401,14 @@ void ECS::RigidBody::Debug(const char* title)
 			if (ImGui::SliderFloat("linearDamping", &bdyDef.linearDamping, 0.0f, 1.0f) && this->enabled()) { body->SetLinearDamping(bdyDef.linearDamping); }
 			if (ImGui::SliderFloat("angularDamping", &bdyDef.angularDamping, 0.0f, 1.0f) && this->enabled()) { body->SetAngularDamping(bdyDef.angularDamping); }
 			if (ImGui::SliderFloat("gravityScale", &bdyDef.gravityScale, 0.0f, 10.0f) && this->enabled()) { body->SetGravityScale(bdyDef.gravityScale); }
+			int bt = (int)bdyDef.type;
+
+			bool a = ImGui::SliderInt("Body Type", &bt, 0, b2_dynamicBody, b2BodyTypeNames[bdyDef.type]);
+			if(a) {
+				bdyDef.type = (b2BodyType)bt;
+				if (this->enabled()) body->SetType(bdyDef.type);
+			} 
+	
 			ImGui::TreePop();
 		}
 		if (ImGui::TreeNode("Fixture Def"))

@@ -50,19 +50,24 @@ function GenEnvironment2()
 
 	
 	elements =  {
-        { x = 00,	y = 20,	w=100,  h=1 , blocking =true, color = GRAY , hasShadow = false},
-        { x = 0,	y = 5, w=040,  h=1 , blocking =true, color = GRAY , hasShadow = true},
-        { x = 30,	y = 10, w=010,  h=1 , blocking =true, color = GRAY , hasShadow = true},
-        { x = -30,	y = 10, w=010,  h=1 , blocking =true, color = GRAY , hasShadow = true}
+        { x = 00,	y = 20,	w=100,  h=1 , blocking =true, color = GRAY , hasShadow = false, dynamic = false},
+        { x = 0,	y = 5, w=040,  h=1 , blocking =true, color = GRAY , hasShadow = true, dynamic = false},
+        { x = 30,	y = 10, w=010,  h=1 , blocking =true, color = GRAY , hasShadow = true,dynamic = false},
+        { x = -30,	y = 10, w=010,  h=1 , blocking =true, color = GRAY , hasShadow = true,dynamic = false },
+        { x = 0,	y = -5, w=010,  h=1 , blocking =true, color = 0xff0000ff , hasShadow = true,dynamic = true }
 	}
 	for k, v in ipairs(elements) do
-		local e = Scene.CreateNode2d("platofrom: ".. k);
+		local e = Scene.CreateNode2d("platform: ".. k);
 		e.transform.position:set(v.x, v.y);
 		e.transform.size:set(v.w, v.h);
 		e.transform:Center();
 		e.material:SetColor(v.color);
 		e.solid = v.blocking
-
+		if(v.dynamic) then
+			e.rigidbody.bdyDef.type = 2
+			e.rigidbody.fixDef.density = 1.0;
+		end
+		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
 	end
 
 	App.GetCamera().zoom = 12;

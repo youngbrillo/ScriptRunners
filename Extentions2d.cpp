@@ -78,7 +78,8 @@ namespace ECS
 		auto getType = std::function<int(const b2BodyDef*)>([](const b2BodyDef* bd) { return  (int)bd->type; });
 		auto setType = std::function<void(b2BodyDef*, int)>([](b2BodyDef* bd, int v) { bd->type = (b2BodyType)v;});
 		auto setGravity = std::function<void(b2World*, float, float)>([](b2World* w, float x, float y) { w->SetGravity(b2Vec2{ x, y }); });
-		 
+		auto setBody = std::function<void(ECS::RigidBody* , b2World*, const ECS::Transform&, int)>
+			([](ECS::RigidBody* rb, b2World* w, const ECS::Transform& x, int y) { rb->SetBody(w, x, y); });
 		luabridge::getGlobalNamespace(L)
 			.beginClass<b2BodyDef>("b2BodyDef")
 			.addData("angle", &b2BodyDef::angle)
@@ -103,7 +104,7 @@ namespace ECS
 				.addFunction("configureBodyDef", &ECS::RigidBody::configureBodyDef)
 				.addFunction("configureFixtureDef", &ECS::RigidBody::configureFixtureDef)
 				.addFunction("enabled", &ECS::RigidBody::enabled)
-				.addFunction("SetBody", &ECS::RigidBody::SetBody)
+				.addFunction("SetBody", setBody)
 				.addData("bdyDef", &ECS::RigidBody::bdyDef)
 				.addData("fixDef", &ECS::RigidBody::fixDef)
 			.endClass()
@@ -136,6 +137,7 @@ namespace ECS
 			.beginClass<ECS::Node2d>("Node2d")
 			.addData("transform", &ECS::Node2d::transform)
 			.addData("material", &ECS::Node2d::material)
+			.addData("rigidbody", &ECS::Node2d::rigidbody)
 			.addData("alive", &ECS::Node2d::alive)
 			.addData("enabled", &ECS::Node2d::enabled)
 			.addData("visible", &ECS::Node2d::visible)
