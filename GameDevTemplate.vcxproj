@@ -264,6 +264,7 @@
     <None Include="Scripts\Scenes\BreakoutScene.lua" />
     <None Include="Scripts\Scenes\demoScene.lua" />
     <None Include="Scripts\Manager\TextureManager.lua" />
+    <None Include="Scripts\Scenes\MissleCommander.lua" />
     <None Include="Scripts\Scenes\platformer.lua" />
     <None Include="Scripts\Scenes\Player.lua" />
   </ItemGroup>

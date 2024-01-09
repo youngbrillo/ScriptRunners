@@ -442,5 +442,8 @@
     <None Include="Scripts\Scenes\Player.lua">
       <Filter>Scripts\components</Filter>
     </None>
+    <None Include="Scripts\Scenes\MissleCommander.lua">
+      <Filter>Scripts\Scenes</Filter>
+    </None>
   </ItemGroup>
 </Project>
