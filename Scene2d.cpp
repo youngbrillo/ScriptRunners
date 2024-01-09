@@ -85,16 +85,38 @@ void Scene2d::Debug()
 		ImGui::TreePop();
 	}
 
-	if (ImGui::SliderInt("Node A", &NodeA, -1, Nodes.size()-1, NodeA > 0 ? Nodes[NodeA]->Name : "- Select Node-"))
+	if (ImGui::BeginCombo("Node A", NodeA >= 0 ? Nodes[NodeA]->Name : "- Select a Node -"))
 	{
-		if (NodeA > -1)
-			Nodes[NodeA]->_inspected = true;
+		for (int n = 0; n < Nodes.size(); n++)
+		{
+			const char* previewValue = n >= 0 ? Nodes[n]->Name : "- Select a Node -";
+			const bool is_selected = (NodeA == n);
+			if (ImGui::Selectable(previewValue, is_selected))
+			{
+				NodeA = n;
+				Nodes[n]->_inspected = true;
+			}
+			if (is_selected)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
 	}
 
-	if (ImGui::SliderInt("Node B", &NodeB, -1, Nodes.size() - 1, NodeB > 0 ? Nodes[NodeB]->Name : "- Select Node-"))
+	if (ImGui::BeginCombo("Node B", NodeB >= 0 ? Nodes[NodeB]->Name : "- Select a Node -"))
 	{
-		if(NodeB > -1)
-			Nodes[NodeB]->_inspected = true;
+		for (int n = 0; n < Nodes.size(); n++)
+		{
+			const char* previewValue = n >= 0 ? Nodes[n]->Name : "- Select a Node -";
+			const bool is_selected = (NodeB == n);
+			if (ImGui::Selectable(previewValue, is_selected))
+			{
+				NodeB = n;
+				Nodes[n]->_inspected = true;
+			}
+			if (is_selected)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
 	}
 
 	if (NodeA > -1 && Nodes[NodeA]->_inspected)
@@ -177,6 +199,16 @@ void Scene2d::InitScript(const char* path)
 		L = NULL;
 	}
 }
+#include "PlatformerController.h"
+
+
+static ECS::Node2d* CreatePlayerControllerNode()
+{
+	Scene2d::Instance()->Nodes.emplace_back(std::make_shared<ECS::PlatformerController>());
+	return Scene2d::Instance()->Nodes[Scene2d::Instance()->Nodes.size() -1].get();
+}
+
+
 
 void Scene2d::Extend(lua_State* L)
 {
@@ -191,6 +223,7 @@ void Scene2d::Extend(lua_State* L)
 		.endNamespace()
 		.beginNamespace("Scene")
 			.addFunction("CreateNode2d", Scene2d::iCreateNode2d)
+			.addFunction("CreatePlayerController", CreatePlayerControllerNode)
 			.addFunction("GetWorld", GetWorld)
 		.endNamespace();
 }

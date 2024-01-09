@@ -22,7 +22,7 @@ public:
     virtual void PollEvents() override;
 
 public:
-    static Scene* Create(const char* path) { return new Scene2d("path"); }
+    static Scene* Create(const char* path) { return new Scene2d(path); }
     static Scene2d* Instance();
     
 public:
