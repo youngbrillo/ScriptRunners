@@ -433,6 +433,39 @@ void ECS::RigidBody::Debug(const char* title)
 
 			ImGui::TreePop();
 		}
+		
+		if (ImGui::TreeNode("Fixture") && this->enabled())
+		{
+			b2FixtureDef fd;
+			fd.isSensor = fixture->IsSensor();
+			fd.friction = fixture->GetFriction();
+			fd.restitution = fixture->GetRestitution();
+			fd.restitutionThreshold = fixture->GetRestitutionThreshold();
+			fd.density = fixture->GetDensity();
+
+			if (ImGui::Checkbox("isSensor", &fd.isSensor)) {
+				fixture->SetSensor(fd.isSensor);
+			}
+			if(ImGui::SliderFloat("Friction", &fd.friction, 0.0f, 1.0f)){
+				fixture->SetFriction(fd.friction);
+
+			}
+			if(ImGui::SliderFloat("restitution", &fd.restitution, 0.0f, 1.0f)){
+				fixture->SetRestitution(fd.restitution);
+
+			}
+			if(ImGui::SliderFloat("restitutionThreshold", &fd.restitutionThreshold, 0.0f, 1.0f)){
+				fixture->SetRestitutionThreshold(fd.restitutionThreshold);
+
+			}
+			if(ImGui::SliderFloat("density", &fd.density, 0.0f, 10.0f)){
+				fixture->SetDensity(fd.density);
+
+			}
+
+			ImGui::TreePop();
+		}
+
 		ImGui::TreePop();
 	}
 }

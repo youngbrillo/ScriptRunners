@@ -496,55 +496,136 @@ current_h_speed = 0;
 
 }
 #endif
+
+
+
+#define CMP_EPSILON_PLAYER 0.00001
+static b2Vec2 move_toward(const b2Vec2& v, const b2Vec2& p_to, const float& p_delta)
+{
+	b2Vec2 vd = p_to - v;
+	float  len = vd.Length();
+	if (len <= p_delta || len < (float)CMP_EPSILON_PLAYER)
+		return p_to;
+	else {
+		b2Vec2 r = v;
+		r.x /= len * p_delta;
+		r.y /= len * p_delta;
+
+		return r;
+	};
+}
+
+static int Sign(const int& val)
+{
+	if (val < 0) return -1;
+	return 1;
+}
+
+
 void ECS::PlatformerController::HandleMovement(const float& delta)
 {
+	//variables
 	bool w = vk_up.just_pressed;
 	bool w_end = vk_up.just_released;
 	int a = vk_left.isDown ? 1 : 0;
 	int s = vk_down.isDown ? 1 : 0;
 	int d = vk_right.isDown ? 1 : 0;
-
+	int x_dir = d - a;
 	rayCaster.evaluate(rigidbody.body, transform.size.x, transform.size.y);
 	this->grounded = rayCaster.contact;
 
-	b2Vec2 force = b2Vec2_zero;
-	b2Vec2 clvelocity = rigidbody.body->GetLinearVelocity();
-	bool force_is_impuluse = true;
-	bool take_the_easy_way_out = true;
-	if (grounded)
-	{
-		if (a > 0 or d > 0) { // they are moving left / right
+	rayCaster.evaluate(rigidbody.body, transform.size.x, -transform.size.y);
+	bool is_on_ceiling = rayCaster.contact;
+	b2Vec2 velocity = b2Vec2_zero;
 
-			force.x = d - a * p.walk_acceleration;
-			//current_h_speed += (d - a) * (p.walk_acceleration * DT);
-			//current_h_speed = clamp(current_h_speed, -(p.clamp_walk * DT), (p.clamp_walk * DT));
+	//x_movement
+	{
+		//stop if not doing movement inputs
+		if (x_dir == 0)
+		{
+			//set velocity 
+			velocity.x = move_toward(b2Vec2(velocity.x, .00f), b2Vec2(0, 0), p.walk_decceleration * delta).x;
+			return;
 		}
-		else { // not moving 
-			//slow them down 
-			
-			if (take_the_easy_way_out)
+		//if we are doing movment inputs and above max speed, don't accelerate or decelerate
+		//except if turning
+		//keeps momentum gained from outside or slopes!
+
+		/*
+		float maximum_allowed_speed = p.walk_speed;
+		if (get_input.sprinting)
+			maximum_allowed_speed = currMove.max_speed;
+		if (get_input.y == -1) //crouching
+			maximum_allowed_speed = currMove.crouch_speed;
+		*/
+
+
+		if (abs(velocity.x) >= p.clamp_walk && Sign(velocity.x) == x_dir)
+		{
+			return;
+		}
+		//are we turning?
+		//decide between acceleration and turn_acceleration
+		float accel_rate = Sign(velocity.x) == x_dir ? p.walk_acceleration : p.walk_decceleration;
+
+		//accelerate
+		velocity.x += x_dir * accel_rate * delta;
+
+		/*
+			set_direction(x_dir);//for visuals
+		*/
+	}
+	//jump logic
+	{
+		/*
+		//reset our jump requirements
+		if (grounded)
+		{
+			currMove.jump_coyote_timer = currMove.jump_coyote;
+			is_jumping = false;
+		}
+
+		if (get_input.just_jumped)
+		{
+			currMove.jump_buffer_timer = currMove.jump_buffer;
+		}
+
+		//Jump if grounded, there is jump input, and we aren't jumping already
+		if (currMove.jump_coyote_timer > 0 && currMove.jump_buffer_timer > 0 && !is_jumping)
+		{
+			is_jumping = true;
+			currMove.jump_coyote_timer = 0;
+			currMove.jump_buffer_timer = 0;
+			//if falling, account for that lost speed
+			if (velocity.y > 0) //not > 0 b/c reverse the direction, thanks raylib lol
 			{
-				clvelocity.x = 0.0f;
-				rigidbody.body->SetLinearVelocity(clvelocity);
+				velocity.y -= velocity.y;
 			}
-			else if (clvelocity.x > 1) {
-				force.x = -1 * p.walk_decceleration;
-				force_is_impuluse = false;
-			}
-			else if (clvelocity.y < -1) {
-				force.x = p.walk_decceleration;
-				force_is_impuluse = false;
-			}
+
+			velocity.y = -currMove.jump_force;
 		}
-	}
 
-	if (abs(clvelocity.x) < p.clamp_walk)
+		if (get_input.relased_jump && velocity.y < 0)
+		{
+			velocity.y -= (currMove.jump_cut * velocity.y);
+		}
+		if (is_on_ceiling)
+		{
+			velocity.y = currMove.jump_hang_treshold + 10.0f;
+		}
+		*/
+	}
+	//application of gravity
 	{
-		if (force_is_impuluse)
-			rigidbody.body->ApplyLinearImpulseToCenter(force, true);
-		else 
-			rigidbody.body->ApplyForceToCenter(force, true);
-	}
 
+	}
+	//timers (cool-downs and warm-ups)
+	{
+
+	}
+	//actual movement
+	{
+
+	}
 
 }
