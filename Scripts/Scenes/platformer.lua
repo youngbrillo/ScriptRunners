@@ -53,8 +53,12 @@ function GenEnvironment2()
 	elements =  {
         {name="floor", x = 00,	y = 20,	w=100,  h=.5 , blocking =true, color = GRAY , hasShadow = false, dynamic = false},
         {name="center platform", x = 0,	y = 5, w=040,  h=.5 , blocking =true, color = GRAY , hasShadow = true, dynamic = false},
-        {name="left platform", x = -30,	y = 10, w=010,  h=.5 , blocking =true, color = 0x9f835cff , hasShadow = true,dynamic = false},
-        {name="right platform", x = 30,	y = 10, w=010,  h=.5 , blocking =true, color = 0x6ca3c3ff , hasShadow = true,dynamic = false },
+        {name="center platform 1", x = -22.5,	y = 10, w=5,  h=.5 , blocking =true, color = GRAY , hasShadow = true, dynamic = false},
+        {name="center platform 2", x = -17,	y = 13, w=5,  h=.5 , blocking =true, color = GRAY , hasShadow = true, dynamic = false},
+        {name="center platform 3", x = -12,	y = 15, w=5,  h=.5 , blocking =true, color = GRAY , hasShadow = true, dynamic = false},
+        {name="center platform 4", x = -7,	y = 17, w=5,  h=.5 , blocking =true, color = GRAY , hasShadow = true, dynamic = false},
+        {name="left platform", x = -30,	y = 12.25, w=010,  h=15 , blocking =true, color = 0x9f835cff , hasShadow = true,dynamic = false},
+        {name="right platform", x = 30,	y = 12.25, w=010,  h=15 , blocking =true, color = 0x6ca3c3ff , hasShadow = true,dynamic = false },
         {name="top platform", x = 0,	y = -7, w=010,  h=.5 , blocking =true, color = 0xff0000ff , hasShadow = true, dynamic = false }
 	}
 	for k, v in ipairs(elements) do

@@ -304,6 +304,7 @@ void ECS::Box2dDraw::Debug(const char* title)
 ECS::RigidBody::RigidBody()
 	: body(NULL)
 {
+	fixDef.density = 1.0f;
 }
 
 ECS::RigidBody::~RigidBody()
@@ -336,6 +337,7 @@ b2Body* ECS::RigidBody::SetBody(b2World* world, const ECS::Transform& t, int sha
 		world->DestroyBody(body);
 	}
 	bdyDef.position.Set(t.position.x, t.position.y);
+	bdyDef.angle = DEG2RAD * t.rotation;
 	body = world->CreateBody(&bdyDef);
 	fixture = createFixture(fixDef, t, shape);
 
@@ -344,7 +346,54 @@ b2Body* ECS::RigidBody::SetBody(b2World* world, const ECS::Transform& t, int sha
 
 b2Fixture* ECS::RigidBody::createFixture(b2FixtureDef fixtureDefinition, const ECS::Transform& t, int shape)
 {
-	return this->createFixtureEx(fixtureDefinition, b2Vec2{ t.size.x * 0.5f, t.size.y * 0.5f }, { 0.5f- t.origin.x / t.size.x , 0.5f-t.origin.y/t.size.y }, shape);
+	/*return this->createFixtureEx(
+		fixtureDefinition, 
+		b2Vec2{ t.size.x * 0.5f, t.size.y * 0.5f }, 
+		b2Vec2{ 0.5f- t.origin.x / t.size.x , 0.5f-t.origin.y/t.size.y }, 
+		shape
+	);*/
+	b2Vec2 v1 = b2Vec2_zero, v2 = b2Vec2_zero;
+	b2Fixture* fix = NULL;
+	switch (shape)
+	{
+	case shape_Rectangle:
+	{
+		v1 = b2Vec2(t.size.x * 0.5f, t.size.y * 0.5f);
+		v2 = b2Vec2(0.5f - t.origin.x / t.size.x, 0.5f - t.origin.y / t.size.y);
+		b2PolygonShape shape;
+		shape.SetAsBox(v1.x, v1.y, v2, 0.0f);
+
+		fixtureDefinition.shape = &shape;
+		fix = body->CreateFixture(&fixtureDefinition);
+	}
+	break;
+	case shape_Circle:
+	{
+
+		b2CircleShape shape;
+		shape.m_radius = t.size.x;
+		fixtureDefinition.shape = &shape;
+		fix = body->CreateFixture(&fixtureDefinition);
+	}
+	break;
+	case shape_edge:
+	{
+		v1 = b2Vec2(0.0f, 0.0f);// / t.size.x, 0.5f - t.origin.y / t.size.y);
+		v2 = b2Vec2(t.size.x, t.size.y);
+		b2EdgeShape shape;
+		shape.m_vertex1 = v1;
+		shape.m_vertex2 = v2;
+		fixtureDefinition.shape = &shape;
+		fix = body->CreateFixture(&fixtureDefinition);
+	}
+	break;
+	default:
+		break;
+	}
+	return fix;
+
+
+
 }
 
 b2Fixture* ECS::RigidBody::createFixtureEx(b2FixtureDef fixtureDefinition, b2Vec2 v1, b2Vec2 v2, int shape)
@@ -365,7 +414,7 @@ b2Fixture* ECS::RigidBody::createFixtureEx(b2FixtureDef fixtureDefinition, b2Vec
 	{
 
 		b2CircleShape shape;
-		shape.m_radius = v1.x;
+		shape.m_radius =v2.x;
 		fixtureDefinition.shape = &shape;
 		fix = body->CreateFixture(&fixtureDefinition);
 	}
