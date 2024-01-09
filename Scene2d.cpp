@@ -84,6 +84,37 @@ void Scene2d::Debug()
 
 		ImGui::TreePop();
 	}
+
+	if (ImGui::SliderInt("Node A", &NodeA, -1, Nodes.size()-1, NodeA > 0 ? Nodes[NodeA]->Name : "- Select Node-"))
+	{
+		if (NodeA > -1)
+			Nodes[NodeA]->_inspected = true;
+	}
+
+	if (ImGui::SliderInt("Node B", &NodeB, -1, Nodes.size() - 1, NodeB > 0 ? Nodes[NodeB]->Name : "- Select Node-"))
+	{
+		if(NodeB > -1)
+			Nodes[NodeB]->_inspected = true;
+	}
+
+	if (NodeA > -1 && Nodes[NodeA]->_inspected)
+	{
+		DebugNode(Nodes[NodeA].get(), "Node Inspector");
+	}
+
+	if (NodeB > -1 && Nodes[NodeB]->_inspected)
+	{
+		DebugNode(Nodes[NodeB].get(), "Node Inspector (2)");
+	}
+}
+
+void Scene2d::DebugNode(ECS::Node2d* Node, const char* title)
+{
+	ImGui::Begin(title, &Node->_inspected);
+	ImGui::Text("Name: %s", Node->Name);
+	Node->inspect();
+
+	ImGui::End();
 }
 
 void Scene2d::PollEvents()

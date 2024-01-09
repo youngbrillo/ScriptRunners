@@ -18,6 +18,7 @@ public:
     virtual void FixedUpdate(const float& timeStep);
     virtual void Draw();
     virtual void Debug() override;
+    void DebugNode(ECS::Node2d* Node, const char* title);
     virtual void PollEvents() override;
 
 public:
@@ -29,6 +30,7 @@ public:
     lua_State* L;
     ECS::Camera2d camera;
     std::vector<std::shared_ptr<ECS::Node2d>> Nodes;
+    int NodeA = -1, NodeB = -1;
     bool tryUpdate, tryDraw, tryUIDraw, tryPoll;
 
     b2World* world;

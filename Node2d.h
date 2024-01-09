@@ -25,5 +25,6 @@ namespace ECS
 		float speed;
 		Vector2 direction;
 		bool solid;
+		bool _inspected = false;
 	};
 }
