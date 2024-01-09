@@ -29,8 +29,7 @@ PlatformingParagonScene::~PlatformingParagonScene()
 void PlatformingParagonScene::Initialize()
 {
     Scene2d::Initialize();
-    //std::shared_ptr<ECS::Node2d> player = std::make_shared<ECS::PlatformerController>();
-    Nodes.emplace_back(std::make_shared<ECS::PlatformerController>(&Nodes));
+    Nodes.emplace_back(std::make_shared<ECS::PlatformerController>());
 }
 
 static Scene* GenPlatformer() { return PlatformingParagonScene::Create("Scripts/Scenes/platformer.lua"); }

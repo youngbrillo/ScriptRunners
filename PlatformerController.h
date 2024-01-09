@@ -2,85 +2,139 @@
 #include "Node2d.h"
 #include <memory>
 #include <vector>
-#define USING_ADVANCED_TECHNIQUE false
-
-namespace PlatController
+#include <imgui.h>
+namespace Player
 {
-	struct PlatformerHelper
+	struct Inputs
 	{
-		bool visible = false;
-		bool anti_gravity_apex = true;
-		bool early_fall = true;
-		bool jump_buffering = true;
-		bool sticky_feet = true;
-		bool speedy_apex = true;
-		bool coyote_jump = true;
-		bool clamp_fall_speed = true;
-		bool catch_missed_jump = true;
-		bool bumped_head_on_corner = true;
-	};
-
-
-	struct AdvancedParameters
-	{
-		float clamp_walk = 10; // maximum walking speed 
-		float clamp_fall_speed = 20;
-
-		float walk_acceleration = 2; // when holding button how fast to get to max speed
-		float walk_decceleration = 1.4; // when no button is held how fast to get to 0
-
-		float jump_height = 19;
-		bool jump_early_end = false;
-
-		float current_h_speed = 0; // how fast the player would like to move 
-		float current_v_speed = 0;
-
-		float fall_speed = 1.2;
-		float fall_speed_min = 0.8;
-		float fall_speed_max = 1.2;
-
-		bool touched_ground_since_last_jump = false;
-
-		// recording how many frames ago these things happened 
-		int grounded_frames_ago = 999;
-		int landed_frames_ago = 999;
-		int apex_frames_ago = 999; // 0 if on floor and on way up (only counts on way down)
-		int w_frames_ago = 999;
-		int frames_going_down = 999;
-
-		bool at_apex = false; // this isnt the apex but the top 4th
-		float speed_for_apex = 6; // if they are going slower than this and in the air we call this the apex
-	};
-
-	struct BaseParamteters
-	{
-		float clamp_walk = 10.0f;
-		float clamp_fall_speed = 20;
-		float walk_acceleration = 2.0f;
-		float walk_decceleration = 1.4f;
-		float jump_height = 10.0f;
-	};
-	class ControllerRayCastCallback : public b2RayCastCallback
-	{
-	public:
-		float fracLen = 0.0f;
-		bool contact = false;
-		virtual float ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float fraction)
+		ECS::KeyInput left{ KEY_LEFT };
+		ECS::KeyInput right{ KEY_RIGHT };
+		ECS::KeyInput up{ KEY_UP };
+		ECS::KeyInput down{ KEY_DOWN };
+		ECS::KeyInput action{ KEY_SPACE };
+		ECS::KeyInput sprint{ KEY_LEFT_SHIFT };
+		int direction = 0;
+		int lastDirection = 1;
+		void Poll()
 		{
-			if (fixture->IsSensor()) return -1;
-			fracLen = fraction;
-			contact = true;
+			left.Poll(); right.Poll(); up.Poll(); down.Poll(); action.Poll(); sprint.Poll();
+			int a = left.isDown ? 1 : 0, d = right.isDown ? 1 : 0;
+			direction = d - a;
+			if (direction != 0) lastDirection = direction;
 		}
-		void evaluate(b2Body* body, float width, float height)
+		void Debug(const char* title = "Inputs")
 		{
-			b2Vec2 origin = b2Vec2(body->GetTransform().p.x, body->GetTransform().p.y);
-			b2Vec2 p2 = origin; 
-			p2.y += height;
-			this->contact = false;
-			body->GetWorld()->RayCast(this, origin, p2);
+			if (ImGui::TreeNode(title))
+			{
+				ImGui::Text("Direction/Last Direction: %d ", direction, lastDirection);
+				left.Debug("Left");
+				right.Debug("right");
+				down.Debug("down");
+				action.Debug("action");
+				sprint.Debug("sprint");
+				ImGui::TreePop();
+			}
+		}
+	};
+	struct State
+	{
+		bool takingDamage = false;
+		bool grounded = false;
+		bool crouched = false;
+		bool climbing = false;
+		bool holding = false;
+		bool sprinting = false;
+		bool stalled = false; 
+		bool airJump_no_input = false; 
+		bool double_jump_enabled = false;
+
+		bool front_contact = false;
+		bool head_contact = false;
+		bool back_contact = false;
+		bool movement_restricted = false; 
+		bool armed = false;
+		bool in_dodge_roll = false;
+		bool can_wall_climb = false;
+
+		void debug(const char* title = "State")
+		{
+			if (ImGui::TreeNode(title))
+			{
+				ImGui::Checkbox("movement restricted", &movement_restricted);
+				ImGui::Checkbox("takingDamage", &takingDamage);
+				ImGui::Checkbox("grounded", &grounded);
+				ImGui::Checkbox("front contact", &front_contact);
+				ImGui::Checkbox("head contact", &head_contact);
+				ImGui::Checkbox("back contact", &back_contact);
+				ImGui::Checkbox("crouched", &crouched);
+				ImGui::Checkbox("climbing", &climbing);
+				ImGui::Checkbox("holding", &holding);
+				ImGui::Checkbox("sprinting", &sprinting);
+				ImGui::Checkbox("stalled (in-air)", &stalled);
+				ImGui::Checkbox("airJump_no_input", &airJump_no_input);
+				ImGui::Checkbox("double enabled", &double_jump_enabled);
+				ImGui::Checkbox("armed", &armed);
+				ImGui::Checkbox("in dodge roll", &in_dodge_roll);
+				ImGui::Checkbox("can wall climb", &can_wall_climb);
+				ImGui::TreePop();
+			}
+		}
+	};
+
+
+
+	struct Parameters
+	{
+		float walk_speed = 2.18f;
+		float run_speed = 6.315f;
+		float crouch_speed = 0.75f;
+		float air_speed = 4.7f;
+		float fall_speed = 0.0f; //additional force added after stalling in air
+		float jump_force = 10.0f;
+		float gravity_scale = 5.0f;
+
+		bool wall_jump_enabled = true;
+		bool wall_jump_debug_draw = false;
+		b2Vec2 wall_jump_force_scale = b2Vec2(1.0f, 1.0f);
+		b2Vec2 wall_jump_dir = b2Vec2(1.0f, -1.0f);
+
+		float double_jump_ratio = 1.0f; //what percentage of the jump force is applied to the double jump?
+
+		float dodge_roll_iframe_duration = 0.166f;
+		float wall_climb_speed = 4.0f;
+
+		b2Vec2 wall_jump_direction(int direction) const
+		{
+			b2Vec2 p2 = wall_jump_dir;
+			p2.x *= jump_force * wall_jump_force_scale.x * -direction;
+			p2.y *= jump_force * wall_jump_force_scale.y;
+			return p2;
+		}
+		void Debug(const char* title = "Parameters") 
+		{
+			if (ImGui::TreeNode(title))
+			{
+				ImGui::SliderFloat("Crouch Speed", &crouch_speed, 0, walk_speed);
+				ImGui::SliderFloat("Walk Speed", &walk_speed, 0, run_speed);
+				ImGui::SliderFloat("Run Speed", &run_speed, walk_speed, 20);
+				ImGui::SliderFloat("Fall Speed", &fall_speed, 0, 100);
+				ImGui::SliderFloat("Air Speed", &air_speed, 0, run_speed);
+				ImGui::SliderFloat("Jump Force", &jump_force, 0, 100);
+				ImGui::SliderFloat("double Jump ratio", &double_jump_ratio, 0, 1);
+				ImGui::Text("Wall Jumping");
+				ImGui::Checkbox("wall jump: enabled", &wall_jump_enabled);
+				ImGui::Checkbox("wall jump: draw debug line", &wall_jump_debug_draw);
+				ImGui::SliderFloat2("wall jump: jump force scaling", &wall_jump_force_scale.x, 0.0f, 1.0f);
+				ImGui::SliderFloat2("wall jump: direction", &wall_jump_dir.x, -1, 1);
+				ImGui::SliderFloat("dodge roll i-frame duration", &dodge_roll_iframe_duration, 0, 1);
+				ImGui::SliderFloat("wall climb speed", &wall_climb_speed, 0, 10);
+				ImGui::TreePop();
+			}
 		}
 
 	};
+
+
 }
 
 namespace ECS
@@ -88,7 +142,7 @@ namespace ECS
 	class PlatformerController : public ECS::Node2d
 	{
 	public:
-		PlatformerController(std::vector<std::shared_ptr<ECS::Node2d>>* ref);
+		PlatformerController();
 		~PlatformerController();
 
 		virtual void Update(const float& deltaTime) override;
@@ -97,26 +151,56 @@ namespace ECS
 		virtual void UIDraw() override;
 		virtual void Poll() override;
 		virtual void inspect() override;
-	public:
-#if USING_ADVANCED_TECHNIQUE
-		std::vector<std::shared_ptr<ECS::Node2d>>* container;
-		bool findGroundCollison(float x, float y, const float& dt);
-		bool place_free(float x, float y);
-#endif
-	private:
-		//variables
-		bool grounded = false;
-		PlatController::PlatformerHelper helper_on;
-#if USING_ADVANCED_TECHNIQUE
-		PlatController::AdvancedParameters p;
-		void proccessMovement(const float& DT);
-#else
-		PlatController::BaseParamteters p;
-		PlatController::ControllerRayCastCallback rayCaster;
-		void HandleMovement(const float& delta);
-#endif
-		ECS::KeyInput vk_up, vk_left, vk_down, vk_right;
+	protected:
 
+		void updateState(const float& dt);
+		void updateState_crouch();
+		void handleMovement(const float& deltaTime);
+		void handleAnimations(const float& deltaTime);
+		void handleActions(const float& deltaTime);
+
+		void handleInvincibility() {};
+		void restoreMovement() {}//if movement is restricted see if we can enable it again
+
+	protected: //variables
+		ECS::RayCastCallback rayCaster;
+		Player::Inputs mInputs;
+		Player::State mState;
+		Player::Parameters mfields;
 	};
+
+
+	template <class T>
+	T clamp(const T& v, const T& min, const T& max)
+	{
+		if (v < min) return min;
+		else if (v > max) return max;
+		else return v;
+	}
+
+
+	#define CMP_EPSILON_PLAYER 0.00001
+	static b2Vec2 move_toward(const b2Vec2& v, const b2Vec2& p_to, const float& p_delta)
+	{
+		b2Vec2 vd = p_to - v;
+		float  len = vd.Length();
+		if (len <= p_delta || len < (float)CMP_EPSILON_PLAYER)
+			return p_to;
+		else {
+			b2Vec2 r = v;
+			r.x /= len * p_delta;
+			r.y /= len * p_delta;
+
+			return r;
+		};
+	}
+
+	static int Sign(const int& val)
+	{
+		if (val < 0) return -1;
+		return 1;
+	}
+
+
 }
 
