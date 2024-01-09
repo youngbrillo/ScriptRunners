@@ -234,7 +234,7 @@
     <ClCompile Include="Scene2d.cpp">
       <Filter>Scenes\base</Filter>
     </ClCompile>
-    <ClCompile Include="PlatformingParagonScene.cpp">
+    <ClCompile Include="miss_commander.cpp">
       <Filter>Scenes</Filter>
     </ClCompile>
     <ClCompile Include="Extentions2d.cpp">

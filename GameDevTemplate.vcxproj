@@ -190,7 +190,7 @@
     <ClCompile Include="MIssleCommander.cpp" />
     <ClCompile Include="Node2d.cpp" />
     <ClCompile Include="PlatformerController.cpp" />
-    <ClCompile Include="PlatformingParagonScene.cpp" />
+    <ClCompile Include="miss_commander.cpp" />
     <ClCompile Include="RayExtend.cpp" />
     <ClCompile Include="RaylibTemplateScene.cpp" />
     <ClCompile Include="rlImGui.cpp" />

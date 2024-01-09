@@ -43,21 +43,22 @@ function GenEnvironment2()
 	p.transform:Center();
 	p.material:SetColor(0X00ffff5e)
 	p.material:SetTextureByAlias("CHECKER")
-	p.material.source.width = p.material.source.width  * p.transform.size.x / p.transform.size.y;
+	p.material.source.width = p.material.source.width  * p.transform.size.x / p.transform.size.y * 4;
+	p.material.source.height =p.material.source.height * 4;
 	p.material.uv_scroll:set(10, 5)
 	p.visible = true;
 	p.solid	 = false;
 
 	
 	elements =  {
-        { x = 00,	y = 20,	w=100,  h=1 , blocking =true, color = GRAY , hasShadow = false, dynamic = false},
-        { x = 0,	y = 5, w=040,  h=1 , blocking =true, color = GRAY , hasShadow = true, dynamic = false},
-        { x = 30,	y = 10, w=010,  h=1 , blocking =true, color = GRAY , hasShadow = true,dynamic = false},
-        { x = -30,	y = 10, w=010,  h=1 , blocking =true, color = GRAY , hasShadow = true,dynamic = false },
-        { x = 0,	y = -7, w=010,  h=1 , blocking =true, color = 0xff0000ff , hasShadow = true, dynamic = false }
+        {name="floor", x = 00,	y = 20,	w=100,  h=.5 , blocking =true, color = GRAY , hasShadow = false, dynamic = false},
+        {name="center platform", x = 0,	y = 5, w=040,  h=.5 , blocking =true, color = GRAY , hasShadow = true, dynamic = false},
+        {name="left platform", x = -30,	y = 10, w=010,  h=.5 , blocking =true, color = 0x9f835cff , hasShadow = true,dynamic = false},
+        {name="right platform", x = 30,	y = 10, w=010,  h=.5 , blocking =true, color = 0x6ca3c3ff , hasShadow = true,dynamic = false },
+        {name="top platform", x = 0,	y = -7, w=010,  h=.5 , blocking =true, color = 0xff0000ff , hasShadow = true, dynamic = false }
 	}
 	for k, v in ipairs(elements) do
-		local e = Scene.CreateNode2d("platform: ".. k);
+		local e = Scene.CreateNode2d(v.name);
 		e.transform.position:set(v.x, v.y);
 		e.transform.size:set(v.w, v.h);
 		e.transform:Center();
@@ -69,6 +70,9 @@ function GenEnvironment2()
 		end
 		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
 	end
+
+	mPlayer = Scene.CreatePlayerController();
+
 
 	App.GetCamera().zoom = 12;
 
