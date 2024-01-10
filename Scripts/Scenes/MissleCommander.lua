@@ -18,8 +18,14 @@ function UIDraw()
 
 	if(gameOver == false) then
 		DrawInProg()
-	end
-
+	else
+        local patext = "PRESS [ENTER] TO PLAY AGAIN"
+        Raylib.DrawText(patext, 
+        Raylib.GetScreenWidth()/2 - Raylib.MeasureText(patext, 20)/2, 
+        Raylib.GetScreenHeight()/2 - 50, 
+        20, 
+        0x5d5d5dff);
+    end
 	DrawInstructions();
 end
 
@@ -27,20 +33,33 @@ KEY_FIRE = 32   -- //KEY_SPACE
 KEY_FIRE_1 = 90 -- //KEY_Z
 KEY_FIRE_2 = 88 -- //KEY_X
 KEY_FIRE_3 = 67 -- //KEY_C
+KEY_ENTER = 257;
+KEY_ENTER2 = 335;
 
 function onKeyPress(key)
-    if(key == KEY_FIRE) then 
-        fire1 = true;
-    elseif(key == KEY_FIRE_1) then 
-        fire1 = true;
-    elseif(key == KEY_FIRE_2) then 
-        fire2 = true;
-    elseif(key == KEY_FIRE_3) then 
-        fire3 = true;
-    else 
-        print(key);
+    HandleMCKeyEvents(key);
+end
+
+function HandleMCKeyEvents(key)
+
+    if(not gameOver)
+    then
+        if(key == KEY_FIRE_1) then 
+            fire1 = true;
+        elseif(key == KEY_FIRE_2 or key == KEY_FIRE) then 
+            fire2 = true;
+        elseif(key == KEY_FIRE_3) then 
+            fire3 = true;
+        end
+    else
+        if key == KEY_ENTER or key == KEY_ENTER2 then
+            InitalizeGame()
+        else 
+            print(key);
+        end
     end
 end
+
 
 function InitalizeGame()
 
@@ -207,12 +226,9 @@ end
 
 
 function DrawInstructions()
-
     Raylib.DrawText("SCORE ".. score, 20, 20, 40, 0xC87DC8FF);
-
 	--local vx, vy = Raylib.MeasureText(inText, 20)
 	--Raylib.DrawText(inText, Raylib.GetScreenWidth() - (vx + 10), Raylib.GetScreenHeight() - (vy + 20), 20, 0xffffffff)
-
 end
 
 
@@ -225,7 +241,22 @@ function HandleGameRules(dt)
 
 		UpdateOutgoingFire();
 		UpdateIncomingFire();
-	end
+        
+        --// Game over logic
+        local checker = 0;
+
+        for i = 1, LAUNCHERS_AMOUNT, 1
+        do
+            if (not launcher[i].active) then checker = checker + 1; end
+            if (checker == LAUNCHERS_AMOUNT) then gameOver = true; end
+        end
+        checker = 0;
+        for i = 1, BUILDINGS_AMOUNT, 1
+        do
+            if (not building[i].active) then checker = checker + 1; end
+            if (checker == BUILDINGS_AMOUNT) then gameOver = true; end
+        end
+    end
 end
 
 function update_Interceptors(delta)
