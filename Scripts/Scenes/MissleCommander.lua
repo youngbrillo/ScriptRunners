@@ -23,8 +23,23 @@ function UIDraw()
 	DrawInstructions();
 end
 
+KEY_FIRE = 32   -- //KEY_SPACE
+KEY_FIRE_1 = 90 -- //KEY_Z
+KEY_FIRE_2 = 88 -- //KEY_X
+KEY_FIRE_3 = 67 -- //KEY_C
 
 function onKeyPress(key)
+    if(key == KEY_FIRE) then 
+        fire1 = true;
+    elseif(key == KEY_FIRE_1) then 
+        fire1 = true;
+    elseif(key == KEY_FIRE_2) then 
+        fire2 = true;
+    elseif(key == KEY_FIRE_3) then 
+        fire3 = true;
+    else 
+        print(key);
+    end
 end
 
 function InitalizeGame()
@@ -51,7 +66,7 @@ function InitalizeGame()
 	BUILDING_SIZE               =60
 	EXPLOSION_RADIUS            =40
 	MISSILE_SPEED               =1
-	MISSILE_LAUNCH_FRAMES       =80
+	MISSILE_LAUNCH_FRAMES       =30
 	INTERCEPTOR_SPEED           =10
 	EXPLOSION_INCREASE_TIME     =90          --// In frames
 	EXPLOSION_TOTAL_TIME        =210         --// In frames
@@ -60,6 +75,7 @@ function InitalizeGame()
 		
 	startPhase();
 	math.randomseed(os.time());
+    interceptorNumber = 1;
 
 end
 
@@ -70,8 +86,8 @@ function startPhase()
 		missile[i] = {
 			origin = {x = 0, y = 0},
 			objective = {x = 0, y = 0},
-			speed = {0, 0},
-			position = {0, 0},
+			speed = {x = 0, y = 0},
+			position = {x = 0, y = 0},
 			active = false
 		}
 	end
@@ -134,6 +150,11 @@ function startPhase()
 
     score = 0;
 
+    missileIndex = 1;
+    cursorPos = {x = 0, y = 0};
+    fire1 = false;
+    fire2 = false;
+    fire3 = false;
 end
 
 function DrawInProg()
@@ -143,7 +164,6 @@ function DrawInProg()
     for i, miss in ipairs(missile) do
         if (miss.active) then
             Raylib.DrawLine(miss.origin.x, miss.origin.y, miss.position.x, miss.position.y, 0xff0000ff);
-
             if (framesCounter % 16 < 8) then
 				Raylib.DrawCircle(miss.position.x, miss.position.y, 3, 0xffff00ff);
 			end
@@ -153,7 +173,7 @@ function DrawInProg()
     --// Draw interceptors
     for i, int in ipairs(interceptor) do
         if (int.active) then
-            Raylib.DrawLine(int.origin.x, int.origin.y, int.position.x, int.position.y, 0x00ff00ff);
+            Raylib.DrawLine(int.origin.x, int.origin.y, int.position.x, int.position.y, 0x00ffffff);
 
             if (framesCounter % 16 < 8) then 
 				Raylib.DrawCircle(int.position.x, int.position.y, 3, 0x0000ffff); 
@@ -168,9 +188,9 @@ function DrawInProg()
 		end
 	end
     --// Draw buildings and launchers
-    for i, launch in ipairs(launcher) do
-        if (launch.active) then
-			Raylib.DrawRectangle(launch.position.x - LAUNCHER_SIZE/2, launch.position.y - LAUNCHER_SIZE/2, LAUNCHER_SIZE, LAUNCHER_SIZE, 0x5d5d5dff);
+    for i, lnchr in ipairs(launcher) do
+        if (lnchr.active) then
+			Raylib.DrawRectangle(lnchr.position.x - LAUNCHER_SIZE/2, lnchr.position.y - LAUNCHER_SIZE/2, LAUNCHER_SIZE, LAUNCHER_SIZE, 0x5d5d5dff);
 		end
 	end
 
@@ -181,6 +201,8 @@ function DrawInProg()
 		end
     end
 
+
+    drawCursor();
 end
 
 
@@ -208,6 +230,37 @@ end
 
 function update_Interceptors(delta)
 
+    --// Interceptors update
+    for i = 1, MAX_INTERCEPTORS, 1
+    do
+        if (interceptor[i].active)
+        then
+            --// Update position
+            interceptor[i].position.x = interceptor[i].position.x + interceptor[i].speed.x;
+            interceptor[i].position.y = interceptor[i].position.y + interceptor[i].speed.y;
+
+            --// Distance to objective
+            local distance = math.sqrt(
+                (interceptor[i].position.x - interceptor[i].objective.x) ^ 2+
+                (interceptor[i].position.y - interceptor[i].objective.y) ^ 2
+            );
+
+            if (distance < INTERCEPTOR_SPEED)
+            then
+                --// Interceptor dissapears
+                interceptor[i].active = false;
+
+                --// Explosion
+                explosion[explosionIndex].position = interceptor[i].position;
+                explosion[explosionIndex].active = true;
+                explosion[explosionIndex].frame = 0;
+                explosionIndex = explosionIndex+1;
+                if (explosionIndex == MAX_EXPLOSIONS) then explosionIndex = 0; end
+
+                break;
+            end
+        end
+    end
 end
 
 function update_Missiles(delta)
@@ -224,11 +277,9 @@ function update_Missiles(delta)
             then 
                 missile[i].active = false;
             else
-            
-            handleBuildingCollisions();
-            handleLauncherCollisions();
-            handleExplosionCollisions();
-
+                handleLauncherCollisions(i);
+                handleBuildingCollisions(i);
+                handleExplosionCollisions(i);
             end
         end
 	end
@@ -236,114 +287,170 @@ function update_Missiles(delta)
 end
 
 function update_Explosions(delta)
-	
+    --// Explosions update
+    for i = 1, MAX_EXPLOSIONS, 1
+    do
+        if (explosion[i].active)
+        then
+            explosion[i].frame = explosion[i].frame + 1;
+
+            if (explosion[i].frame <= EXPLOSION_INCREASE_TIME) 
+            then
+                explosion[i].radiusMultiplier = explosion[i].frame / EXPLOSION_INCREASE_TIME;
+            elseif (explosion[i].frame <= EXPLOSION_TOTAL_TIME)  then
+                explosion[i].radiusMultiplier = 1 - (explosion[i].frame - EXPLOSION_INCREASE_TIME) / EXPLOSION_TOTAL_TIME;
+            else
+                explosion[i].frame = 0;
+                explosion[i].active = false;
+            end
+        end
+    end
 end
 
-function handleLauncherCollisions()
+function handleLauncherCollisions(i)
     --// CHeck collision with launchers
-    --[[
-    for (int j = 0; j < LAUNCHERS_AMOUNT; j++)
+    for j = 1,LAUNCHERS_AMOUNT, 1
     do
         if (launcher[j].active)
         then
-            if (Raylib.CheckCollisionPointRec(
-                missile[i].position, 
-                launcher[j].position.x - LAUNCHER_SIZE / 2, launcher[j].position.y - LAUNCHER_SIZE / 2,
-                LAUNCHER_SIZE, LAUNCHER_SIZE
-            }))
+            if (getMissileCollision(missile[i], launcher[j], LAUNCHER_SIZE))
             then
-                --// Missile dissapears
-                missile[i].active = false;
-
-                --// Explosion and destroy building
-                launcher[j].active = false;
-
-                explosion[explosionIndex].position = missile[i].position;
-                explosion[explosionIndex].active = true;
-                explosion[explosionIndex].frame = 0;
-                explosionIndex = explosionIndex+1;
-                if (explosionIndex == MAX_EXPLOSIONS) then explosionIndex = 0 end
-
+                handleOnCollision(missile[i], launcher[j]);
                 break;
             end
         end
     end
-    ]]
-
 end
 
-function handleBuildingCollisions()
+function handleBuildingCollisions(i)
     --// CHeck collision with buildings
-    --[[
-    for (int j = 0; j < BUILDINGS_AMOUNT; j++)
-    then
+    for j = 1,BUILDINGS_AMOUNT, 1
+    do
         if (building[j].active)
         then
-            if (Raylib.CheckCollisionPointRec(missile[i].position, Rectangle {
-                building[j].position.x - BUILDING_SIZE / 2, building[j].position.y - BUILDING_SIZE / 2,
-                    BUILDING_SIZE, BUILDING_SIZE
-            }))
+            if (getMissileCollision(missile[i], building[j], BUILDING_SIZE))
             then
-                // Missile dissapears
-                missile[i].active = false;
-
-                // Explosion and destroy building
-                building[j].active = false;
-
-                explosion[explosionIndex].position = missile[i].position;
-                explosion[explosionIndex].active = true;
-                explosion[explosionIndex].frame = 0;
-                explosionIndex++;
-                if (explosionIndex == MAX_EXPLOSIONS) then explosionIndex = 0; end
-
+                handleOnCollision(missile[i], building[j]);
                 break;
             end
         end
     end
-    ]]
 end
-function handleExplosionCollisions()
+
+
+function getMissileCollision(mMissile, mObject, mSize)
+    local x = mMissile.position.x;
+    local y = mMissile.position.y;
+    local rx = mObject.position.x - mSize/2
+    local ry = mObject.position.y - mSize/2;
+    local rw = mSize;
+    local rh = mSize;
+
+    return Raylib.CheckCollisionPointRec(x, y, rx, ry, rw, rh);
+end
+
+function handleOnCollision(mMissile, mObject)
+    --// Missile dissapears
+    mMissile.active = false;
+    --// Explosion and destroy building
+    mObject.active = false;
+
+    explosion[explosionIndex].position = {x = mMissile.position.x, y= mMissile.position.y};
+    explosion[explosionIndex].active = true;
+    explosion[explosionIndex].frame = 0;
+    explosionIndex = explosionIndex + 1;
+    if (explosionIndex == MAX_EXPLOSIONS) then 
+        explosionIndex = 1; 
+    end
+end
+
+
+function handleExplosionCollisions(i)
     --// CHeck collision with explosions
-    --[[
-    for (int j = 0; j < MAX_EXPLOSIONS; j++)
-    then
+    for j = 1, MAX_EXPLOSIONS, 1
+    do
         if (explosion[j].active)
         then
-            if (CheckCollisionPointCircle(missile[i].position, explosion[j].position, EXPLOSION_RADIUS * explosion[j].radiusMultiplier))
+            if (Raylib.CheckCollisionPointCircle(
+                missile[i].position.x, 
+                missile[i].position.y, 
+                explosion[j].position.x, 
+                explosion[j].position.y, 
+                EXPLOSION_RADIUS * explosion[j].radiusMultiplier
+            ))
             then
                 --// Missile dissapears and we earn 100 points
                 missile[i].active = false;
-                score += 100;
+                score = score + 100;
 
                 explosion[explosionIndex].position = missile[i].position;
                 explosion[explosionIndex].active = true;
                 explosion[explosionIndex].frame = 0;
-                explosionIndex++;
-                if (explosionIndex == MAX_EXPLOSIONS) explosionIndex = 0;
+                explosionIndex = explosionIndex + 1;
+                if (explosionIndex == MAX_EXPLOSIONS) then explosionIndex = 1 end
 
                 break;
             end
         end
     end
-    ]]
 end
 function UpdateOutgoingFire()
+    local launcherShooting = 0;
 
+    if (fire1) then launcherShooting = 1 end
+    if (fire2) then launcherShooting = 2 end
+    if (fire3) then launcherShooting = 3 end
+
+    --interceptorNumber = launcherShooting;
+    if (launcherShooting > 0 and launcher[launcherShooting].active)
+    then
+        local module = 0;
+        local sideX = 0;
+        local sideY = 0;
+
+        --// Activate the interceptor
+        interceptor[interceptorNumber].active = true;
+
+        --// Assign start position
+        interceptor[interceptorNumber].origin =   {x=launcher[launcherShooting].position.x, y = launcher[launcherShooting].position.y};
+        interceptor[interceptorNumber].position = {x=interceptor[interceptorNumber].origin.x, y =interceptor[interceptorNumber].origin.y};
+        interceptor[interceptorNumber].objective = {x= cursorPos.x, y = cursorPos.y};
+
+        --// Calculate speed
+        module = math.sqrt(
+                (interceptor[interceptorNumber].objective.x - interceptor[interceptorNumber].origin.x) ^ 2 +
+                (interceptor[interceptorNumber].objective.y - interceptor[interceptorNumber].origin.y) ^ 2
+        );
+
+        sideX = (interceptor[interceptorNumber].objective.x - interceptor[interceptorNumber].origin.x) * INTERCEPTOR_SPEED / module;
+        sideY = (interceptor[interceptorNumber].objective.y - interceptor[interceptorNumber].origin.y) * INTERCEPTOR_SPEED / module;
+
+        interceptor[interceptorNumber].speed = {x= sideX, y=sideY };
+
+        --// Update
+        interceptorNumber = interceptorNumber + 1;
+        if (interceptorNumber == MAX_INTERCEPTORS) then 
+            interceptorNumber = 1 
+        end;
+
+
+        fire1 = false;fire2 =false; fire3 = false;
+    end
 end
 function UpdateIncomingFire()
 
-    missileIndex = 1;
+    --missileIndex = 1;
 
     --// Launch missile
     if (framesCounter % MISSILE_LAUNCH_FRAMES == 0)
     then
-
         --// Activate the missile
         missile[missileIndex].active = true;
 
         --// Assign start position
         missile[missileIndex].origin = { x = math.random(20, Raylib.GetScreenWidth() - 20), y = -10 };
-        missile[missileIndex].position = missile[missileIndex].origin;
+        missile[missileIndex].position.x = missile[missileIndex].origin.x;
+        missile[missileIndex].position.y = missile[missileIndex].origin.y;
         missile[missileIndex].objective = {x= math.random(20, Raylib.GetScreenWidth() - 20),y = Raylib.GetScreenHeight() + 10 };
 
         --// Calculate speed
@@ -359,6 +466,17 @@ function UpdateIncomingFire()
 
         --// Update
         missileIndex = missileIndex+1;
-        if (missileIndex == MAX_MISSILES) then missileIndex = 1 end
+        if (missileIndex == MAX_MISSILES) then 
+            missileIndex = 1 
+        end
+
     end
+end
+
+
+function drawCursor()
+	cursorPos.x, cursorPos.y = Raylib.GetMousePosition();
+    local cursor_rad = 16;
+    local cursor_color = 0xff00003e;
+    Raylib.DrawCircle(cursorPos.x, cursorPos.y, cursor_rad, cursor_color)
 end
