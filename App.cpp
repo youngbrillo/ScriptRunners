@@ -39,6 +39,17 @@ App* App::Get()
 	return Instance;
 }
 
+void App::GoToScene(std::string name)
+{
+	if (Get()->sceneManager.scene_to_globalIndex.find(name) !=
+		Get()->sceneManager.scene_to_globalIndex.end())
+	{
+		int id = Get()->sceneManager.scene_to_globalIndex[name];
+		Get()->settings.lastScene_id = id;
+		Get()->settings.restart = true;
+	}
+}
+
 App::App()
 	: fData()
 	, currentScene(NULL)

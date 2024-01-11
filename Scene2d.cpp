@@ -213,13 +213,16 @@ static ECS::Node2d* CreatePlayerControllerNode()
 void Scene2d::Extend(lua_State* L)
 {
 	auto getCameraFunction = std::function<Camera2D* (void)>([]() {return &Scene2d::Instance()->camera.cam; });
+	auto isPausedFunction = std::function<bool(void)>([]() {return App::GetState() != AppState_::AppState_Play; });
 	ECS::ExtendAll(L);
 	TextureManager::Extend(L);
 	luabridge::getGlobalNamespace(L)
 		.beginNamespace("App")
-		.addFunction("GetCamera", getCameraFunction)
-		.addFunction("Quit", App::QuitApp)
-		.addFunction("RestartScene", App::RestartScene)
+			.addFunction("GetCamera", getCameraFunction)
+			.addFunction("Quit", App::QuitApp)
+			.addFunction("RestartScene", App::RestartScene)
+			.addFunction("isPaused", isPausedFunction)
+			.addFunction("GoToScene", App::GoToScene)
 		.endNamespace()
 		.beginNamespace("Scene")
 			.addFunction("CreateNode2d", Scene2d::iCreateNode2d)

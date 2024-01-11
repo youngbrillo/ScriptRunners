@@ -39,6 +39,7 @@ public:
 	static void RestartScene() { Get()->settings.restart = true; }
 	static AppState_ GetState() { return Get()->settings.state; }
 	static AppState_ SetState(AppState_ s) { return Get()->settings.state = s; }
+	static void GoToScene(std::string name);
 private:
 	App();
 	~App();
