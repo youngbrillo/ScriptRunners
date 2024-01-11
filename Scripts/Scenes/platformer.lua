@@ -33,6 +33,9 @@ end
 
 function onKeyPress(key)
 	--ScriptedKeyPress(key);
+	if(key == 258) then --//tab key
+		App.GoToScene("Missle Commander (2)")
+	end
 end
 
 

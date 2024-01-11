@@ -1,6 +1,5 @@
-
+-- hooked functions -- /////////////////////////////////////////////////////////////////////////////////////
 function onSceneStart()
-
 	InitalizeGame();
 end
 
@@ -15,19 +14,13 @@ function Draw()
 end
 
 function UIDraw() 
-
-	if(gameOver == false) then
-		DrawInProg()
-	else
-        local patext = "PRESS [ENTER] TO PLAY AGAIN"
-        Raylib.DrawText(patext, 
-        Raylib.GetScreenWidth()/2 - Raylib.MeasureText(patext, 20)/2, 
-        Raylib.GetScreenHeight()/2 - 50, 
-        20, 
-        0x5d5d5dff);
-    end
-	DrawInstructions();
+    DrawGamePlayScene();
 end
+
+function onKeyPress(key)
+    HandleMCKeyEvents(key);
+end
+-- my functions -- /////////////////////////////////////////////////////////////////////////////////////
 
 KEY_FIRE = 32   -- //KEY_SPACE
 KEY_FIRE_1 = 90 -- //KEY_Z
@@ -35,11 +28,6 @@ KEY_FIRE_2 = 88 -- //KEY_X
 KEY_FIRE_3 = 67 -- //KEY_C
 KEY_ENTER = 257;
 KEY_ENTER2 = 335;
-
-function onKeyPress(key)
-    HandleMCKeyEvents(key);
-end
-
 function HandleMCKeyEvents(key)
 
     if(not gameOver)
@@ -54,6 +42,8 @@ function HandleMCKeyEvents(key)
     else
         if key == KEY_ENTER or key == KEY_ENTER2 then
             InitalizeGame()
+        elseif(key == 258) then --//tab key
+            App.GoToScene("Platforming")
         else 
             print(key);
         end
@@ -176,6 +166,20 @@ function startPhase()
     fire3 = false;
 end
 
+function DrawGamePlayScene()
+	if(gameOver == false) then
+		DrawInProg()
+	    DrawInstructions();
+	else
+        local patext = "PRESS [ENTER] TO PLAY AGAIN"
+        Raylib.DrawText(patext, 
+        Raylib.GetScreenWidth()/2 - Raylib.MeasureText(patext, 20)/2, 
+        Raylib.GetScreenHeight()/2 - 50, 
+        20, 
+        0x5d5d5dff);
+    end
+end
+
 function DrawInProg()
 	-- body
 	
@@ -231,6 +235,12 @@ function DrawInstructions()
     --Raylib.DrawText("explosion Number ".. explosionIndex, 20, 70, 20, 0xffffffff);
 	--local vx, vy = Raylib.MeasureText(inText, 20)
 	--Raylib.DrawText(inText, Raylib.GetScreenWidth() - (vx + 10), Raylib.GetScreenHeight() - (vy + 20), 20, 0xffffffff)
+
+    if(App.isPaused()) then
+        local mtext = "PRESS [P] TO UNPAUSE"
+        local vx, vy = Raylib.MeasureText(mtext, 20)
+	    Raylib.DrawText(mtext, Raylib.GetScreenWidth()/2 - vx /2 , Raylib.GetScreenHeight()/2, 20, 0xffffffff)
+    end
 end
 
 
