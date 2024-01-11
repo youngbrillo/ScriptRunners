@@ -66,7 +66,7 @@ namespace ECS
 			.addFunction("SetTexture", &ECS::Material::SetTexture)
 			.addFunction("SetTextureByAlias", &ECS::Material::SetTexture)
 			.addFunction("SetColor", &ECS::Material::SetColorH)
-			.addFunction("SetColorVec", &ECS::Material::SetColorV)
+			.addFunction("SetColorVec", &ECS::Material::SetColorf)
 			.addData("source", &ECS::Material::source)
 			.addData("uv_scroll", &ECS::Material::uv_scroll)
 			.addProperty("shape", getShapeFunc, setShapeFunc)

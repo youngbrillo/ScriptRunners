@@ -42,11 +42,13 @@ function HandleMCKeyEvents(key)
     else
         if key == KEY_ENTER or key == KEY_ENTER2 then
             InitalizeGame()
-        elseif(key == 258) then --//tab key
-            App.GoToScene("Platforming")
         else 
             print(key);
         end
+    end
+
+    if (key == 258) then --//tab key
+        App.GoToScene("Action-Test")
     end
 end
 
