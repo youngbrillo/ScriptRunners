@@ -115,7 +115,7 @@ function UpdateHazards(dt)
 	end
 	for k, v in ipairs(GHazard_container) 
 	do
-		if(v.transform.position.y > GH_settings.destroy_depth) 
+		if(v.transform.position.y > GH_settings.destroy_depth or CheckHazardCollision(v)) 
 		then
 			--print("->", k, v, GH_settings.destroy_depth, v.transform.position.y)
 			v.alive = false;
@@ -157,3 +157,35 @@ function GenerateHazards(dt)
 	end
 end
 
+function CheckHazardCollision(hazard)
+	local val = false;
+
+	for k, v in ipairs(GBuildings) do
+		local r1 = 
+		{
+			 x = hazard.transform.position.x - hazard.transform.size.x / 2
+			,y = hazard.transform.position.y - hazard.transform.size.y / 2
+			,w = hazard.transform.size.x
+			,h = hazard.transform.size.x
+		};
+		local r2 = 
+		{
+			 x = v.transform.position.x - v.transform.size.x / 2
+			,y = v.transform.position.y - v.transform.size.y / 2
+			,w = v.transform.size.x
+			,h = v.transform.size.x
+		};
+		val = Raylib.CheckCollisionRecs(
+			r1.x, r1.y, r1.w, r1.h,
+			r2.x, r2.y, r2.w, r2.h
+		)
+		if val then 
+			v.alive = false;
+			table.remove(GBuildings, k);
+
+			break;
+		end;
+
+	end
+	return val;
+end
