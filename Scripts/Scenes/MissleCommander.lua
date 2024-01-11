@@ -227,6 +227,8 @@ end
 
 function DrawInstructions()
     Raylib.DrawText("SCORE ".. score, 20, 20, 40, 0xC87DC8FF);
+    --Raylib.DrawText("interceptor Number ".. interceptorNumber, 20, 50, 20, 0xffffffff);
+    --Raylib.DrawText("explosion Number ".. explosionIndex, 20, 70, 20, 0xffffffff);
 	--local vx, vy = Raylib.MeasureText(inText, 20)
 	--Raylib.DrawText(inText, Raylib.GetScreenWidth() - (vx + 10), Raylib.GetScreenHeight() - (vy + 20), 20, 0xffffffff)
 end
@@ -282,11 +284,16 @@ function update_Interceptors(delta)
                 interceptor[i].active = false;
 
                 --// Explosion
-                explosion[explosionIndex].position = interceptor[i].position;
+                explosion[explosionIndex].position =  {
+                    x = interceptor[i]
+                        .position.x, 
+                    y = interceptor[i]
+                        .position.y
+                };
                 explosion[explosionIndex].active = true;
                 explosion[explosionIndex].frame = 0;
                 explosionIndex = explosionIndex+1;
-                if (explosionIndex == MAX_EXPLOSIONS) then explosionIndex = 0; end
+                if (explosionIndex == MAX_EXPLOSIONS) then explosionIndex = 1; end
 
                 break;
             end
