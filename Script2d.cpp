@@ -24,7 +24,11 @@ ECS::Script2d::Script2d(const char* script_path)
 
 ECS::Script2d::~Script2d()
 {
-	this->End();
+	if (L != NULL)
+	{
+		lua_close(L);
+	}
+	L = NULL;
 }
 
 void ECS::Script2d::Begin()
@@ -39,8 +43,6 @@ void ECS::Script2d::End()
 {
 	if (!enabled) return;
 	ECS::CallLuaFunction(L, endFunc);
-	lua_close(L);
-	L = NULL;
 }
 
 void ECS::Script2d::Update(const float& delta)
