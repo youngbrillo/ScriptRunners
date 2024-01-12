@@ -18,6 +18,7 @@ public:
 	virtual void CanvasDraw() override;
 	virtual void innerdebug() override;
 	void Populate(unsigned int textureId, std::string textureName, std::string path);
+	Animation::Resource GenerateResource(unsigned int texureId);
 
 	Animation::StateMachine& GetAnimator(unsigned int texture_id);
 	static std::shared_ptr<AnimationStateManager> Instance();

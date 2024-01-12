@@ -49,6 +49,9 @@
     <Filter Include="Scripts\components">
       <UniqueIdentifier>{94220ffa-b1e3-42ca-a2c9-fa2350da39ce}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{de08308f-4e46-4f24-b6fd-84cf8552af2f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -249,14 +252,14 @@
     <ClCompile Include="RayExtend.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Script2d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AnimationStateManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
     <ClCompile Include="AnimationHelper.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Script2d.cpp">
+      <Filter>Source Files\Components\2d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -443,6 +446,9 @@
     <ClInclude Include="AnimationHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AnimationComponents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\Manager\TextureManager.lua">
@@ -465,6 +471,12 @@
     </None>
     <None Include="Scripts\Scenes\Action.lua">
       <Filter>Scripts\Scenes</Filter>
+    </None>
+    <None Include="Assets\Textures\dummy_animations.json">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\Textures\dummy.json">
+      <Filter>Assets</Filter>
     </None>
   </ItemGroup>
 </Project>

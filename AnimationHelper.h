@@ -4,13 +4,11 @@
 #include <string>
 #include "RenderPipeline.h"
 #include "JsonHandler.h"
+#include "AnimationComponents.h"
+
+
 namespace Animation
 {
-	struct FrameData
-	{
-		Rectangle frame = Rectangle{ 0, 0, 64, 64 };
-		float duration = 0.15f;
-	};
 	enum Event { NUMBER = 0, STRING, BOOL };
 	enum Operator { EQUAL = 0, GREATER_THAN, LESS_THAN, GREATER_THAN_EQUAL_TO, LESS_THAN_EQUAL_TO, NOTEQUAL };
 	struct Value
@@ -122,7 +120,7 @@ namespace Animation
 	struct StateMachine
 	{
 		int defaultState = 0;
-		std::map<int, std::vector<Animation::FrameData>> states = {};
+		std::map<int, std::vector<FrameData>> states = {};
 		std::map<int, std::vector<Animation::Transition>> stateTransitions = {};
 		std::map<std::string, int> stateLookup = {};
 		std::map< int, std::string> reverse_stateLookup = {};
@@ -133,13 +131,13 @@ namespace Animation
 		std::string transition_file_path;
 		jsonObjects transition_data;
 
+		void Populate(unsigned int texture, std::string path);
+
 		std::vector<Animation::Condition> GetKeys() const { return keys; }
-
 		std::vector<Animation::Transition> GetTransitions(int state) const;
-
 		int GetState(std::string n) const;
 		std::string GetState(int i) const;
-		std::vector<Animation::FrameData> GetFrame(int frame_index) const;
+		std::vector<FrameData> GetFrame(int frame_index) const;
 		const int getStateIndex(std::string key);
 		void Inspect(const char* title);
 	};
@@ -157,10 +155,12 @@ namespace Animation
 		void SetFields(std::string key, std::string v);
 		const int getStateIndex(std::string key);
 
-		std::vector<Animation::FrameData> GetFrameCurrent();
-		std::vector<Animation::FrameData> GetFrame(int frame_index);
+		std::vector<FrameData> GetFrameCurrent();
+		std::vector<FrameData> GetFrame(int frame_index);
 
 		void Inspect(const char* title, const Animation::StateMachine& map);
 	};
+
+	Animation::Operator ConvertOpperatorString(const char* opp_string);
 }
 

@@ -8,6 +8,7 @@
 #include <lua.hpp>
 #include <vector>
 #include <memory>
+#include "AnimationComponents.h"
 namespace textureDebug
 {
 	struct Sprite;
@@ -31,13 +32,6 @@ namespace textureDebug
 		Rectangle _frame = { 0, 0, 16, 16 };
 		float _frame_zoom = 1.0f;
 
-	};
-
-	struct FrameData
-	{
-		Rectangle frame = Rectangle{ 0, 0, 64, 64 };
-		float duration = 0.100f; //ms
-		std::string name = "no name";
 	};
 
 	struct Sprite

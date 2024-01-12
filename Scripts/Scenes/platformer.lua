@@ -75,6 +75,9 @@ function GenEnvironment2()
 		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
 	end
 
+
+
+	TextureManager.Add("Assets/Textures/dummy", "dummy")
 	mPlayer = Scene.CreatePlayerController();
 
 

@@ -204,6 +204,7 @@
     <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnimationComponents.h" />
     <ClInclude Include="AnimationHelper.h" />
     <ClInclude Include="AnimationStateManager.h" />
     <ClInclude Include="App.h" />
@@ -267,6 +268,8 @@
     <ClInclude Include="TextureManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Textures\dummy.json" />
+    <None Include="Assets\Textures\dummy_animations.json" />
     <None Include="Scripts\Scenes\Action.lua" />
     <None Include="Scripts\Scenes\BreakoutScene.lua" />
     <None Include="Scripts\Scenes\demoScene.lua" />

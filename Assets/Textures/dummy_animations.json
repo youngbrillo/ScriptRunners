@@ -109,6 +109,6 @@
 		{"name": "fall_land", "type":  "boolean", "default": false},
 		{"name": "dodging", "type":  "boolean", "default": false},
 		{"name": "climbing", "type":  "boolean", "default": false}
-
-	]
+	],
+	"defaultState": "idle"
 }

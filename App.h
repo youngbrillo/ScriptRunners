@@ -9,7 +9,7 @@
 #include <string>
 
 
-struct FrameData
+struct FrameSettings
 {
 	float currentFrame = 0.0f;
 	float deltaTime = 0.0f;
@@ -55,7 +55,7 @@ private:
 	void DebugComponents();
 	static App* Instance;
 
-	FrameData fData;
+	FrameSettings fData;
 	Inspector inspector;
 	AppSettings settings;
 	SceneManager sceneManager;

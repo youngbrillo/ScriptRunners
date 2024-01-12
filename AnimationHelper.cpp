@@ -1,10 +1,92 @@
 #include "AnimationHelper.h"
 #include "AnimationStateManager.h"
 #include <imgui_string_wrap_extension.h>
+#include "TextureManager.h"
 
 //Animation State machine //////////////////////////////////////////////////////////////////////////////////////////////////
 
+void Animation::StateMachine::Populate(unsigned int texture, std::string path)
+{
+	auto& sprite = TextureManager::Instance()->getSprite(texture);
 
+	int i = 0;
+	for (std::pair<std::string, std::vector<int>>&& pair : sprite.animations)
+	{
+		this->stateLookup[pair.first] = i;
+		this->reverse_stateLookup[i] = pair.first;
+		this->states[i] = sprite.getAnimationFrames(pair.first);
+		i++;
+	}
+
+	transition_file_path = path + "_animations.json";
+	JSONParse::ParseJSONFile(transition_data, transition_file_path.c_str());
+
+	auto& kChild = transition_data.find("keys");
+
+	int keyIndex = 0;
+	for (auto& child : kChild.children)
+	{
+		std::string type = "", key = "";
+		child.GetString("name", key).GetString("type", type);
+		Animation::Event e;
+		Animation::Value cond;
+		if (strcmp(type.c_str(), "number") == 0)
+		{
+			e = Animation::Event::NUMBER;
+			child.GetNumber("default", cond.numericValue);
+		}
+		else if (strcmp(type.c_str(), "boolean") == 0)
+		{
+			e = Animation::Event::BOOL;
+			child.Getboolean("default", cond.boolvalue);
+		}
+		else if (strcmp(type.c_str(), "string") == 0)
+		{
+			e = Animation::Event::STRING;
+			child.GetString("default", cond.stringValue);
+		}
+
+		Animation::Condition kp = 
+			Animation::Condition{ e, Animation::Operator::EQUAL, key, cond };
+
+		this->keys.push_back(kp);
+		this->keyLookup[key] = keyIndex++;
+	}
+	//2. get the actual transition data from the 'transitions' field
+	auto& tChild = transition_data.find("transitions");
+	std::vector<Animation::Transition> allTransitions;
+
+	for (auto& child : tChild.children)
+	{
+		Animation::Transition nTran;
+		std::string from, to, key, opprand;
+		Animation::Condition cond; //only one condition for now
+		child.GetString("from", from).GetString("to", to).GetString("key", key).GetString("operator", opprand)
+			.GetString("value", cond.target.stringValue)
+			.GetNumber("value", cond.target.numericValue)
+			.Getboolean("value", cond.target.boolvalue);
+		cond.key = key;
+		cond.type = this->keys[keyLookup[key]].type; //type should match the key
+		cond.mOperator = Animation::ConvertOpperatorString(opprand.c_str());
+		//add condition to new transitions' condition list
+		nTran.conditions.push_back(cond);
+		nTran.origin = this->stateLookup[from];
+		nTran.destination = this->stateLookup[to];
+		nTran.name = child.name;
+		//add new transition
+		allTransitions.push_back(nTran);
+	}
+	//3 take the transitions we have generated, and dole them out to the AnimationResource's stateTrnasitions map
+	for (auto& transition : allTransitions)
+	{
+		stateTransitions[transition.origin].push_back(transition);
+	}
+
+	std::string defaultStateName = "";
+	transition_data.GetString("defaultState", defaultStateName);
+	if(stateLookup.find(defaultStateName) != stateLookup.end())
+		this->defaultState = stateLookup[defaultStateName];
+}
 		//GETTERS ////////////////////////////////////////////////////////////////////////////
 	   //////////////////////////////////////////////////////////////////////////////////////
 std::vector<Animation::Transition> Animation::StateMachine::GetTransitions(int state) const
@@ -35,9 +117,9 @@ std::string Animation::StateMachine::GetState(int i) const
 	}
 	return r;
 }
-std::vector<Animation::FrameData> Animation::StateMachine::GetFrame(int frame_index) const
+std::vector<FrameData> Animation::StateMachine::GetFrame(int frame_index) const
 {
-	return std::vector<Animation::FrameData>();
+	return std::vector<FrameData>();
 }
 const int Animation::StateMachine::getStateIndex(std::string key)
 {
@@ -112,12 +194,12 @@ const int Animation::Resource::getStateIndex(std::string key)
 	return -1;
 }
 
-std::vector<Animation::FrameData> Animation::Resource::GetFrameCurrent()
+std::vector<FrameData> Animation::Resource::GetFrameCurrent()
 {
 	return this->GetFrame(this->currentState);
 }
 
-std::vector<Animation::FrameData> Animation::Resource::GetFrame(int frame_index)
+std::vector<FrameData> Animation::Resource::GetFrame(int frame_index)
 {
 	auto& a = AnimationStateManager::Instance()->GetAnimator(this->texId);
 	return a.GetFrame(frame_index);
@@ -319,4 +401,19 @@ void Animation::Resource::Inspect(const char* title, const Animation::StateMachi
 		}
 		ImGui::TreePop();
 	}
+}
+#define _strcmp(a, b) strcmp(a, b ) == 0
+
+Animation::Operator Animation::ConvertOpperatorString(const char* opp_string)
+{
+	Animation::Operator k = Animation::Operator::EQUAL;
+
+	if (_strcmp(opp_string, "==")) k = Animation::Operator::EQUAL;
+	else if (_strcmp(opp_string, "!=")) k = Animation::Operator::NOTEQUAL;
+	else if (_strcmp(opp_string, ">")) k = Animation::Operator::GREATER_THAN;
+	else if (_strcmp(opp_string, ">=")) k = Animation::Operator::GREATER_THAN_EQUAL_TO;
+	else if (_strcmp(opp_string, "<")) k = Animation::Operator::LESS_THAN;
+	else if (_strcmp(opp_string, "<=")) k = Animation::Operator::LESS_THAN_EQUAL_TO;
+
+	return k;
 }

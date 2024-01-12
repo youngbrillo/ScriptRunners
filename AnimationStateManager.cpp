@@ -61,7 +61,21 @@ void AnimationStateManager::innerdebug()
 
 void AnimationStateManager::Populate(unsigned int textureId, std::string textureName, std::string path)
 {
+	this->animatorLookup[textureName] = textureId;
+	this->reverse_animatorLookup[textureId] = textureName;
+	this->stateMachines[textureId].Populate(textureId, path);
+	aliasDB.insert(textureName);
 
+	this->resources[textureId] = this->GenerateResource(textureId);
+}
+
+Animation::Resource AnimationStateManager::GenerateResource(unsigned int texureId)
+{
+	Animation::Resource k;
+	k.keys = this->stateMachines[texureId].keys;
+	k.texId = texureId; 
+	k.currentState = this->stateMachines[texureId].defaultState;
+	return k;
 }
 
 Animation::StateMachine& AnimationStateManager::GetAnimator(unsigned int texture_id)

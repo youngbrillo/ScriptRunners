@@ -1,7 +1,7 @@
 #include "TextureManager.h"
 #include "GlobalManager.h"
 #include <LuaBridge/LuaBridge.h>
-
+#include "AnimationStateManager.h"
 
 TextureManager::TextureManager()
 	: Manager(
@@ -65,7 +65,6 @@ void TextureManager::clear()
 	lua_close(L);
 	L = NULL;
 }
-
 Texture2D TextureManager::AddTexturePath(const char* path, const char* alias)
 {
 	if (textures.find(alias) != textures.end())
@@ -90,6 +89,8 @@ Texture2D TextureManager::AddTexturePath(const char* path, const char* alias)
 	textures.emplace(alias, texture);
 
 	this->AddSprite(texture.t.id, path);
+	
+	AnimationStateManager::Instance()->Populate(texture.t.id, alias, path);
 	return texture.t;
 }
 
@@ -383,7 +384,7 @@ void TextureManager::populate_spriteSheet(textureDebug::Sprite& sprite, const ch
 			.GetInteger("w", newFrame.width)
 			.GetInteger("h", newFrame.height);
 
-		textureDebug::FrameData newFrameData;
+		FrameData newFrameData;
 		newFrameData.frame = newFrame;
 
 		frameObj.GetInteger("duration", newFrameData.duration);

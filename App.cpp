@@ -82,7 +82,7 @@ void App::Initialize()
 	GlobalManager::Begin();
 	startScene(settings.lastScene_id);
 }
-void FrameData::Advance()
+void FrameSettings::Advance()
 {
 	this->currentFrame = (float)glfwGetTime();
 	this->deltaTime = currentFrame - lastFrame;
