@@ -1,0 +1,114 @@
+{
+	"states": [
+   { "name": "idle", "from": 0, "to": 9, "direction": "forward" },
+   { "name": "walk", "from": 10, "to": 17, "direction": "forward" },
+   { "name": "run", "from": 18, "to": 25, "direction": "forward" },
+   { "name": "jump-up", "from": 26, "to": 26, "direction": "forward" },
+   { "name": "jump-apex", "from": 27, "to": 27, "direction": "forward" },
+   { "name": "fall", "from": 28, "to": 28, "direction": "forward" },
+   { "name": "fall-land", "from": 29, "to": 37, "direction": "forward" },
+   { "name": "crouch-idle", "from": 38, "to": 47, "direction": "forward" },
+   { "name": "crouch-walk", "from": 48, "to": 57, "direction": "forward" },
+   { "name": "hurt", "from": 58, "to": 61, "direction": "forward" },
+   { "name": "punch", "from": 62, "to": 69, "direction": "forward" },
+   { "name": "K.O.", "from": 70, "to": 79, "direction": "forward" },
+   { "name": "wall_slide_no_velocity", "from": 80, "to": 80, "direction": "forward" },
+   { "name": "wall_slide_med", "from": 81, "to": 81, "direction": "forward" },
+   { "name": "wall_slide_fast", "from": 82, "to": 82, "direction": "forward" },
+   { "name": "wall_land", "from": 83, "to": 88, "direction": "forward" },
+   { "name": "air-spin", "from": 89, "to": 94, "direction": "forward" },
+   { "name": "ledge-climb", "from": 95, "to": 99, "direction": "forward" },
+   { "name": "roll", "from": 100, "to": 106, "direction": "forward" },
+   { "name": "pull", "from": 107, "to": 112, "direction": "forward" },
+   { "name": "push", "from": 113, "to": 122, "direction": "forward" },
+   { "name": "push-pull-idle", "from": 123, "to": 130, "direction": "forward" },
+   { "name": "sword-idle", "from": 131, "to": 140, "direction": "forward" },
+   { "name": "sword-run", "from": 141, "to": 148, "direction": "forward" },
+   { "name": "sword-slash", "from": 149, "to": 154, "direction": "forward" },
+   { "name": "side-climb", "from": 155, "to": 158, "direction": "forward" },
+   { "name": "jab", "from": 159, "to": 168, "direction": "forward" }
+	],
+	"transitions": [
+		{"from":  "idle", "to": "walk", "key":"speed", "operator": ">", "value": 0.0},
+		{"from":  "walk", "to": "idle", "key":"speed", "operator": "<", "value": 0.49},
+    
+		{"from":  "walk", "to": "run", "key":"speed", "operator": ">=", "value": 1.0},
+		{"from":  "run", "to": "walk", "key":"speed", "operator": "<", "value": 1.0},
+    
+		{"from":  "idle", "to": "jump-up", "key":"grounded", "operator": "==", "value": false},
+		{"from":  "walk", "to": "jump-up", "key":"grounded", "operator": "==", "value": false},
+		{"from":  "run", "to": "jump-up", "key":"grounded", "operator": "==", "value": false},
+		{"from": "jump-up", "to":  "idle", "key":"grounded", "operator": "==", "value": true},
+    
+		{"from":  "idle", "to": "K.O.", "key":"alive", "operator": "==", "value": false},
+		{"from":  "walk", "to": "K.O.", "key":"alive", "operator": "==", "value": false},
+		{"from":  "run",  "to": "K.O.", "key":"alive", "operator": "==", "value": false},
+		{"from":  "run",  "to": "crouch-walk", "key":"crouch", "operator": "==", "value": true},
+    
+		{"from":  "idle", "to": "hurt", "key":"hurt", "operator": "==", "value": true},
+		{"from":  "hurt", "to": "idle", "key":"hurt", "operator": "==", "value": false},
+    
+		{"from":  "idle", "to": "crouch-idle", "key":"crouch", "operator": "==", "value": true},
+		{"from":  "crouch-idle", "to": "idle", "key":"crouch", "operator": "==", "value": false},
+		{"from":  "crouch-idle", "to": "crouch-walk", "key":"speed", "operator": ">", "value": 0.0},
+		{"from":  "crouch-walk", "to": "crouch-idle", "key":"speed", "operator": "<", "value": 0.1},
+		{"from":  "crouch-walk", "to": "walk", "key":"crouch", "operator": "==", "value": false},
+		{"from":  "walk", "to": "crouch-walk", "key":"crouch", "operator": "==", "value": true},
+    
+		{"from":  "idle", "to": "punch", "key":"punch", "operator": "==", "value": true},
+		{"from":  "walk", "to": "punch", "key":"punch", "operator": "==", "value": true},
+		{"from":  "run", "to": "punch", "key":"punch", "operator": "==", "value": true},
+		{"from":  "punch", "to": "idle", "key":"punch", "operator": "==", "value": false},
+		
+		{"from":  "idle", "to": "jab", "key":"jab", "operator": "==", "value": true},
+		{"from":  "walk", "to": "jab", "key":"jab", "operator": "==", "value": true},
+		{"from":  "run", "to": "jab",  "key":"jab", "operator": "==", "value": true},
+		{"from":  "jab", "to": "idle", "key":"jab", "operator": "==", "value": false},
+
+		{"from":  "idle", "to": "sword-idle", "key":"armed", "operator": "==", "value": true},
+		{"from":  "sword-idle", "to": "idle", "key":"armed", "operator": "==", "value": false},
+		{"from":  "walk", "to": "sword-run", "key":"armed", "operator": "==", "value": true},
+		{"from":  "run", "to": "sword-run",  "key":"armed", "operator": "==", "value": true},
+		{"from":  "sword-run", "to": "run",  "key":"armed", "operator": "==", "value": false},
+		
+		{"from":  "sword-idle", "to": "sword-run", "key":"speed", "operator": ">", "value": 0.0},
+		{"from":  "sword-run", "to": "sword-idle", "key":"speed", "operator": "<", "value": 0.49},
+		{"from":  "sword-idle", "to": "sword-slash", "key":"punch", "operator": "==", "value": true},
+		{"from":  "sword-run", "to": "sword-slash", "key":"punch", "operator": "==", "value": true},
+		{"from":  "sword-slash", "to": "sword-idle", "key":"punch", "operator": "==", "value": false},
+
+		{"from": "jump-up", "to":  "air-spin", "key":"doublejump", "operator": "==", "value": true},
+		{"from": "fall", "to":  "air-spin", "key":"doublejump", "operator": "==", "value": true},
+		{"from": "air-spin", "to":  "fall", "key":"doublejump", "operator": "==", "value": false},
+		{"from": "fall", "to":  "fall-land", "key":"fall_land", "operator": "==", "value": true},
+		{"from": "fall-land", "to":  "idle", "key":"fall_land", "operator": "==", "value": false},
+
+		{"from":  "crouch-walk","to": "roll", "key":"dodging", "operator": "==", "value": true},
+		{"from":  "sword-run",	"to": "roll", "key":"dodging", "operator": "==", "value": true},
+		{"from":  "run",				"to": "roll", "key":"dodging", "operator": "==", "value": true},
+		
+		{"from": "roll", "to": "run",				 "key":"dodging", "operator": "==", "value": false},
+		{"from": "roll", "to": "air-spin",		"key":"grounded", "operator": "==", "value": false},
+
+		{"from": "jump-up", "to":  "side-climb", "key":"climbing", "operator": "==", "value": true},
+		{"from": "fall", "to":  "wall_land", "key":"climbing", "operator": "==", "value": true},
+		{"from": "wall_land", "to":  "fall", "key":"climbing", "operator": "==", "value": false},
+		{"from": "side-climb", "to":  "fall", "key":"climbing", "operator": "==", "value": false}
+
+	],
+	"keys": [
+		{"name": "speed", "type":  "number", "default": 0.0},
+		{"name": "grounded", "type":  "boolean", "default": true},
+		{"name": "punch", "type":  "boolean", "default": false},
+		{"name": "alive", "type":  "boolean", "default": true},
+		{"name": "hurt", "type":  "boolean", "default": false},
+		{"name": "crouch", "type":  "boolean", "default": false},
+		{"name": "jab", "type":  "boolean", "default": false},
+		{"name": "armed", "type":  "boolean", "default": false},
+		{"name": "doublejump", "type":  "boolean", "default": false},
+		{"name": "fall_land", "type":  "boolean", "default": false},
+		{"name": "dodging", "type":  "boolean", "default": false},
+		{"name": "climbing", "type":  "boolean", "default": false}
+
+	]
+}

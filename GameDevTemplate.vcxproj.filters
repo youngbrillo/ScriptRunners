@@ -252,6 +252,12 @@
     <ClCompile Include="Script2d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AnimationStateManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -429,6 +435,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Script2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationStateManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
