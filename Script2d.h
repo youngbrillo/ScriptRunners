@@ -22,7 +22,6 @@ namespace ECS
 		void configureScript(const char* path);
 	public:
 		lua_State* L;
-		const char* path;
 		bool enabled;
 		bool tryUpdate, tryDraw, tryUIDraw, tryPoll;
 		const char* startFunc, * endFunc, * updateFunc, * drawFunc, * uiDrawFunc, * pollFunc;

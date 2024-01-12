@@ -7,7 +7,6 @@
 
 Scene2d::Scene2d(const char* path)
 	: scriptPath(path)
-	, L(NULL)
 	, tryUpdate(true)
 	, tryDraw(true)
 	, tryUIDraw(true)
@@ -16,6 +15,7 @@ Scene2d::Scene2d(const char* path)
 	, b2drawer()
 	, boxMouse(NULL)
 	, Gravity(0.0f, 10.0f)
+	, script()
 {
 	world = new b2World(Gravity);
 	world->SetDebugDraw(&b2drawer);
@@ -25,10 +25,7 @@ Scene2d::Scene2d(const char* path)
 
 Scene2d::~Scene2d()
 {
-	if (L != NULL) {
-		lua_close(L);
-	}
-	L = NULL;
+	script.End();
 	Nodes.clear();
 
 
@@ -56,18 +53,18 @@ void Scene2d::FixedUpdate(const float& timeStep)
 	boxMouse->FixedUpdate(timeStep, world);
 
 	for (auto&& node : Nodes) node->FixedUpdate(timeStep);
-	if (tryUpdate) tryUpdate = ECS::CallLuaFunctionf(L, "Update", timeStep);
+	script.Update(timeStep);
 }
 
 void Scene2d::Draw()
 {
 	BeginMode2D(camera.cam);
 		for (auto&& node : Nodes) node->Draw();
-		if (tryDraw) tryDraw = ECS::CallLuaFunction(L, "Draw");
+		script.Draw();
 		world->DebugDraw();
 	EndMode2D();
 		for (auto&& node : Nodes) node->UIDraw();
-		if (tryUIDraw) tryUIDraw = ECS::CallLuaFunction(L, "UIDraw");
+		script.UIDraw();
 
 
 }
@@ -78,6 +75,7 @@ void Scene2d::Debug()
 	camera.Debug();
 	boxMouse->Debug(world);
 	b2drawer.Debug();
+	script.Inspect();
 	if (ImGui::TreeNode("Nodes"))
 	{
 		for (auto&& node : Nodes) node->Inspect();
@@ -145,8 +143,7 @@ void Scene2d::PollEvents()
 	boxMouse->HandleInput(camera.cam, world);
 
 	for (auto&& node : Nodes) node->Poll();
-	int key_pressed = GetKeyPressed();
-	if (tryPoll && key_pressed != KEY_NULL) tryPoll = ECS::CallLuaFunctioni(L, "onKeyPress", key_pressed);
+	script.Poll();
 }
 
 Scene2d* Scene2d::Instance()
@@ -179,24 +176,11 @@ void Scene2d::removeDeadNodes()
 
 void Scene2d::InitScript(const char* path)
 {
-	if (L != NULL) {
-		ECS::CallLuaFunction(L, "onSceneEnd");
-		lua_close(L);
-		L = NULL;
-	}
-
-	L = luaL_newstate();
-	luaL_openlibs(L);
-	int rv = luaL_dofile(L, path);
-	if (rv == LUA_OK)
+	script.configureScript(path);
+	if(script.enabled)
 	{
-		this->Extend(L);
-		ECS::CallLuaFunction(L, "onSceneStart");
-	}
-	else {
-		printf("LuaScripted Scene found an Error on load:\n\t%s\n", lua_tostring(L, -1));
-		lua_close(L);
-		L = NULL;
+		this->Extend(script.L);
+		script.Begin();
 	}
 }
 #include "PlatformerController.h"

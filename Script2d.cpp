@@ -2,18 +2,16 @@
 #include "Components2d.h"
 
 ECS::Script2d::Script2d()
-	: path("")
-	, startFunc("") , endFunc("")
-	, updateFunc(""), drawFunc("") , uiDrawFunc("") , pollFunc("")
+	: startFunc("onSceneStart") , endFunc("onSceneEnd")
+	, updateFunc("Update"), drawFunc("Draw") , uiDrawFunc("UIDraw") , pollFunc("onKeyPress")
 	, L(NULL)
 	, enabled(false)
 	, tryUpdate(false), tryDraw(false), tryUIDraw(false), tryPoll(false)
 {
 }
 
-ECS::Script2d::Script2d(const char* script_path) 
-	: path(script_path)
-	, startFunc("onSceneStart"), endFunc("onSceneEnd")
+ECS::Script2d::Script2d(const char* path) 
+	: startFunc("onSceneStart"), endFunc("onSceneEnd")
 	, updateFunc("Update"), drawFunc("Draw"), uiDrawFunc("UIDraw"), pollFunc("onKeyPress")
 	, L(NULL)
 	, enabled(false)
@@ -96,4 +94,5 @@ void ECS::Script2d::configureScript(const char* p_for_path)
 		lua_close(L);
 		L = NULL;
 	}
+	tryUpdate = tryDraw = tryUIDraw = tryPoll = true;
 }

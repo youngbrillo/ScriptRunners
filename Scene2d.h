@@ -7,6 +7,7 @@
 #include <memory>
 #include "BoxMouse.h"
 #include <box2d/box2d.h>
+#include "Script2d.h"
 
 class Scene2d : public Scene
 {
@@ -27,7 +28,6 @@ public:
     
 public:
     const char* scriptPath;
-    lua_State* L;
     ECS::Camera2d camera;
     std::vector<std::shared_ptr<ECS::Node2d>> Nodes;
     int NodeA = -1, NodeB = -1;
@@ -37,7 +37,7 @@ public:
     ECS::Box2dDraw b2drawer;
     Box2dMouse* boxMouse;
     b2Vec2 Gravity;
-
+    ECS::Script2d script;
 protected:
     ECS::Node2d* CreateNode2d(const char* name);
     static ECS::Node2d* iCreateNode2d(const char* name);
