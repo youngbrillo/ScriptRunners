@@ -27,11 +27,20 @@ void ECS::Sprite2d::Update(const float& deltaTime)
 {
 	if (!this->enabled) return;
 	Node2d::Update(deltaTime);
-	timer += deltaTime;
+	this->updateSprite(deltaTime);
+
+
+}
+void ECS::Sprite2d::updateSprite(const float& dt)
+{
+	if (frameDone && frameDoOnce) return;
+
+	timer += dt;
 	if (timer >= this->frames[frame_index].duration)
 	{
 		timer = 0;
 		frame_index++;
+		frameDone = frame_index == frames.size() - 1;
 		if (frame_index >= frames.size())
 		{
 			frame_index = 0;
@@ -39,9 +48,7 @@ void ECS::Sprite2d::Update(const float& deltaTime)
 		this->material.source = this->frames[frame_index].frame;
 
 	}
-
 }
-
 void ECS::Sprite2d::Draw()
 {
 	Node2d::Draw();
@@ -72,4 +79,43 @@ void ECS::Sprite2d::Extend(lua_State* L)
 				.addData("SetTexture", &ECS::Node2d::direction)
 			.endClass()
 		.endNamespace();
+}
+
+bool ECS::Sprite2d::SetState(const char* s, bool v)
+{
+	if (animator.SetFieldb(s, v) && animator.lastState != animator.currentState)
+	{
+		animator.lastState = animator.currentState;
+		this->frames = animator.GetFrameCurrent();
+		this->frame_index = 0;
+		this->material.source = this->frames[frame_index].frame;
+		return true;
+	}
+	return false;
+}
+
+bool ECS::Sprite2d::SetState(const char* s, float v)
+{
+	if (animator.SetFieldf(s, v) && animator.lastState != animator.currentState)
+	{
+		animator.lastState = animator.currentState;
+		this->frames = animator.GetFrameCurrent();
+		this->frame_index = 0;
+		this->material.source = this->frames[frame_index].frame;
+		return true;
+	}
+	return false;
+}
+
+bool ECS::Sprite2d::SetState(const char* s,  std::string v)
+{
+	if (animator.SetFields(s, v) && animator.lastState != animator.currentState)
+	{
+		animator.lastState = animator.currentState;
+		this->frames = animator.GetFrameCurrent();
+		this->frame_index = 0;
+		this->material.source = this->frames[frame_index].frame;
+		return true;
+	}
+	return false;
 }
