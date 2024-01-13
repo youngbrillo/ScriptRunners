@@ -184,7 +184,7 @@ void Scene2d::InitScript(const char* path)
 	}
 }
 #include "PlatformerController.h"
-
+#include "Sprite2d.h"
 
 static ECS::Node2d* CreatePlayerControllerNode()
 {
@@ -193,6 +193,11 @@ static ECS::Node2d* CreatePlayerControllerNode()
 }
 
 
+static ECS::Node2d* CreateSprite2dNode(const char* name, const char* alias)
+{
+	Scene2d::Instance()->Nodes.emplace_back(std::make_shared<ECS::Sprite2d>(name, alias));
+	return Scene2d::Instance()->Nodes[Scene2d::Instance()->Nodes.size() - 1].get();
+}
 
 void Scene2d::Extend(lua_State* L)
 {
@@ -211,6 +216,7 @@ void Scene2d::Extend(lua_State* L)
 		.beginNamespace("Scene")
 			.addFunction("CreateNode2d", Scene2d::iCreateNode2d)
 			.addFunction("CreatePlayerController", CreatePlayerControllerNode)
+			.addFunction("CreateSprite2d", CreateSprite2dNode)
 			.addFunction("GetWorld", GetWorld)
 		.endNamespace();
 }

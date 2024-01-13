@@ -119,11 +119,13 @@ std::string Animation::StateMachine::GetState(int i) const
 }
 std::vector<FrameData> Animation::StateMachine::GetFrame(int frame_index) const
 {
+	return states.at(frame_index);
+
 	return std::vector<FrameData>();
 }
 const int Animation::StateMachine::getStateIndex(std::string key)
 {
-	return 0;
+	return stateLookup.at(key);
 }
 //RESOURCE //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -151,37 +153,44 @@ void Animation::Resource::SetState(int new_state)
 	}
 }
 
-void Animation::Resource::SetFieldf(std::string key, float v)
+bool Animation::Resource::SetFieldf(std::string key, float v)
 {
+	bool res = false;
 	auto& a = AnimationStateManager::Instance()->GetAnimator(this->texId);
 	auto key_pair = a.keyLookup.find(key);
 	if (key_pair != a.keyLookup.end())
 	{
 		this->keys[key_pair->second].target.numericValue = v;
-		this->onStateModified(a.stateTransitions[this->currentState]);
+		res = this->onStateModified(a.stateTransitions[this->currentState]);
 	}
+
+	return res;
 }
 
-void Animation::Resource::SetFieldb(std::string key, bool v)
+bool Animation::Resource::SetFieldb(std::string key, bool v)
 {
+	bool res = false;
 	auto& a = AnimationStateManager::Instance()->GetAnimator(this->texId);
 	auto key_pair = a.keyLookup.find(key);
 	if (key_pair != a.keyLookup.end())
 	{
 		this->keys[key_pair->second].target.boolvalue = v;
-		this->onStateModified(a.stateTransitions[this->currentState]);
+		res = this->onStateModified(a.stateTransitions[this->currentState]);
 	}
+	return res;
 }
 
-void Animation::Resource::SetFields(std::string key, std::string v)
+bool Animation::Resource::SetFields(std::string key, std::string v)
 {
+	bool res = false;
 	auto& a = AnimationStateManager::Instance()->GetAnimator(this->texId);
 	auto key_pair = a.keyLookup.find(key);
 	if (key_pair != a.keyLookup.end())
 	{
 		this->keys[key_pair->second].target.stringValue = v;
-		this->onStateModified(a.stateTransitions[this->currentState]);
+		res = this->onStateModified(a.stateTransitions[this->currentState]);
 	}
+	return res;
 }
 
 const int Animation::Resource::getStateIndex(std::string key)

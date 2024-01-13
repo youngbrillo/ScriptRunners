@@ -24,7 +24,9 @@ namespace ECS
 		
 		float speed;
 		Vector2 direction;
+		Vector2 textureScale;
 		bool solid;
 		bool _inspected = false;
+
 	};
 }

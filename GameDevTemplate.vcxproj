@@ -201,6 +201,7 @@
     <ClCompile Include="Script2d.cpp" />
     <ClCompile Include="Snake.cpp" />
     <ClCompile Include="platformerScene.cpp" />
+    <ClCompile Include="Sprite2d.cpp" />
     <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -265,6 +266,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Scene2d.h" />
     <ClInclude Include="Script2d.h" />
+    <ClInclude Include="Sprite2d.h" />
     <ClInclude Include="TextureManager.h" />
   </ItemGroup>
   <ItemGroup>

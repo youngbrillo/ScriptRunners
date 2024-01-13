@@ -75,6 +75,7 @@ Animation::Resource AnimationStateManager::GenerateResource(unsigned int texureI
 	k.keys = this->stateMachines[texureId].keys;
 	k.texId = texureId; 
 	k.currentState = this->stateMachines[texureId].defaultState;
+	k.lastState = k.currentState;
 	return k;
 }
 

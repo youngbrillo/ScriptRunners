@@ -145,14 +145,15 @@ namespace Animation
 	struct Resource
 	{
 		int currentState = 0;
+		int lastState = 0;
 		unsigned int texId = 0;
 		std::vector<Animation::Condition> keys;
 
 		const bool& onStateModified(const std::vector<Animation::Transition>& transitions);
 		void SetState(int new_state);
-		void SetFieldf(std::string key, float v);
-		void SetFieldb(std::string key, bool v);
-		void SetFields(std::string key, std::string v);
+		bool SetFieldf(std::string key, float v);
+		bool SetFieldb(std::string key, bool v);
+		bool SetFields(std::string key, std::string v);
 		const int getStateIndex(std::string key);
 
 		std::vector<FrameData> GetFrameCurrent();

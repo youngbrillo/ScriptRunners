@@ -144,6 +144,7 @@ namespace ECS
 			.addData("direction", &ECS::Node2d::direction)
 			.addData("speed", &ECS::Node2d::speed)
 			.addData("solid", &ECS::Node2d::solid)
+			.addData("textureScale", &ECS::Node2d::textureScale)
 			.endClass()
 			.endNamespace();
 	}

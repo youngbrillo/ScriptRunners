@@ -261,6 +261,9 @@
     <ClCompile Include="Script2d.cpp">
       <Filter>Source Files\Components\2d</Filter>
     </ClCompile>
+    <ClCompile Include="Sprite2d.cpp">
+      <Filter>Source Files\Components\2d</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -447,6 +450,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AnimationComponents.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite2d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -9,6 +9,7 @@ ECS::Node2d::Node2d(const char* name)
 	, speed(1.0f)
 	, direction({0.0f, 0.0f})
 	, solid(true)
+	, textureScale({ 1.0f, 1.0f })
 {
 }
 
@@ -40,14 +41,23 @@ void ECS::Node2d::Draw()
 	switch (material.shape)
 	{
 	case ECS::shape_Rectangle:
+	{
+		Rectangle destination = transform.Destination();
+		destination.width *= textureScale.x;
+		destination.height *= textureScale.y;
+
+		Vector2 origin = transform.origin;
+		origin.x *= textureScale.x;
+		origin.y *= textureScale.y;
 		DrawTexturePro(
 			material.texture,
 			material.source,
-			transform.Destination(),
-			transform.origin,
+			destination,
+			origin,
 			transform.rotation,
 			material.color
-		);		
+		);
+	}
 		break;
 	case ECS::shape_Circle:
 		DrawCircleV(transform.position, transform.size.x, material.color);
@@ -96,5 +106,6 @@ void ECS::Node2d::inspect()
 
 	ImGui::SliderFloat("speed", &speed, 0, 30);
 	ImGui::SliderFloat2("direction", &direction.x, -1, 1);
+	ImGui::SliderFloat2("textureScale", &textureScale.x, 1, 5);
 
 }
