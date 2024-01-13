@@ -87,6 +87,7 @@ namespace ECS
 			.addData("linearDamping", &b2BodyDef::linearDamping)
 			.addData("angularDamping", &b2BodyDef::angularDamping)
 			.addData("gravityScale", &b2BodyDef::gravityScale)
+			.addData("fixedRotation", &b2BodyDef::fixedRotation)
 			.addProperty("type", getType, setType)
 			.endClass()
 			.beginClass<b2FixtureDef>("b2FixtureDef")
