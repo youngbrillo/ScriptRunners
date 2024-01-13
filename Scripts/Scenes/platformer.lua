@@ -78,9 +78,9 @@ function GenEnvironment2()
 
 
 	TextureManager.Add("Assets/Textures/dummy", "dummy")
-	mPlayer = Scene.CreatePlayerController();
-	mPlayer.material:SetTextureByAlias("dummy")
-	mPlayer.material.source:set(0, 0, 64, 64);
+	mPlayer = Scene.CreatePlayerController("Player Controller", "dummy");
+	--mPlayer.material:SetTextureByAlias("dummy")
+	--mPlayer.material.source:set(0, 0, 64, 64);
 	mPlayer.textureScale:set(4, 2)
 
 	App.GetCamera().zoom = 12;
@@ -95,8 +95,9 @@ function GenEnvironment2()
 	e.rigidbody.fixDef.density = 1.0;
 	e.textureScale:set(4, 2)
 	e.transform.position.x = -3
+	e.rigidbody.bdyDef.fixedRotation = true;
 	e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
-
+	
 end
 -- Scripted functions -- /////////////////////////////////////////////////////////////////////////////////////////////
 

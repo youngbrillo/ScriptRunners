@@ -186,9 +186,9 @@ void Scene2d::InitScript(const char* path)
 #include "PlatformerController.h"
 #include "Sprite2d.h"
 
-static ECS::Node2d* CreatePlayerControllerNode()
+static ECS::Node2d* CreatePlayerControllerNode(const char* name, const char* alias)
 {
-	Scene2d::Instance()->Nodes.emplace_back(std::make_shared<ECS::PlatformerController>());
+	Scene2d::Instance()->Nodes.emplace_back(std::make_shared<ECS::PlatformerController>(name, alias));
 	return Scene2d::Instance()->Nodes[Scene2d::Instance()->Nodes.size() -1].get();
 }
 

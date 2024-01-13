@@ -1,5 +1,5 @@
 #pragma once
-#include "Node2d.h"
+#include "Sprite2d.h"
 #include <memory>
 #include <vector>
 #include <imgui.h>
@@ -139,10 +139,10 @@ namespace Player
 
 namespace ECS
 {
-	class PlatformerController : public ECS::Node2d
+	class PlatformerController : public ECS::Sprite2d
 	{
 	public:
-		PlatformerController();
+		PlatformerController(const char* name, const char* alias);
 		~PlatformerController();
 
 		virtual void Update(const float& deltaTime) override;

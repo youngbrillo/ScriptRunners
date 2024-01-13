@@ -3,8 +3,8 @@
 #include <string>
 #include "Scene2d.h"
 
-ECS::PlatformerController::PlatformerController()
-	: Node2d("Player Controller")
+ECS::PlatformerController::PlatformerController(const char* name, const char* alias)
+	: Sprite2d(name, alias)
 	, rayCaster()
 	, mInputs()
 	, mState()
@@ -32,7 +32,7 @@ ECS::PlatformerController::~PlatformerController()
 
 void ECS::PlatformerController::Update(const float& deltaTime)
 {
-	Node2d::Update(deltaTime);
+	Sprite2d::Update(deltaTime);
 	this->updateState(deltaTime);
 	this->handleMovement(deltaTime);
 	this->handleAnimations(deltaTime);
@@ -41,7 +41,7 @@ void ECS::PlatformerController::Update(const float& deltaTime)
 
 void ECS::PlatformerController::FixedUpdate(const float& timestep)
 {
-	Node2d::FixedUpdate(timestep);
+	Sprite2d::FixedUpdate(timestep);
 	rayCaster.evaluate(rigidbody.body, transform.size.x , transform.size.y); 
 	mState.grounded = rayCaster.contact;
 	rayCaster.evaluate(rigidbody.body, transform.size.x, -transform.size.y);
@@ -56,24 +56,24 @@ void ECS::PlatformerController::FixedUpdate(const float& timestep)
 
 void ECS::PlatformerController::Draw()
 {
-	Node2d::Draw();
+	Sprite2d::Draw();
 }
 
 void ECS::PlatformerController::UIDraw()
 {
-	Node2d::UIDraw();
+	Sprite2d::UIDraw();
 }
 
 void ECS::PlatformerController::Poll()
 {
 	if (!enabled) return;
-	Node2d::Poll();
+	Sprite2d::Poll();
 	mInputs.Poll();
 }
 
 void ECS::PlatformerController::inspect()
 {
-	Node2d::inspect();
+	Sprite2d::inspect();
 	mInputs.Debug();
 	mState.debug();
 	mfields.Debug();
@@ -107,6 +107,13 @@ void ECS::PlatformerController::updateState(const float& dt)
 }
 void ECS::PlatformerController::updateState_crouch()
 {
+	bool lastCrouched = mState.crouched;
+	mState.crouched = mInputs.down.isDown;
+	if (lastCrouched && mState.crouched != lastCrouched && mState.head_contact)
+	{
+		mState.crouched = lastCrouched;
+	}
+
 }
 void ECS::PlatformerController::handleMovement(const float& deltaTime)
 {
@@ -201,6 +208,38 @@ void ECS::PlatformerController::handleMovement(const float& deltaTime)
 }
 void ECS::PlatformerController::handleAnimations(const float& deltaTime)
 {
+	SetState("grounded", mState.grounded);
+	//SetState("doublejump", mState.double_jump_enabled);
+	material.direction.x = mInputs.lastDirection;
+	float speed = abs(mInputs.direction * 0.5f);
+	if (mState.sprinting) speed *= 2.0f;
+	SetState("speed",speed);
+	SetState("crouch", mState.crouched);
+	SetState("fall_land", mState.grounded);
+
+	bool spinningInTheAir = !mState.grounded && !mState.double_jump_enabled;
+	if (SetState("doublejump", spinningInTheAir))
+	{
+	}
+	if (animator.getStateIndex("air-spin") == animator.currentState && spinningInTheAir && frameDone)
+	{
+		SetState("doublejump", false);
+
+	}
+
+	SetState("fall_land", mState.grounded);
+	int fall_landState = animator.getStateIndex("fall-land");
+	if (fall_landState == animator.currentState && mState.grounded && (frameDone || mInputs.direction != 0))
+	{
+		SetState("fall_land", false);
+	}
+
+	SetState("dodging", mState.in_dodge_roll);
+	if (animator.getStateIndex("roll") == animator.currentState && mState.in_dodge_roll && frameDone)
+	{
+		mState.in_dodge_roll = false;
+	}
+	SetState("climbing", mState.can_wall_climb);
 }
 void ECS::PlatformerController::handleActions(const float& deltaTime)
 {
