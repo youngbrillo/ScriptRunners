@@ -52,6 +52,9 @@
     <Filter Include="Assets">
       <UniqueIdentifier>{de08308f-4e46-4f24-b6fd-84cf8552af2f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Components\2d\Nodes">
+      <UniqueIdentifier>{9392b81e-548f-4271-84e9-36133646a660}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -231,9 +234,6 @@
     <ClCompile Include="Components2d.cpp">
       <Filter>Source Files\Components\2d</Filter>
     </ClCompile>
-    <ClCompile Include="Node2d.cpp">
-      <Filter>Source Files\Components\2d</Filter>
-    </ClCompile>
     <ClCompile Include="Scene2d.cpp">
       <Filter>Scenes\base</Filter>
     </ClCompile>
@@ -242,9 +242,6 @@
     </ClCompile>
     <ClCompile Include="Extentions2d.cpp">
       <Filter>Source Files\Components\2d</Filter>
-    </ClCompile>
-    <ClCompile Include="PlatformerController.cpp">
-      <Filter>Source Files\Components</Filter>
     </ClCompile>
     <ClCompile Include="BoxMouse.cpp">
       <Filter>Source Files\Components</Filter>
@@ -261,8 +258,17 @@
     <ClCompile Include="Script2d.cpp">
       <Filter>Source Files\Components\2d</Filter>
     </ClCompile>
+    <ClCompile Include="Node2d.cpp">
+      <Filter>Source Files\Components\2d\Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="PlatformerController.cpp">
+      <Filter>Source Files\Components\2d\Nodes</Filter>
+    </ClCompile>
     <ClCompile Include="Sprite2d.cpp">
-      <Filter>Source Files\Components\2d</Filter>
+      <Filter>Source Files\Components\2d\Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraController2d.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -453,6 +459,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sprite2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraController2d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

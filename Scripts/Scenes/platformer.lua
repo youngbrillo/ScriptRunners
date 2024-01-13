@@ -107,8 +107,29 @@ function GenEnvironment2()
 	e.transform.position.x = -3
 	e.rigidbody.bdyDef.fixedRotation = true;
 	e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
-	GenerateBreakableBoxes();
-end
+	--GenerateBreakableBoxes();
+
+	camController01 = Scene.CreateCameraController2d("cam controller 1");
+	camController01.transform.position:set(0, 15);
+	camController01.transform.size:set(50, 10);
+	camController01.transform:Center();
+	camController01.material:SetColorVec(1,1,1,0.5)
+	camController01:SetTarget(mPlayer);
+	camController01:Standardize();
+	camController01.onEnter.zoom = 34.0;
+	camController01.onExit.zoom = 34.0;
+
+	
+	camController02 = Scene.CreateCameraController2d("cam controller 2");
+	camController02.transform.position:set(0, 6);
+	camController02.transform.size:set(25, 5);
+	camController02.transform:Center();
+	camController02.material:SetColorVec(1,1,1,0.5)
+	camController02:SetTarget(mPlayer);
+	camController02:Standardize();
+	camController02.onEnter.zoom = 84.0;
+	camController02.onExit.zoom = 34.0;
+end				  
 
 
 function  GenerateBreakableBoxes()

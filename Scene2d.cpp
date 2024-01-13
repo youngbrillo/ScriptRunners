@@ -238,7 +238,7 @@ void Scene2d::InitScript(const char* path)
 }
 #include "PlatformerController.h"
 #include "Sprite2d.h"
-
+#include "CameraController2d.h"
 static ECS::Node2d* CreatePlayerControllerNode(const char* name, const char* alias)
 {
 	Scene2d::Instance()->Nodes.emplace_back(std::make_shared<ECS::PlatformerController>(name, alias));
@@ -246,10 +246,19 @@ static ECS::Node2d* CreatePlayerControllerNode(const char* name, const char* ali
 }
 
 
-static ECS::Node2d* CreateSprite2dNode(const char* name, const char* alias)
+static ECS::Sprite2d* CreateSprite2dNode(const char* name, const char* alias)
 {
-	Scene2d::Instance()->Nodes.emplace_back(std::make_shared<ECS::Sprite2d>(name, alias));
-	return Scene2d::Instance()->Nodes[Scene2d::Instance()->Nodes.size() - 1].get();
+	auto  node = std::make_shared<ECS::Sprite2d>(name, alias);
+		Scene2d::Instance()->Nodes.emplace_back(node);
+	return node.get();
+}
+
+static ECS::CameraController2d* CreateCameraController2dNode(const char* name)
+{
+	auto  node =
+	std::make_shared<ECS::CameraController2d>(name);
+	Scene2d::Instance()->Nodes.emplace_back(node);
+	return node.get();
 }
 
 void Scene2d::Extend(lua_State* L)
@@ -270,6 +279,11 @@ void Scene2d::Extend(lua_State* L)
 			.addFunction("CreateNode2d", Scene2d::iCreateNode2d)
 			.addFunction("CreatePlayerController", CreatePlayerControllerNode)
 			.addFunction("CreateSprite2d", CreateSprite2dNode)
+			.addFunction("CreateCameraController2d", CreateCameraController2dNode)
 			.addFunction("GetWorld", GetWorld)
 		.endNamespace();
+
+	ECS::Sprite2d::Extend(L);
+	ECS::CameraController2d::Extend(L);
+
 }

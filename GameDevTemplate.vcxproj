@@ -139,6 +139,7 @@
     <ClCompile Include="AppSettings.cpp" />
     <ClCompile Include="box2dScene.cpp" />
     <ClCompile Include="BoxMouse.cpp" />
+    <ClCompile Include="CameraController2d.cpp" />
     <ClCompile Include="Components2d.cpp" />
     <ClCompile Include="Extentions2d.cpp" />
     <ClCompile Include="GlobalManager.cpp" />
@@ -212,6 +213,7 @@
     <ClInclude Include="AppSettings.h" />
     <ClInclude Include="BoxMouse.h" />
     <ClInclude Include="Breakout.h" />
+    <ClInclude Include="CameraController2d.h" />
     <ClInclude Include="Extentions2d.h" />
     <ClInclude Include="GlobalManager.h" />
     <ClInclude Include="Components2d.h" />
