@@ -33,6 +33,9 @@ namespace ECS
 		Rectangle source = { 0, 0, 1, 1 };
 		shape_ shape = shape_Rectangle;
 		Vector2 uv_scroll = { 0, 0 };
+		Vector2 direction = { 1.0f, 1.0f };
+
+		Rectangle Source() const;
 		void Update(const float& dt);
 		void SetTexture(const char* alias);
 		void SetTextureT(Texture2D t);

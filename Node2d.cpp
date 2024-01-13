@@ -51,7 +51,7 @@ void ECS::Node2d::Draw()
 		origin.y *= textureScale.y;
 		DrawTexturePro(
 			material.texture,
-			material.source,
+			material.Source(),
 			destination,
 			origin,
 			transform.rotation,

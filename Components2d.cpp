@@ -47,6 +47,14 @@ bool ECS::Transform::Debug(const char* title)
 }
 
 // MATERIAL //////////////////////////////////////////////
+Rectangle ECS::Material::Source() const
+{
+	Rectangle r = source;
+	r.width *= direction.x;
+	r.height *= direction.y;
+
+	return r;
+}
 void ECS::Material::Update(const float& dt)
 {
 	source.x += uv_scroll.x * dt;
@@ -101,6 +109,7 @@ void ECS::Material::Debug(const char* title )
 		ImGui::SliderFloat("y", &source.y, -texture.height, texture.height);
 		ImGui::SliderFloat("width", &source.width, -texture.width, texture.width);
 		ImGui::SliderFloat("height", &source.height, -texture.height, texture.height);
+		ImGui::SliderFloat2("Direction", &direction.x,-1.0f, 1.0f);
 		ImGui::TreePop();
 	}
 }
