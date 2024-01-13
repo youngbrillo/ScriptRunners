@@ -13,6 +13,12 @@ namespace ECS
 		virtual void Draw();
 		virtual void UIDraw();
 		virtual void Poll();
+
+		virtual void BeginContact(b2Contact* contact, ECS::Node2d* other) {};
+		virtual void EndContact(b2Contact* contact, ECS::Node2d* other) {};
+		virtual void PreSolve(b2Contact* contact, const b2Manifold* oldManifold) {};
+		virtual void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse) {};
+
 		void Inspect();
 		virtual void inspect();
 	public:

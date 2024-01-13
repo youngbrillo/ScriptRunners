@@ -28,6 +28,7 @@ end
 
 function UIDraw() 
 	--ScriptedDrawUI();
+	DrawInstructions()
 end
 
 
@@ -35,7 +36,14 @@ function onKeyPress(key)
 	--ScriptedKeyPress(key);
 end
 
-
+function DrawInstructions()
+	text = "Build a path to the Red door to proceed";
+	local fontSize = 20;
+	local pos = {x = 25, y = Raylib.GetScreenHeight() - fontSize};
+	local _x, _y = Raylib.MeasureText(text, fontSize)
+	Raylib.DrawRectangle(pos.x - fontSize/2, pos.y - (_y + fontSize/2), _x + fontSize, _y + fontSize, 0xCECE007F)
+	Raylib.DrawText(text, pos.x, pos.y - _y, fontSize, 0xffffffff)
+end
 function GenEnvironment2()
 	local p = Scene.CreateNode2d("Background");
 	p.transform.size.x = 100;
@@ -51,15 +59,17 @@ function GenEnvironment2()
 
 	
 	elements =  {
-        {name="floor", x = 00,	y = 20,	w=100,  h=.5 , blocking =true, color = GRAY , hasShadow = false, dynamic = false},
-        {name="center platform", x = 0,	y = 5, w=040,  h=.5 , blocking =true, color = GRAY , hasShadow = true, dynamic = false},
-        {name="center platform 1", x = -22.5,	y = 10, w=5,  h=.5 , blocking =true, color = GRAY , hasShadow = true, dynamic = false},
-        {name="center platform 2", x = -17,	y = 13, w=5,  h=.5 , blocking =true, color = GRAY , hasShadow = true, dynamic = false},
-        {name="center platform 3", x = -12,	y = 15, w=5,  h=.5 , blocking =true, color = GRAY , hasShadow = true, dynamic = false},
-        {name="center platform 4", x = -7,	y = 17, w=5,  h=.5 , blocking =true, color = GRAY , hasShadow = true, dynamic = false},
-        {name="left platform", x = -30,	y = 12.25, w=010,  h=15 , blocking =true, color = 0x9f835cff , hasShadow = true,dynamic = false},
-        {name="right platform", x = 30,	y = 12.25, w=010,  h=15 , blocking =true, color = 0x6ca3c3ff , hasShadow = true,dynamic = false },
-        {name="top platform", x = 0,	y = -7, w=010,  h=.5 , blocking =true, color = 0xff0000ff , hasShadow = true, dynamic = false }
+         {name="floor", x = 00,	y = 20,	w=100,  h=.5 , blocking =true, color = GRAY , hasShadow = false, dynamic = false}
+        ,{name="center platform", x = 0,	y = 5, w=040,  h=.5 , blocking =true, color = GRAY , hasShadow = true, dynamic = false}
+        ,{name="center platform 1", x = -22.5,	y = 10, w=5,  h=.5 , blocking =true, color = GRAY , hasShadow = true, dynamic = false}
+        ,{name="center platform 2", x = -17,	y = 13, w=5,  h=.5 , blocking =true, color = GRAY , hasShadow = true, dynamic = false}
+        ,{name="center platform 3", x = -12,	y = 15, w=5,  h=.5 , blocking =true, color = GRAY , hasShadow = true, dynamic = false}
+        ,{name="center platform 4", x = -7,	y = 17, w=5,  h=.5 , blocking =true, color = GRAY , hasShadow = true, dynamic = false}
+        ,{name="left platform", x = -30,	y = 12.25, w=010,  h=15 , blocking =true, color = 0x9f835cff , hasShadow = true,dynamic = false}
+        ,{name="right platform", x = 30,	y = 12.25, w=010,  h=15 , blocking =true, color = 0x6ca3c3ff , hasShadow = true,dynamic = false }
+        ,{name="top platform", x = 0,	y = -7, w=010,  h=.5 , blocking =true, color = 0xff0000ff , hasShadow = true, dynamic = false }
+        ,{name="left bounds", x = -50,	y = 9.75, w=0.5,  h=20 , blocking =true, color = 0x000000ff , hasShadow = true, dynamic = false }
+        ,{name="left bounds", x = 50,	y = 9.75, w=0.5,  h=20 , blocking =true, color = 0x000000ff , hasShadow = true, dynamic = false }
 	}
 	for k, v in ipairs(elements) do
 		local e = Scene.CreateNode2d(v.name);
@@ -97,8 +107,38 @@ function GenEnvironment2()
 	e.transform.position.x = -3
 	e.rigidbody.bdyDef.fixedRotation = true;
 	e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
-	
+	GenerateBreakableBoxes();
 end
+
+
+function  GenerateBreakableBoxes()
+	xLimit = {min = -45, max = 45}
+	yLimit = {min = -15, max = 15}
+	sLimit = {min = 0, max = 2}
+
+	for i = 1, 100, 1 do
+		local e = Scene.CreateNode2d("dynamic box");
+		e.transform.position:set(
+			math.random(xLimit.min, xLimit.max),
+			math.random(yLimit.min, yLimit.max)
+		)
+		e.transform.size:set(
+			math.random(sLimit.min, sLimit.max),
+			math.random(sLimit.min, sLimit.max)
+		)
+		e.transform.size.x = e.transform.size.x + math.random();
+		e.transform.size.y = e.transform.size.y + math.random();
+		if e.transform.size.x < 0.1 then e.transform.size.x = 0.1;end
+		if e.transform.size.y < 0.1 then e.transform.size.y = 0.1;end
+		e.transform:Center();
+		e.rigidbody.bdyDef.type = 2;
+		e.rigidbody.fixDef.density = 1.0;
+		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
+		e.material:SetColorVec(math.random(), math.random(), math.random(), 0.7)
+	end
+end
+
+
 -- Scripted functions -- /////////////////////////////////////////////////////////////////////////////////////////////
 
 function GenEnvironment()

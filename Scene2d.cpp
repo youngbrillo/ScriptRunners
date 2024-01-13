@@ -20,14 +20,14 @@ Scene2d::Scene2d(const char* path)
 	world = new b2World(Gravity);
 	world->SetDebugDraw(&b2drawer);
 	boxMouse = new Box2dMouse(world);
-
+	world->SetContactListener(this);
 }
 
 Scene2d::~Scene2d()
 {
+	world->SetContactListener(NULL);
 	script.End();
 	Nodes.clear();
-
 
 	delete world;
 	world = NULL;
@@ -144,6 +144,59 @@ void Scene2d::PollEvents()
 
 	for (auto&& node : Nodes) node->Poll();
 	script.Poll();
+}
+
+//bool Scene2d::validateContact(b2Contact* contact, ECS::Node2d* A, ECS::Node2d* B)
+bool Scene2d::validateContact(b2Contact* contact, std::shared_ptr<ECS::Node2d>& A, std::shared_ptr<ECS::Node2d>& B)
+{
+	bool val = false;
+	b2Body* bod_a = contact->GetFixtureA()->GetBody(),
+		* bod_b = contact->GetFixtureB()->GetBody();
+	for (auto&& node : Nodes)
+	{
+		if (!node->rigidbody.enabled()) continue;
+		if (node->rigidbody.body == bod_a)
+		{
+			A = node;
+		}
+		else if (node->rigidbody.body == bod_b)
+		{
+			B = node;
+		}
+		if (A != nullptr && B != nullptr)
+		{
+			val = true;
+			break;
+		}
+	}
+
+
+	return val;
+}
+
+void Scene2d::BeginContact(b2Contact* contact)
+{
+	std::shared_ptr<ECS::Node2d> A, B;
+	if (!validateContact(contact, A, B)) return;
+	A->BeginContact(contact, B.get());
+	B->BeginContact(contact, A.get());
+}
+
+void Scene2d::EndContact(b2Contact* contact)
+{
+	//ECS::Node2d* A = NULL, * B = NULL;
+	std::shared_ptr<ECS::Node2d> A, B;
+	if (!validateContact(contact, A, B)) return;
+	A->EndContact(contact, B.get());
+	B->EndContact(contact, A.get());
+}
+
+void Scene2d::PreSolve(b2Contact* contact, const b2Manifold* oldManifold)
+{
+}
+
+void Scene2d::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse)
+{
 }
 
 Scene2d* Scene2d::Instance()

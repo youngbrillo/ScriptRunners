@@ -9,7 +9,7 @@
 #include <box2d/box2d.h>
 #include "Script2d.h"
 
-class Scene2d : public Scene
+class Scene2d : public Scene, public b2ContactListener
 {
 public:
     Scene2d(const char* path);
@@ -21,6 +21,14 @@ public:
     virtual void Debug() override;
     void DebugNode(ECS::Node2d* Node, const char* title);
     virtual void PollEvents() override;
+protected:
+    bool validateContact(b2Contact* contact, std::shared_ptr<ECS::Node2d>& A, std::shared_ptr<ECS::Node2d>& B);
+    //bool validateContact(b2Contact* contact, ECS::Node2d* A, ECS::Node2d* B);
+public:
+    virtual void BeginContact(b2Contact* contact) override;
+    virtual void EndContact(b2Contact* contact) override;
+    virtual void PreSolve(b2Contact* contact, const b2Manifold* oldManifold) override;
+    virtual void PostSolve(b2Contact* contact, const b2ContactImpulse* impulse) override;
 
 public:
     static Scene* Create(const char* path) { return new Scene2d(path); }
