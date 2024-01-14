@@ -325,6 +325,7 @@ ECS::RigidBody::~RigidBody()
 {
 	if (body != NULL)
 	{
+		body->DestroyFixture(fixture);
 		body->GetWorld()->DestroyBody(this->body);
 	}
 	body = NULL;

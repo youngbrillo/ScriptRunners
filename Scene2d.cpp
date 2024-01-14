@@ -44,11 +44,11 @@ void Scene2d::Update(const float& deltaTime)
 {
 	boxMouse->Update(deltaTime, world);
 	for (auto&& node : Nodes) node->Update(deltaTime);
-	removeDeadNodes();
 }
 
 void Scene2d::FixedUpdate(const float& timeStep)
 {
+	removeDeadNodes();
 	world->Step(timeStep, 6, 8);
 	boxMouse->FixedUpdate(timeStep, world);
 
@@ -131,7 +131,7 @@ void Scene2d::Debug()
 void Scene2d::DebugNode(ECS::Node2d* Node, const char* title)
 {
 	ImGui::Begin(title, &Node->_inspected);
-	ImGui::Text("Name: %s", Node->Name);
+	ImGui::Text("Name: %s", Node->Name.c_str());
 	Node->inspect();
 
 	ImGui::End();
@@ -154,7 +154,10 @@ bool Scene2d::validateContact(b2Contact* contact, std::shared_ptr<ECS::Node2d>& 
 		* bod_b = contact->GetFixtureB()->GetBody();
 	for (auto&& node : Nodes)
 	{
-		if (!node->rigidbody.enabled()) continue;
+		if (node == nullptr) 
+			continue;
+		if (!node->rigidbody.enabled()) 
+			continue;
 		if (node->rigidbody.body == bod_a)
 		{
 			A = node;
@@ -217,14 +220,31 @@ ECS::Node2d* Scene2d::iCreateNode2d(const char* name)
 }
 void Scene2d::removeDeadNodes()
 {
-	Nodes.erase(
-		std::remove_if(
-			Nodes.begin(), 
-			Nodes.end(), 
-			[](std::shared_ptr<ECS::Node2d> n) {return n->alive == false; }
-		),
-		Nodes.end()
-	);
+	//Nodes.erase(
+	//	std::remove_if(
+	//		Nodes.begin(), 
+	//		Nodes.end(), 
+	//		[](std::shared_ptr<ECS::Node2d> n) {return n->alive == false; }
+	//	),
+	//	Nodes.end()
+	//);
+
+
+	auto it = Nodes.begin();
+	while (it != Nodes.end())
+	{
+		if (it->get()->alive == false)
+		{
+			if (NodeA >= Nodes.size() - 2)
+				NodeA = -1;
+			if (NodeB >= Nodes.size() - 2)
+				NodeB = -1;
+			it = Nodes.erase(it);
+			
+		}
+		else it++;
+	}
+
 }
 
 void Scene2d::InitScript(const char* path)

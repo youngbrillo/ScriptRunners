@@ -268,7 +268,7 @@
       <Filter>Source Files\Components\2d\Nodes</Filter>
     </ClCompile>
     <ClCompile Include="CameraController2d.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Components\2d\Nodes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

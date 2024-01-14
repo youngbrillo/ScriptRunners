@@ -183,10 +183,10 @@ end
 function  GenerateBreakableBoxes()
 	xLimit = {min = -45, max = 45}
 	yLimit = {min = -15, max = 15}
-	sLimit = {min = 0, max = 2}
+	sLimit = {min = 1, max = 3}
 
 	for i = 1, 100, 1 do
-		local e = Scene.CreateNode2d("dynamic box");
+		local e = Scene.CreateNode2d("box-"..i);
 		e.transform.position:set(
 			math.random(xLimit.min, xLimit.max),
 			math.random(yLimit.min, yLimit.max)
