@@ -198,6 +198,7 @@ namespace ECS
 			if (body == NULL) return;
 			b2Vec2 origin = b2Vec2(body->GetTransform().p.x, body->GetTransform().p.y);
 			b2Vec2 p2 = origin;
+			p2.x += width;
 			p2.y += height;
 			body->GetWorld()->RayCast(this, origin, p2);
 		}
