@@ -2,195 +2,18 @@
 #include <box2d/box2d.h>
 #include <imgui.h>
 #include "RenderPipeline.h"
-
-class Rayb2Draw : public b2Draw
-{
-public:
-	bool e_shape, e_joint, e_aabb, e_pair, e_centerOfMass;
-public:
-	Rayb2Draw()
-		:b2Draw()
-		, e_shape(true)
-		, e_joint(false)
-		, e_aabb(false)
-		, e_pair(false)
-		, e_centerOfMass(false)
-	{
-		setInternalFlags();
-	}
-	~Rayb2Draw() {
-
-	}
-
-	void setInternalFlags()
-	{
-		int flags = 0;
-		if (e_shape) flags += b2Draw::e_shapeBit;
-		if (e_joint) flags += b2Draw::e_jointBit;
-		if (e_aabb) flags += b2Draw::e_aabbBit;
-		if (e_pair) flags += b2Draw::e_pairBit;
-		if (e_centerOfMass) flags += b2Draw::e_centerOfMassBit;
-
-		this->SetFlags(flags);
-	}
-
-	/// Draw a closed polygon provided in CCW order.
-	virtual void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) {
-		b2Vec2 p1 = vertices[vertexCount - 1];
-		rlBegin(RL_LINES);
-
-
-
-		Color _color = Color{ (unsigned char)(color.r * 255), (unsigned char)(color.g * 255), (unsigned char)(color.b * 255), (unsigned char)(color.a * 255) };
-		rlColor4ub(_color.r, _color.g, _color.b, _color.a);
-
-		for (int32 i = 0; i < vertexCount; ++i)
-		{
-			b2Vec2 p2 = vertices[i];
-
-			rlVertex2f(p1.x, p1.y);
-			rlVertex2f(p2.x, p2.y);
-
-			p1 = p2;
-		}
-		rlEnd();
-	}
-	/// Draw a solid closed polygon provided in CCW order.
-	virtual void DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) {
-		
-		rlEnd();
-	}
-	/// Draw a circle.
-	virtual void DrawCircle(const b2Vec2& center, float radius, const b2Color& color) {
-		Color _color = Color{ (unsigned char)(color.r * 255), (unsigned char)(color.g * 255), (unsigned char)(color.b * 255), (unsigned char)(color.a * 255) };
-		DrawCircleLines(center.x, center.y, radius, _color);
-
-	}
-	/// Draw a solid circle.
-	virtual void DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2& axis, const b2Color& color) {
-		Color _color = Color{ (unsigned char)(color.r * 255), (unsigned char)(color.g * 255), (unsigned char)(color.b * 255), (unsigned char)(color.a * 255) };
-		DrawCircleV({ center.x, center.y }, radius, _color);
-
-	}
-	/// Draw a line segment.
-	virtual void DrawSegment(const b2Vec2& p1, const b2Vec2& p2, const b2Color& color) {
-		Color _color = Color{ (unsigned char)(color.r * 255), (unsigned char)(color.g * 255), (unsigned char)(color.b * 255), (unsigned char)(color.a * 255) };
-
-		rlBegin(RL_LINES);
-
-		rlColor4ub(_color.r, _color.g, _color.b, _color.a);
-
-		rlVertex2f(p1.x, p1.y);
-		rlVertex2f(p2.x, p2.y);
-
-		rlEnd();
-	}
-	/// Draw a transform. Choose your own length scale.
-	/// @param xf a transform.
-	virtual void DrawTransform(const b2Transform& xf) {
-
-		const float k_axisScale = 0.4f;
-		b2Color red(1.0f, 0.0f, 0.0f);
-		b2Color green(0.0f, 1.0f, 0.0f);
-		b2Vec2 p1 = xf.p, p2;
-
-		p2 = p1 + k_axisScale * xf.q.GetXAxis();
-
-		DrawSegment(p1, p2, red);
-		p2 = p1 + k_axisScale * xf.q.GetYAxis();
-		DrawSegment(p1, p2, green);
-	}
-	/// Draw a point.
-	virtual void DrawPoint(const b2Vec2& p, float size, const b2Color& color) {
-		Color _color = Color{ (unsigned char)(color.r * 255), (unsigned char)(color.g * 255), (unsigned char)(color.b * 255), (unsigned char)(color.a * 255) };
-
-		float scaleFactor = 0.050f;
-		float _size = size * scaleFactor;
-		DrawRectanglePro({ p.x, p.y, _size, _size }, { _size * 0.5f, _size * 0.5f }, 0.0f, _color);
-	}
-
-	void Debug(const char* title = "Ray b2Draw")
-	{
-		if (ImGui::TreeNode(title))
-		{
-			bool a = ImGui::Checkbox("e_shape", &e_shape);
-			bool b = ImGui::Checkbox("e_joint", &e_joint);
-			bool c = ImGui::Checkbox("e_aabb", &e_aabb);
-			bool d = ImGui::Checkbox("e_pair", &e_pair);
-			bool e = ImGui::Checkbox("e_centerOfMass", &e_centerOfMass);
-
-			if (a || b || c || d || e)
-			{
-				this->setInternalFlags();
-			}
-
-			ImGui::TreePop();
-		}
-	}
-};
-
-class B2dCameraWrapper
-{
-public:
-	Camera2D mCamera;
-	Vector2 mouseStartPos;
-	bool mRightMouseDown = false;
-	B2dCameraWrapper()
-	{
-		mCamera.zoom = 1.0f;
-		mCamera.offset.x = GetScreenWidth() / 2.0f;
-		mCamera.offset.y = GetScreenHeight() / 2.0f;
-	}
-	void control()
-	{
-
-		if (ImGui::GetIO().WantCaptureMouse) return;
-		bool first_click = false;
-		//handle position
-		if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
-		{
-			mRightMouseDown = true;
-			Vector2 wc = GetScreenToWorld2D(GetMousePosition(), mCamera);
-			mouseStartPos = wc;
-			first_click = true;
-		}
-
-		if (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT)) mRightMouseDown = false;
-
-		if (mRightMouseDown && !first_click)
-		{
-
-			Vector2 wc = GetScreenToWorld2D( GetMousePosition(), mCamera);
-			Vector2 currMousePos = wc;
-			Vector2 _mouse_position_diff = Vector2Subtract(currMousePos, mouseStartPos);
-
-			mCamera.target.x -= _mouse_position_diff.x;
-			mCamera.target.y -= _mouse_position_diff.y;
-		}
-
-		//handle zoom
-		int zOff = GetMouseWheelMove();
-		if (zOff)
-		{
-			if (zOff > 0) mCamera.zoom *= 1.1f;
-			else mCamera.zoom /= 1.1f;
-
-
-			if (mCamera.zoom < 0.01f) mCamera.zoom = 0.01f;
-		}
-
-	}
-};
+#include "Components2d.h"
+#include "BoxMouse.h"
 
 class Box2dBaseScene : public Scene
 {
 protected:
 	b2World* world;
 	b2Vec2 Gravity;
-	Rayb2Draw drawer;
-	B2dCameraWrapper camera;
+	ECS::Box2dDraw drawer;
+	ECS::Camera2d camera;
 	int velocity_iterations = 6, position_iterations = 8;
-
+	Box2dMouse* boxMouse;
 public:
 	Box2dBaseScene()
 		:Scene()
@@ -198,18 +21,22 @@ public:
 	{
 		world = new b2World(Gravity);
 		world->SetDebugDraw(&drawer);
-		camera.mCamera.zoom = 1.0f;
+		camera.cam.zoom = 1.0f;
+		boxMouse = new Box2dMouse(world);
 	}
 	virtual ~Box2dBaseScene()
 	{
 		delete world;
 		world = NULL;
+
+		delete boxMouse;
+		boxMouse = NULL;
 	}
 
 
 	virtual void Draw()
 	{
-		BeginMode2D(camera.mCamera);
+		BeginMode2D(camera.cam);
 		
 		world->DebugDraw();
 
@@ -217,19 +44,23 @@ public:
 	}
 	virtual void Update(const float& deltaTime)
 	{
+		boxMouse->Update(deltaTime, world);
 
 	}
 	virtual void FixedUpdate(const float& timeStep)
 	{
 		world->Step(timeStep, velocity_iterations, position_iterations);
+		boxMouse->FixedUpdate(timeStep, world);
 	}
 	virtual void PollEvents() override {
-		camera.control();
+		camera.HandleInputs();
+		boxMouse->HandleInput(camera.cam, world);
 	}
 	virtual void Debug() override
 	{
 
 		drawer.Debug();
+		boxMouse->Debug(world);
 		if (ImGui::SliderFloat2("Gravity", &Gravity.x, -20, 20))
 		{
 			world->SetGravity(Gravity);
@@ -237,18 +68,7 @@ public:
 		ImGui::SliderInt("velocity iterations", &velocity_iterations, 0, 10);
 		ImGui::SliderInt("position iterations", &position_iterations, 0, 10);
 
-
-		if (ImGui::TreeNode("Camera"))
-		{
-
-			ImGui::SliderFloat("Offset x", &camera.mCamera.offset.x, -GetScreenWidth(), GetScreenWidth());
-			ImGui::SliderFloat("Offset y", &camera.mCamera.offset.y, -GetScreenHeight() , GetScreenHeight());
-			ImGui::SliderFloat2("target", &camera.mCamera.target.x, -100, 100);
-			ImGui::SliderFloat("rotation", &camera.mCamera.rotation, -360, 360);
-			ImGui::SliderFloat("zoom", &camera.mCamera.zoom,1, 100);
-			
-			ImGui::TreePop();
-		}
+		camera.Debug();
 	}
 };
 class Box2dScene_CarScene : public Box2dBaseScene
@@ -271,8 +91,8 @@ public:
 	{
 		Gravity.y = -10.0f;
 		world->SetGravity(Gravity);
-		camera.mCamera.zoom = 10.0f;
-		camera.mCamera.rotation = 180;
+		camera.cam.zoom = 10.0f;
+		camera.cam.rotation = 180;
 		b2Body* ground = NULL;
 		{
 			b2BodyDef bd;
@@ -510,7 +330,7 @@ public:
 	{
 		if (track)
 		{
-			camera.mCamera.target.x = m_car->GetPosition().x;
+			camera.cam.target.x = m_car->GetPosition().x;
 		}
 
 	}
@@ -541,7 +361,7 @@ public:
 	{
 		int e_count = 20;
 		b2Timer timer;
-		camera.mCamera.zoom = 10.0f;
+		camera.cam.zoom = 10.0f;
 
 		{
 			float a = 0.5f;
@@ -610,5 +430,93 @@ public:
 	static Scene* Create() { return new Box2dScene_Tiles; }
 
 };
-static int scene000 = RegisterScene("Template", "Box2d: Car", Box2dScene_CarScene::Create);
-static int scene001 = RegisterScene("Template", "Box2d: Tiles", Box2dScene_Tiles::Create);
+
+
+class Box2dScene_PullyJoint : public Box2dBaseScene
+{
+	b2PulleyJoint* m_joint1;
+
+public:
+	Box2dScene_PullyJoint() :Box2dBaseScene()
+	{
+
+		float y = 16.0f;
+		float L = 12.0f;
+		float a = 1.0f;
+		float b = 2.0f;
+
+		b2Body* ground = NULL;
+		{
+			b2BodyDef bd;
+			ground = world->CreateBody(&bd);
+
+			b2CircleShape circle;
+			circle.m_radius = 2.0f;
+
+			circle.m_p.Set(-10.0f, y -(+ b + L));
+			ground->CreateFixture(&circle, 0.0f);
+
+			circle.m_p.Set(10.0f, y - (+b + L));
+			ground->CreateFixture(&circle, 0.0f);
+		}
+
+		{
+
+			b2PolygonShape shape;
+			shape.SetAsBox(a, b);
+
+			b2BodyDef bd;
+			bd.type = b2_dynamicBody;
+
+			//bd.fixedRotation = true;
+			bd.position.Set(-10.0f, y);
+			b2Body* body1 = world->CreateBody(&bd);
+			body1->CreateFixture(&shape, 5.0f);
+
+			bd.position.Set(10.0f, y);
+			//bd.fixedRotation = true;
+			b2Body* body2 = world->CreateBody(&bd);
+			body2->CreateFixture(&shape, 5.0f);
+
+			b2PulleyJointDef pulleyDef;
+			b2Vec2 anchor1(-10.0f, y - b);
+			b2Vec2 anchor2(10.0f, y - b);
+			b2Vec2 groundAnchor1(-10.0f, y - (+b + L));
+			b2Vec2 groundAnchor2(10.0f, y - (+b + L));
+			pulleyDef.Initialize(body1, body2, groundAnchor1, groundAnchor2, anchor1, anchor2, 1.5f);
+
+			m_joint1 = (b2PulleyJoint*)world->CreateJoint(&pulleyDef);
+		}
+		camera.cam.zoom = 11;
+		//camera.cam.offset.y = 0.0f;
+		this->drawer.e_joint = true;
+		this->drawer.setInternalFlags();
+	}
+
+	~Box2dScene_PullyJoint()
+	{
+	}
+	virtual void Draw() override
+	{
+		Box2dBaseScene::Draw();
+
+		float ratio = m_joint1->GetRatio();
+		float L = m_joint1->GetCurrentLengthA() + ratio * m_joint1->GetCurrentLengthB();
+		DrawText(TextFormat("L1 + %4.2f * L2 = %4.2f", (float)ratio, (float)L), 25, 25,20, RAYWHITE);
+	}
+	//virtual void Update(const float& deltaTime){}
+	virtual void FixedUpdate(const float& timeStep){
+		Box2dBaseScene::FixedUpdate(timeStep);
+
+	}
+	//virtual void PollEvents() override {}
+	//virtual void Debug() override{}
+
+	static Scene* Create() { return new Box2dScene_PullyJoint; }
+};
+
+
+
+static int scene000 = RegisterScene("Box2d", "Car", Box2dScene_CarScene::Create);
+static int scene001 = RegisterScene("Box2d", "Tiles", Box2dScene_Tiles::Create);
+static int scene002 = RegisterScene("Box2d", "Pully Joint", Box2dScene_PullyJoint::Create);
