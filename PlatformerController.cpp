@@ -42,10 +42,16 @@ void ECS::PlatformerController::Update(const float& deltaTime)
 void ECS::PlatformerController::FixedUpdate(const float& timestep)
 {
 	Sprite2d::FixedUpdate(timestep);
-	rayCaster.evaluate(rigidbody.body, transform.size.x , transform.size.y); 
+	//check for grounded
+	rayCaster.evaluate(rigidbody.body, 0.0f , transform.size.y); 
 	mState.grounded = rayCaster.contact;
-	rayCaster.evaluate(rigidbody.body, transform.size.x, -transform.size.y);
+	//check for head contact
+	rayCaster.evaluate(rigidbody.body, 0.0f, -transform.size.y);
 	mState.head_contact = rayCaster.contact;
+	//check for 'front' contact
+	rayCaster.evaluate(rigidbody.body, transform.size.x * mInputs.lastDirection, 0.0f);
+	mState.grabbing = rayCaster.contact && (mInputs.sprint.isDown || mState.grabbing);
+	mState.pushing = mState.grabbing && mInputs.direction != 0;
 
 	if (!mState.grounded)
 	{
@@ -240,6 +246,9 @@ void ECS::PlatformerController::handleAnimations(const float& deltaTime)
 		mState.in_dodge_roll = false;
 	}
 	SetState("climbing", mState.can_wall_climb);
+	SetState("grabbing", mState.grabbing);
+	SetState("pushing", mState.pushing);
+	SetState("pulling", mState.pulling);
 }
 void ECS::PlatformerController::handleActions(const float& deltaTime)
 {

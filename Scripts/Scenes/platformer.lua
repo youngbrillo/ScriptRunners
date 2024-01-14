@@ -177,13 +177,24 @@ function AddCameraControllers()
 	camController03.onEnter.zoom = 34.0;
 	camController03.onExit.zoom = 19;
 	camController03.visible = false;
+	
+	camController04 = Scene.CreateCameraController2d("cam controller 4");
+	camController04.transform.position:set(-42.5, 16);
+	camController04.transform.size:set(15,8);
+	camController04.transform:Center();
+	camController04.material:SetColorVec(1,1,1,0.5)
+	camController04:SetTarget(mPlayer);
+	camController04:Standardize();
+	camController04.onEnter.zoom = 85.0;
+	camController04.onExit.zoom = 34;
+	camController04.visible = false;
 end
 
 
 function  GenerateBreakableBoxes()
 	xLimit = {min = -45, max = 45}
 	yLimit = {min = -15, max = 15}
-	sLimit = {min = 1, max = 3}
+	sLimit = {min = 0, max = 1}
 
 	for i = 1, 100, 1 do
 		local e = Scene.CreateNode2d("box-"..i);

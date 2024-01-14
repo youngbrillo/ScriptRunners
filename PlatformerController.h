@@ -11,7 +11,7 @@ namespace Player
 		ECS::KeyInput right{ KEY_RIGHT };
 		ECS::KeyInput up{ KEY_UP };
 		ECS::KeyInput down{ KEY_DOWN };
-		ECS::KeyInput action{ KEY_SPACE };
+		ECS::KeyInput action{ KEY_Z };
 		ECS::KeyInput sprint{ KEY_LEFT_SHIFT };
 		int direction = 0;
 		int lastDirection = 1;
@@ -55,7 +55,9 @@ namespace Player
 		bool armed = false;
 		bool in_dodge_roll = false;
 		bool can_wall_climb = false;
-
+		bool grabbing = false;
+		bool pushing = false;
+		bool pulling = false;
 		void debug(const char* title = "State")
 		{
 			if (ImGui::TreeNode(title))
@@ -76,6 +78,9 @@ namespace Player
 				ImGui::Checkbox("armed", &armed);
 				ImGui::Checkbox("in dodge roll", &in_dodge_roll);
 				ImGui::Checkbox("can wall climb", &can_wall_climb);
+				ImGui::Checkbox("pushing", &pushing);
+				ImGui::Checkbox("grabbing", &grabbing);
+				ImGui::Checkbox("pulling", &pulling);
 				ImGui::TreePop();
 			}
 		}
