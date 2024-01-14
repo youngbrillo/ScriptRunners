@@ -357,7 +357,7 @@ void Animation::Transition::Inspect(const char* title, const std::vector<Animati
 		ImGui::TreePop();
 	}
 }
-
+static float frameOffset = 0.0f;
 void Animation::StateMachine::Inspect(const char* title)
 {
 	if (ImGui::TreeNode(title))
@@ -369,7 +369,33 @@ void Animation::StateMachine::Inspect(const char* title)
 			{
 				if (ImGui::TreeNode(reverse_stateLookup[pair.first].c_str()))
 				{
-					ImGui::Text("Frames: %d", pair.second.size());
+					//ImGui::Text("Frames: %d", pair.second.size());
+					if (ImGui::TreeNode(TextFormat("Frames: %d", pair.second.size())))
+					{
+						for (auto&& frame : pair.second)
+						{
+							if (ImGui::TreeNode(frame.name.c_str()))
+							{
+								ImGui::InputFloat("x", &frame.frame.x);
+								ImGui::InputFloat("y", &frame.frame.y);
+								ImGui::InputFloat("w", &frame.frame.width);
+								ImGui::InputFloat("h", &frame.frame.height);
+
+
+								
+								ImGui::TreePop();
+							}
+
+						}
+
+
+						ImGui::InputFloat("frame offset", &frameOffset);
+						if (ImGui::Button("perform offset"))
+						{
+							for (auto&& frame : pair.second) { frame.frame.x += frameOffset; }
+						}
+						ImGui::TreePop();
+					}
 					for (auto& transition : stateTransitions[pair.first])
 					{
 						transition.Inspect(transition.name.c_str(), this->keys);

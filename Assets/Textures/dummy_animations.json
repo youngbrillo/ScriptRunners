@@ -93,8 +93,20 @@
 		{"from": "jump-up", "to":  "side-climb", "key":"climbing", "operator": "==", "value": true},
 		{"from": "fall", "to":  "wall_land", "key":"climbing", "operator": "==", "value": true},
 		{"from": "wall_land", "to":  "fall", "key":"climbing", "operator": "==", "value": false},
-		{"from": "side-climb", "to":  "fall", "key":"climbing", "operator": "==", "value": false}
+		{"from": "side-climb", "to":  "fall", "key":"climbing", "operator": "==", "value": false},
 
+		{"from":  "idle", "to": "push-pull-idle", "key":"grabbing", "operator": "==", "value": true},
+		{"from":  "push-pull-idle", "to": "idle", "key":"grabbing", "operator": "==", "value": false},
+
+		{"from":  "push-pull-idle", "to": "push", "key":"pushing", "operator": "==", "value": true},
+		{"from":  "push", "to": "push-pull-idle", "key":"pushing", "operator": "==", "value": false},
+		{"from":  "walk", "to": "push", "key":"pushing", "operator": "==", "value": true},
+		{"from":  "push", "to": "walk", "key":"pushing", "operator": "==", "value": false},
+		{"from":  "run", "to": "push", "key":"pushing", "operator": "==", "value": true},
+		{"from":  "push", "to": "run", "key":"pushing", "operator": "==", "value": false},
+
+		{"from":  "push-pull-idle", "to": "pull", "key":"pulling", "operator": "==", "value": true},
+		{"from":  "pull", "to": "push-pull-idle", "key":"pulling", "operator": "==", "value": false}
 	],
 	"keys": [
 		{"name": "speed", "type":  "number", "default": 0.0},
@@ -108,7 +120,10 @@
 		{"name": "doublejump", "type":  "boolean", "default": false},
 		{"name": "fall_land", "type":  "boolean", "default": false},
 		{"name": "dodging", "type":  "boolean", "default": false},
-		{"name": "climbing", "type":  "boolean", "default": false}
+		{"name": "climbing", "type":  "boolean", "default": false},
+		{"name": "grabbing", "type":  "boolean", "default": false},
+		{"name": "pushing", "type":  "boolean", "default": false},
+		{"name": "pulling", "type":  "boolean", "default": false}
 	],
 	"defaultState": "idle"
 }
