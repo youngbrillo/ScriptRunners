@@ -61,6 +61,11 @@ void AnimationStateManager::innerdebug()
 
 void AnimationStateManager::Populate(unsigned int textureId, std::string textureName, std::string path)
 {
+	std::string ppath = path + "_animations.json";
+	jsonObjects testonme;
+	if (!JSONParse::ParseJSONFile(testonme, ppath.c_str())) return;
+
+
 	this->animatorLookup[textureName] = textureId;
 	this->reverse_animatorLookup[textureId] = textureName;
 	this->stateMachines[textureId].Populate(textureId, path);

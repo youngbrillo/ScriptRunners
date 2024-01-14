@@ -39,6 +39,11 @@ bool ECS::Transform::Debug(const char* title)
 		if (ImGui::SliderFloat("origin.x", &origin.x, -size.x, size.x)) res++;
 		if (ImGui::SliderFloat("origin.y", &origin.y, -size.y, size.y)) res++;
 		if (ImGui::SliderFloat("rotation", &rotation, -360, 360)) res++;
+		if (ImGui::Button("Center")) {
+			this->Center();
+			res++;
+
+		}
 
 		ImGui::TreePop();
 	}

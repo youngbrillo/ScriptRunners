@@ -1,7 +1,7 @@
 #include "Node2d.h"
 #include <imgui_string_wrap_extension.h>
 
-ECS::Node2d::Node2d(const char* name)
+ECS::Node2d::Node2d(std::string name)
 	:Name(name)
 	, alive(true)
 	, enabled(true)
@@ -82,7 +82,7 @@ void ECS::Node2d::Poll()
 void ECS::Node2d::Inspect()
 {
 
-	if (ImGui::TreeNode(Name))
+	if (ImGui::TreeNode(Name.c_str()))
 	{
 		ImGui::PushItemWidth(250.0f);
 		this->inspect();

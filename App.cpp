@@ -25,9 +25,9 @@ void App::End()
 {
     std::cout << "Closing Project" << std::endl;
 	CloseWindow();
-	GlobalManager::End();
 	delete Instance;
 	Instance = NULL;
+	GlobalManager::End();
 }
 
 App* App::Get()

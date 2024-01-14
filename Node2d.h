@@ -1,11 +1,13 @@
 #pragma once
 #include "Components2d.h"
+#include <string>
+
 namespace ECS
 {
 	class Node2d
 	{
 	public:
-		Node2d(const char* name);
+		Node2d(std::string name);
 		~Node2d();
 			
 		virtual void Update(const float& deltaTime);
@@ -22,7 +24,7 @@ namespace ECS
 		void Inspect();
 		virtual void inspect();
 	public:
-		const char* Name = "Node";
+		std::string Name = "Node";
 		bool enabled, visible, alive;
 		ECS::Transform transform;
 		ECS::Material material;

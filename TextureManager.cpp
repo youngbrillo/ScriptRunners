@@ -322,11 +322,12 @@ Manager TextureManager::Register()
 void TextureManager::Extend(lua_State* L)
 {
 	//add texture and alias
-	std::function<void(const char* a, const char* b)> add1 = [](const char* c, const char* d) {
-		TextureManager::Instance()->AddTexturePath(c, d);
+	std::function<unsigned int(const char* a, const char* b)> add1 = [](const char* c, const char* d) {
+		return TextureManager::Instance()->AddTexturePath(c, d).id;
+		
 	};
 	//get texture id with alias
-	std::function<int(const char* a)> get = [](const char* aforalias) {
+	std::function<unsigned int(const char* a)> get = [](const char* aforalias) {
 		auto t = TextureManager::Instance()->GetTexture(aforalias);
 		return t.id;
 	};

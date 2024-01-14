@@ -15,7 +15,7 @@ function onSceneStart()
 end
 
 function onSceneEnd() 
-
+	RemoveBackGroundTextures();
 end
 function Update(dt) 
 	--ScriptedUpdate(dt);
@@ -44,7 +44,51 @@ function DrawInstructions()
 	Raylib.DrawRectangle(pos.x - fontSize/2, pos.y - (_y + fontSize/2), _x + fontSize, _y + fontSize, 0xCECE007F)
 	Raylib.DrawText(text, pos.x, pos.y - _y, fontSize, 0xffffffff)
 end
-function GenEnvironment2()
+
+function LoadBackgroundTextures()
+	bgTextures = {};
+	local base_path = "Assets/Textures/";
+	local cloud_path = "clouds_craft-pixel/Clouds/Clouds 4/"
+		  --cloud_path = "clouds_craft-pixel/city-backgrounds/city 6/"
+	table.insert(bgTextures, {id = TextureManager.Add(base_path..cloud_path.."1", "bg_1"), name = "bg_1"});
+	table.insert(bgTextures, {id = TextureManager.Add(base_path..cloud_path.."2", "bg_2"), name = "bg_2"});
+	table.insert(bgTextures, {id = TextureManager.Add(base_path..cloud_path.."3", "bg_3"), name = "bg_3"});
+	table.insert(bgTextures, {id = TextureManager.Add(base_path..cloud_path.."4", "bg_4"), name = "bg_4"});
+	
+	--table.insert(bgTextures, {id = TextureManager.Add(base_path..cloud_path.."5", "bg_5"), name = "bg_5"});
+	--table.insert(bgTextures, {id = TextureManager.Add(base_path..cloud_path.."6", "bg_6"), name = "bg_6"});
+	
+
+	print(">>>>>>>>>>>>>>>\n\n\n\n");
+	for k, v in ipairs(bgTextures)
+	do
+		print(">>>>>", k, v.id, v.name);
+		local p = Scene.CreateNode2d("Background-"..v.name);
+		p.transform.size.x = 100;
+		p.transform.size.y = 40;
+		p.transform:Center();
+		p.material:SetTextureByAlias(v.name)
+		p.material.uv_scroll:set(2 * (k-1), 0)
+
+	end
+	print(">>>>>>>>>>>>>>>\n\n\n\n");
+
+
+
+	
+	backgrounds_initiated = true;
+end
+
+function RemoveBackGroundTextures()
+	if backgrounds_initiated then
+		for k, v in ipairs(bgTextures)
+		do
+			TextureManager.Remove(v.id);
+		end
+	end
+end
+
+function setCheckerBackGround()
 	local p = Scene.CreateNode2d("Background");
 	p.transform.size.x = 100;
 	p.transform.size.y = 40;
@@ -54,8 +98,10 @@ function GenEnvironment2()
 	p.material.source.width = p.material.source.width  * p.transform.size.x / p.transform.size.y * 4;
 	p.material.source.height =p.material.source.height * 4;
 	p.material.uv_scroll:set(10, 5)
-	p.visible = true;
-	p.solid	 = false;
+end
+function GenEnvironment2()
+	LoadBackgroundTextures();
+
 
 	
 	elements =  {
@@ -89,26 +135,15 @@ function GenEnvironment2()
 
 	TextureManager.Add("Assets/Textures/dummy", "dummy")
 	mPlayer = Scene.CreatePlayerController("Player Controller", "dummy");
-	--mPlayer.material:SetTextureByAlias("dummy")
-	--mPlayer.material.source:set(0, 0, 64, 64);
 	mPlayer.textureScale:set(4, 2)
 
 	App.GetCamera().zoom = 12;
+	GenerateBreakableBoxes();
+	AddCameraControllers();
 
-	--[[
-	]]
-	local e = Scene.CreateSprite2d("mannequin", "dummy");
-	--local e = Scene.CreateNode2d("mannequin");
-	e.transform.size:set(0.5, 1)
-	e.transform:Center();
-	e.rigidbody.bdyDef.type = 2;
-	e.rigidbody.fixDef.density = 1.0;
-	e.textureScale:set(4, 2)
-	e.transform.position.x = -3
-	e.rigidbody.bdyDef.fixedRotation = true;
-	e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
-	--GenerateBreakableBoxes();
+end				  
 
+function AddCameraControllers()
 	camController01 = Scene.CreateCameraController2d("cam controller 1");
 	camController01.transform.position:set(0, 15);
 	camController01.transform.size:set(50, 10);
@@ -118,18 +153,31 @@ function GenEnvironment2()
 	camController01:Standardize();
 	camController01.onEnter.zoom = 34.0;
 	camController01.onExit.zoom = 34.0;
+	camController01.visible = false;
 
 	
 	camController02 = Scene.CreateCameraController2d("cam controller 2");
-	camController02.transform.position:set(0, 6);
-	camController02.transform.size:set(25, 5);
+	camController02.transform.position:set(0, 2.5);
+	camController02.transform.size:set(5, 5);
 	camController02.transform:Center();
 	camController02.material:SetColorVec(1,1,1,0.5)
 	camController02:SetTarget(mPlayer);
 	camController02:Standardize();
 	camController02.onEnter.zoom = 84.0;
 	camController02.onExit.zoom = 34.0;
-end				  
+	camController02.visible = false;
+
+	camController03 = Scene.CreateCameraController2d("cam controller 3");
+	camController03.transform.position:set(-23.5, 3);
+	camController03.transform.size:set(21, 13);
+	camController03.transform:Center();
+	camController03.material:SetColorVec(1,1,1,0.5)
+	camController03:SetTarget(mPlayer);
+	camController03:Standardize();
+	camController03.onEnter.zoom = 34.0;
+	camController03.onExit.zoom = 19;
+	camController03.visible = false;
+end
 
 
 function  GenerateBreakableBoxes()

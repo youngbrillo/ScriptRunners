@@ -83,11 +83,11 @@ void Scene2d::Debug()
 		ImGui::TreePop();
 	}
 
-	if (ImGui::BeginCombo("Node A", NodeA >= 0 ? Nodes[NodeA]->Name : "- Select a Node -"))
+	if (ImGui::BeginCombo("Node A", NodeA >= 0 ? Nodes[NodeA]->Name.c_str() : "- Select a Node -"))
 	{
 		for (int n = 0; n < Nodes.size(); n++)
 		{
-			const char* previewValue = n >= 0 ? Nodes[n]->Name : "- Select a Node -";
+			const char* previewValue = n >= 0 ? Nodes[n]->Name.c_str() : "- Select a Node -";
 			const bool is_selected = (NodeA == n);
 			if (ImGui::Selectable(previewValue, is_selected))
 			{
@@ -100,11 +100,11 @@ void Scene2d::Debug()
 		ImGui::EndCombo();
 	}
 
-	if (ImGui::BeginCombo("Node B", NodeB >= 0 ? Nodes[NodeB]->Name : "- Select a Node -"))
+	if (ImGui::BeginCombo("Node B", NodeB >= 0 ? Nodes[NodeB]->Name.c_str() : "- Select a Node -"))
 	{
 		for (int n = 0; n < Nodes.size(); n++)
 		{
-			const char* previewValue = n >= 0 ? Nodes[n]->Name : "- Select a Node -";
+			const char* previewValue = n >= 0 ? Nodes[n]->Name.c_str() : "- Select a Node -";
 			const bool is_selected = (NodeB == n);
 			if (ImGui::Selectable(previewValue, is_selected))
 			{
