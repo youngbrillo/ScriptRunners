@@ -33,7 +33,17 @@ void ECS::CameraController2d::Update(const float& deltaTime)
 	lerpCam(c, deltaTime);
 
 
-	if (this->hasTarget()) this->Action(deltaTime);
+	if (this->hasTarget())
+	{
+		if (target->alive == false)
+		{
+			target = NULL;
+		}
+		else
+		{
+			this->Action(deltaTime);
+		}
+	}
 }
 
 void ECS::CameraController2d::Draw()
