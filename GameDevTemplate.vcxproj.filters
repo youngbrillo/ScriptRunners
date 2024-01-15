@@ -270,6 +270,12 @@
     <ClCompile Include="CameraController2d.cpp">
       <Filter>Source Files\Components\2d\Nodes</Filter>
     </ClCompile>
+    <ClCompile Include="ModelLoading.cpp">
+      <Filter>Scenes\Template Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="FogShaderScene.cpp">
+      <Filter>Scenes\Template Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -463,6 +469,9 @@
     </ClInclude>
     <ClInclude Include="CameraController2d.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rlights.h">
+      <Filter>Scenes\Template Scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

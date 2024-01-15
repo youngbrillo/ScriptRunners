@@ -142,6 +142,7 @@
     <ClCompile Include="CameraController2d.cpp" />
     <ClCompile Include="Components2d.cpp" />
     <ClCompile Include="Extentions2d.cpp" />
+    <ClCompile Include="FogShaderScene.cpp" />
     <ClCompile Include="GlobalManager.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
@@ -191,6 +192,7 @@
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="Breakout.cpp" />
     <ClCompile Include="MIssleCommander.cpp" />
+    <ClCompile Include="ModelLoading.cpp" />
     <ClCompile Include="Node2d.cpp" />
     <ClCompile Include="PlatformerController.cpp" />
     <ClCompile Include="miss_commander.cpp" />
@@ -259,6 +261,7 @@
     <ClInclude Include="Node2d.h" />
     <ClInclude Include="PlatformerController.h" />
     <ClInclude Include="RayExtend.h" />
+    <ClInclude Include="rlights.h" />
     <ClInclude Include="sajson.h" />
     <ClInclude Include="Inspector.h" />
     <ClInclude Include="IOHandler.h" />
