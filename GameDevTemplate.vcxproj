@@ -201,6 +201,8 @@
     <ClCompile Include="rlImGui.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Scene2d.cpp" />
+    <ClCompile Include="Scene3d.cpp" />
+    <ClCompile Include="Scene3dExample.cpp" />
     <ClCompile Include="Script2d.cpp" />
     <ClCompile Include="Snake.cpp" />
     <ClCompile Include="platformerScene.cpp" />
@@ -270,6 +272,7 @@
     <ClInclude Include="rlImGui.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Scene2d.h" />
+    <ClInclude Include="Scene3d.h" />
     <ClInclude Include="Script2d.h" />
     <ClInclude Include="Sprite2d.h" />
     <ClInclude Include="TextureManager.h" />

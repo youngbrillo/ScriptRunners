@@ -276,6 +276,12 @@
     <ClCompile Include="FogShaderScene.cpp">
       <Filter>Scenes\Template Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="Scene3d.cpp">
+      <Filter>Scenes\base</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene3dExample.cpp">
+      <Filter>Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -472,6 +478,9 @@
     </ClInclude>
     <ClInclude Include="rlights.h">
       <Filter>Scenes\Template Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene3d.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
