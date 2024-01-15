@@ -94,6 +94,7 @@ namespace Player
 		float run_speed = 6.315f;
 		float crouch_speed = 0.75f;
 		float air_speed = 4.7f;
+		float air_speed_sprint = 9.13f;
 		float fall_speed = 0.0f; //additional force added after stalling in air
 		float jump_force = 10.0f;
 		float gravity_scale = 5.0f;
@@ -123,7 +124,8 @@ namespace Player
 				ImGui::SliderFloat("Walk Speed", &walk_speed, 0, run_speed);
 				ImGui::SliderFloat("Run Speed", &run_speed, walk_speed, 20);
 				ImGui::SliderFloat("Fall Speed", &fall_speed, 0, 100);
-				ImGui::SliderFloat("Air Speed", &air_speed, 0, run_speed);
+				ImGui::SliderFloat("Air Speed", &air_speed, 0, air_speed_sprint);
+				ImGui::SliderFloat("Air Speed Sprint", &air_speed_sprint, 0, run_speed);
 				ImGui::SliderFloat("Jump Force", &jump_force, 0, 100);
 				ImGui::SliderFloat("double Jump ratio", &double_jump_ratio, 0, 1);
 				ImGui::Text("Wall Jumping");

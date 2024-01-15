@@ -149,7 +149,56 @@ namespace ECS
 			.endClass()
 			.endNamespace();
 	}
+
+	static void mCreatePullyJoint(b2World* world, 
+		ECS::Node2d* body1, ECS::Node2d* body2,
+		luabridge::LuaRef tableRef
+	)
+	{
+		float x1 = 1, y1 = 1;
+		float x2 = 1, y2 = 1;
+		float x3 = 1, y3 = 1;
+		float x4 = 1, y4 = 1;
+		float ratio = 1.5f;
+
+		
+		int type = tableRef.type();
+		if (type == LUA_TTABLE)
+		{
+			x1 = tableRef["x1"].cast<float>();
+			y1 = tableRef["y1"].cast<float>();
+
+			x2 = tableRef["x2"].cast<float>();
+			y2 = tableRef["y2"].cast<float>();
+
+			x3 = tableRef["x3"].cast<float>();
+			y3 = tableRef["y3"].cast<float>();
+
+			x4 = tableRef["x4"].cast<float>();
+			y4 = tableRef["y4"].cast<float>();
+
+			ratio = tableRef["ratio"].cast<float>();
+		}
+		b2PulleyJointDef pulleyDef;
+		b2Vec2 anchor1(x1, y1);
+		b2Vec2 anchor2(x2, y2);
+
+		b2Vec2 groundAnchor1(x3, y3);
+		b2Vec2 groundAnchor2(x4, y4);
+		pulleyDef.Initialize(body1->rigidbody.body, body2->rigidbody.body, groundAnchor1, groundAnchor2, anchor1, anchor2, ratio);
+		world->CreateJoint(&pulleyDef);
+	}
+
+	static void ExtendBox2d(lua_State* L)
+	{
+		luabridge::getGlobalNamespace(L)
+			.beginNamespace("b2d")
+				.addFunction("CreatePullyJoint", ECS::mCreatePullyJoint)
+			.endNamespace();
+	}
 }
+
+
 
 void ECS::ExtendAll(lua_State* L){
 	ECS::ExtendRayLib(L);
@@ -159,4 +208,5 @@ void ECS::ExtendAll(lua_State* L){
 	ECS::ExtendInput(L);
 	ECS::ExtendNode2d(L);
 	ECS::ExtendCamera(L);
+	ECS::ExtendBox2d(L);
 }

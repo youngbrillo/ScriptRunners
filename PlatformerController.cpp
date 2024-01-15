@@ -50,7 +50,8 @@ void ECS::PlatformerController::FixedUpdate(const float& timestep)
 	mState.head_contact = rayCaster.contact;
 	//check for 'front' contact
 	rayCaster.evaluate(rigidbody.body, transform.size.x * mInputs.lastDirection, 0.0f);
-	mState.grabbing = rayCaster.contact && (mInputs.sprint.isDown || mState.grabbing);
+	mState.front_contact = rayCaster.contact;// && (mInputs.sprint.isDown || mState.grabbing);
+	mState.can_wall_climb = mState.front_contact;
 	mState.pushing = mState.grabbing && mInputs.direction != 0;
 
 	if (!mState.grounded)
@@ -165,8 +166,8 @@ void ECS::PlatformerController::handleMovement(const float& deltaTime)
 		}
 		if (!mState.movement_restricted)
 		{
-			velocity *= mfields.air_speed;
-			max_speed = mfields.air_speed;
+			velocity *= mState.sprinting ? mfields.air_speed_sprint : mfields.air_speed;
+			max_speed = mState.sprinting ? mfields.air_speed_sprint : mfields.air_speed;
 		}
 
 		if (mState.can_wall_climb && mInputs.up.isDown && !mInputs.up.just_pressed)
@@ -252,4 +253,13 @@ void ECS::PlatformerController::handleAnimations(const float& deltaTime)
 }
 void ECS::PlatformerController::handleActions(const float& deltaTime)
 {
+	if (mInputs.action.just_pressed && !mState.grabbing)
+	{
+		mState.grabbing = mState.front_contact && mState.grounded;
+	}
+	else if ((mInputs.action.just_pressed && mState.grabbing )|| mState.front_contact == false)
+	{
+		mState.grabbing = false;
+	}
+
 }
