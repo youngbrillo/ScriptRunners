@@ -136,6 +136,7 @@ namespace ECS
 		luabridge::getGlobalNamespace(L)
 			.beginNamespace("ECS")
 			.beginClass<ECS::Node2d>("Node2d")
+			.addData("Name", &ECS::Node2d::Name)
 			.addData("transform", &ECS::Node2d::transform)
 			.addData("material", &ECS::Node2d::material)
 			.addData("rigidbody", &ECS::Node2d::rigidbody)
