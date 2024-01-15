@@ -124,6 +124,8 @@ void FogShaderScene::FixedUpdate(const float& timeStep)
 
 void FogShaderScene::Draw()
 {
+
+    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), GRAY);
     BeginMode3D(camera);
 
     // Draw the three models
