@@ -1,5 +1,5 @@
 
-Player = require("Scripts/Scenes/Player")
+Player = require("Scripts/Components/Player")
 
 LIGHTGRAY = 0xC8C8C8FF
 GRAY = 0x828282FF
