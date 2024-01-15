@@ -3,6 +3,10 @@
 #include <LuaBridge/LuaBridge.h>
 #include <imgui.h>
 
+unsigned int ECS::CameraController2d::Instances = 0;
+unsigned int ECS::CameraController2d::Locked_Id = 0;
+unsigned int ECS::CameraController2d::Alive = 0;
+
 ECS::CameraController2d::CameraController2d(const char* name)
 	:Node2d(name)
 	, target(NULL)
@@ -10,11 +14,24 @@ ECS::CameraController2d::CameraController2d(const char* name)
 	auto& gCam = Scene2d::Instance()->camera.cam;
 	onEnter = gCam;
 	onExit = gCam;
+
+	CameraController2d::Instances++;
+	CameraController2d::Alive++;
+	this->Instance_Id = CameraController2d::Instances;
 }
 
 ECS::CameraController2d::~CameraController2d()
 {
 	target = NULL;
+	CameraController2d::Alive--;
+	if (CameraController2d::Alive == 0)
+	{
+		CameraController2d::Instances = 0.0;
+	}
+	if (CameraController2d::Locked_Id == this->Instance_Id)
+	{
+		CameraController2d::Locked_Id = 0;
+	}
 }
 
 void ECS::CameraController2d::Standardize()
@@ -26,24 +43,20 @@ void ECS::CameraController2d::Standardize()
 
 void ECS::CameraController2d::Update(const float& deltaTime)
 {
-	Camera2D* c = camSettings.onEnterCamActive 
-			? &onEnter :
-		camSettings.onExitCamActive ? 
-		&onExit : NULL;
-	lerpCam(c, deltaTime);
-
-
+	if (!this->enabled) return;
+	ECS::Node2d::Update(deltaTime);
 	if (this->hasTarget())
 	{
 		if (target->alive == false)
 		{
 			target = NULL;
 		}
-		else
-		{
-			this->Action(deltaTime);
-		}
 	}
+	if (!this->canTrack()) return;
+
+	Camera2D* c = camSettings.onEnterCamActive ? &onEnter : camSettings.onExitCamActive ? &onExit : NULL;
+	lerpCam(c, deltaTime);
+	this->Action(deltaTime);
 }
 
 void ECS::CameraController2d::Draw()
@@ -75,7 +88,10 @@ void ECS::CameraController2d::Action(const float& dt)
 		}
 	}
 }
-
+ template <typename T> 
+ static int _sgn(T val) {
+	return (T(0) < val) - (val < T(0));
+}
 void ECS::CameraController2d::lerpCam(Camera2D* cam, const float& dt)
 {
 	if (cam == NULL) return;
@@ -86,14 +102,14 @@ void ECS::CameraController2d::lerpCam(Camera2D* cam, const float& dt)
 	const float DIST_THRESHOLD = 0.003f;
 	if(gCam.zoom != cam->zoom)
 	{
-		float dist = cam->zoom - gCam.zoom;
+		float dist = _sgn(cam->zoom - gCam.zoom);
 		gCam.zoom += dist * camSettings.zoom_adjust_speed * dt;
 		float min = cam->zoom - DIST_THRESHOLD;
 		float max = cam->zoom + DIST_THRESHOLD;
 		if (gCam.zoom >= min && gCam.zoom <= max)
 		{
-			camSettings.onEnterCamActive = false;
-			camSettings.onExitCamActive = false;
+			//camSettings.onEnterCamActive = false;
+			//camSettings.onExitCamActive = false;
 			gCam.zoom = cam->zoom;
 		}
 	}
@@ -111,7 +127,7 @@ void ECS::CameraController2d::BeginContact(b2Contact* contact, ECS::Node2d* othe
 	camSettings.target_locked = true;
 	camSettings.onEnterCamActive = true;
 	camSettings.onExitCamActive = false;
-
+	this->Locked_Id = this->Instance_Id;
 }
 
 void ECS::CameraController2d::EndContact(b2Contact* contact, ECS::Node2d* other)
