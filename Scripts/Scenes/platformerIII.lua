@@ -62,6 +62,10 @@ function CreateEnvironments()
 
 	elements =  {
          {name="floor", x = 00,	y = 20,	w=100,  h=.5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
+         ,{name="platform", x = 0,	y = 15,	w=5,  h=.5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
+         ,{name="west tower", x = -30,	y = 8.5,	w=5,  h=22.5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
+         ,{name="east tower", x = 30,	y = 8.5,	w=5,  h=22.5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
+         , {name="breezeway", x = 2.5,	y = -4,	w=50,  h=.5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
 	}
 
 	for k, v in ipairs(elements) do
@@ -76,6 +80,20 @@ function CreateEnvironments()
 		end
 		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
 	end
+
+	local base = {x = 0, y = 15, w = 5, h = 0.5, color = 0x6ca3c3ff}
+	for i = 1, 5, 1 do
+	
+		local e = Scene.CreateNode2d("step "..i);
+		e.transform.position:set(base.x - (i * base.w), base.y - (i * 3));
+		e.transform.size:set(base.w, base.h);
+		e.transform:Center();
+		e.material:SetColor(base.color);
+		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
+
+	end
+
+
 	App.GetCamera().zoom = 18;
 end
 function CreateObjects() 
@@ -87,7 +105,11 @@ function CreateObjects()
 	--add camera controller to floor
 	local camControllers = 
 	{
-		{pos = {x = 0, y = 17.25}, size = {x=85, y=5}, onEnter = 34, onExit = 18, name  = "Floor Cam Controller"},
+		{pos = {x = 0, y = 17.25}, size = {x=85, y=5}, onEnter = 34, onExit = 18, name  = "Floor Cam Controller"}
+		,{pos = {x = -15, y = 6}, size = {x=25, y=20}, onEnter = 34, onExit = 18, name  = "stair Cam Controller"}
+		,{pos = {x = 2.5, y = -7}, size = {x=27, y=5}, onEnter = 22, onExit = 80, name  = "breezway main Cam Controller"}
+		,{pos = {x = -16.5, y = -7}, size = {x=10, y=5}, onEnter = 80, onExit = 22, name  = "breezway entrance Cam Controller"}
+		,{pos = {x = 22.5, y = -7}, size = {x=10, y=5}, onEnter = 80, onExit = 22, name  = "breezway exit Cam Controller"}
 	}
 
 	for k, v in ipairs(camControllers) do
@@ -106,8 +128,8 @@ function CreateObjects()
 
 	exitListeners = 
 	{
-		  {pos = {x = -50+2.5,  y = 17.25}, size = {x = 5, y = 5}, name="Exit to Platformer II", destination = "Platforming II"}
-		, {pos = {x = 50-2.5,  y = 17.25}, size = {x = 5, y = 5}, name="Exit to Platformer I", destination = "Platforming"}
+		  {pos = {x = -30,  y = -5}, size = {x = 5, y = 5}, name="Exit to Platformer II", destination = "Platforming II"}
+		, {pos = {x = 30,  y = -5}, size = {x = 5, y = 5}, name="Exit to Platformer I", destination = "Platforming"}
 	}
 	
 	for k, v in ipairs(exitListeners) do

@@ -56,7 +56,12 @@ end
 function CreateEnvironments() 
 
 	elements =  {
-         {name="floor", x = 00,	y = 20,	w=100,  h=.5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
+         {name="floor", x = 22.5,	y = 10,	w=55,  h=.5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
+         , {name="floor frag.1", x = -32.375,	y = 10,	w=35.25,  h=.5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
+         , {name="sub floor 1", x = -7.25,	y = 15,	w=15,  h=.5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
+         , {name="sub wall.l", x = -15,	y = 12.75,	w=.5,  h=5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
+         , {name="sub wall.r", x = 0.5,	y = 12.75,	w=.5,  h=5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
+         , {name="float floor 1", x = 7.75,	y = 5,	w=15,  h=.5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
 	}
 
 	for k, v in ipairs(elements) do
@@ -81,7 +86,7 @@ function CreateObjects()
 	--add camera controller to floor
 	local camControllers = 
 	{
-		{pos = {x = 0, y = 17.25}, size = {x=85, y=5}, onEnter = 34, onExit = 18, name  = "Floor Cam Controller"},
+		{pos = {x = 0, y = 7.25}, size = {x=85, y=5}, onEnter = 34, onExit = 18, name  = "Floor Cam Controller"},
 	}
 
 	for k, v in ipairs(camControllers) do
@@ -100,8 +105,8 @@ function CreateObjects()
 	
 	exitListeners = 
 	{
-		  {pos = {x = -50+2.5,  y = 17.25}, size = {x = 5, y = 5}, name="Exit to Platformer I", destination = "Platforming"}
-		, {pos = {x = 50-2.5,  y = 17.25}, size = {x = 5, y = 5}, name="Exit to Platformer III", destination = "Platforming III"}
+		  {pos = {x = -12.5,  y = 12.5}, size = {x = 4.5, y = 4.5}, name="Exit to Platformer I", destination = "Platforming"}
+		, {pos = {x = 13,  y = 2.5}, size = {x = 4.5, y = 4.5}, name="Exit to Platformer III", destination = "Platforming III"}
 	}
 	
 	for k, v in ipairs(exitListeners) do
