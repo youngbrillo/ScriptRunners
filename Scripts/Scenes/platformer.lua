@@ -36,6 +36,15 @@ function onKeyPress(key)
 	--ScriptedKeyPress(key);
 end
 
+
+function onBeginContact(A, B)
+	ListenForSceneTransitionContact(A, B);
+end
+
+function onEndContact(A, B)
+
+end
+
 function DrawInstructions()
 	text = "Build a path to the upmost platform to proceed";
 	local fontSize = 20;
@@ -148,7 +157,57 @@ function GenEnvironment2()
 	--GenerateBreakableBoxes();
 	AddCameraControllers();
 	BuildPullySystem();
+
+
+	
+	exitListeners = 
+	{
+		{pos = {x = 0,  y = -8}, size = {x = 1, y = 1}, name="Exit: PlatformerII", destination = "Platforming II"}
+	}
+	
+	for k, v in ipairs(exitListeners) do
+		local e  = Scene.CreateNode2d(v.name);
+		e.transform.position:set(v.pos.x, v.pos.y);
+		e.transform.size:set(v.size.x, v.size.y);
+		e.transform:Center();
+		e.material:SetColorVec(0.5, 0.5, 0.5,0.5)
+		e.visible = true;
+		e.rigidbody.fixDef.isSensor = true;
+		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
+		v.node = e;
+	end
 end				  
+
+function ListenForSceneTransitionContact(A, B)
+	local other = nil;
+	local target = nil
+	for k, v in ipairs(exitListeners) do
+		if(v.node.Name == A.Name) then
+			target = v;
+			other = B;
+			break;
+		elseif(v.node.Name == B.Name) then
+			target = v;
+			other = A;
+			break;
+		end
+	end
+
+	if(other ~= nil and target ~= nil) then
+		--print("A Node: [", target.name, "] Collided with an exit listner [", other.Name , "]")
+		if(other.Name == mPlayer.Name) then
+			--print("And the listenr is the player!!")
+			App.GoToScene(target.destination)
+
+		end
+	end
+
+	--print("contact found: ",A.Name, B.Name)
+end
+
+
+
+
 
 function AddCameraControllers()
 
@@ -254,6 +313,18 @@ function BuildPullySystem()
 		} 
 	);
 end
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 -- Scripted functions -- /////////////////////////////////////////////////////////////////////////////////////////////

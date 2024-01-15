@@ -18,6 +18,14 @@ function UIDraw()
 	DrawInstructions();
 end
 
+function onBeginContact(A, B)
+	ListenForSceneTransitionContact(A, B);
+end
+
+function onEndContact(A, B)
+
+end
+
 
 
 function CreateBackGrounds() 
@@ -88,9 +96,50 @@ function CreateObjects()
 		e.onExit.zoom = v.onExit;
 		e.visible = false;
 	end
+	
+	
+	exitListeners = 
+	{
+		  {pos = {x = -50+2.5,  y = 17.25}, size = {x = 5, y = 5}, name="Exit to Platformer I", destination = "Platforming"}
+		, {pos = {x = 50-2.5,  y = 17.25}, size = {x = 5, y = 5}, name="Exit to Platformer III", destination = "Platforming III"}
+	}
+	
+	for k, v in ipairs(exitListeners) do
+		local e  = Scene.CreateNode2d(v.name);
+		e.transform.position:set(v.pos.x, v.pos.y);
+		e.transform.size:set(v.size.x, v.size.y);
+		e.transform:Center();
+		e.material:SetColorVec(0.5, 0.5, 0.5,0.5)
+		e.visible = true;
+		e.rigidbody.fixDef.isSensor = true;
+		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
+		v.node = e;
+	end
 
 end
 function DrawInstructions() 
 	Raylib.DrawText("Platformer II", 25, 25, 25, 0xffffffff)
 
+end
+
+function ListenForSceneTransitionContact(A, B)
+	local other = nil;
+	local target = nil
+	for k, v in ipairs(exitListeners) do
+		if(v.node.Name == A.Name) then
+			target = v;
+			other = B;
+			break;
+		elseif(v.node.Name == B.Name) then
+			target = v;
+			other = A;
+			break;
+		end
+	end
+
+	if(other ~= nil and target ~= nil) then
+		if(other.Name == mPlayer.Name) then
+			App.GoToScene(target.destination)
+		end
+	end
 end
