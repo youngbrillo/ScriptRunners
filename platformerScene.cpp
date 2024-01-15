@@ -251,4 +251,4 @@ void AutoMationEventScene::PollEvents() {
     camera.offset = Vector2{ GetScreenWidth() / 2.0f, GetScreenHeight() / 2.0f };
 }
 
-static int scene000 = RegisterScene("Template", "Platformer", AutoMationEventScene::Create);
+//static int scene000 = RegisterScene("Template", "Platformer", AutoMationEventScene::Create);

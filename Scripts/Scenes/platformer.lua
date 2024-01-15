@@ -43,6 +43,15 @@ function DrawInstructions()
 	local _x, _y = Raylib.MeasureText(text, fontSize)
 	Raylib.DrawRectangle(pos.x - fontSize/2, pos.y - (_y + fontSize/2), _x + fontSize, _y + fontSize, 0xCECE007F)
 	Raylib.DrawText(text, pos.x, pos.y - _y, fontSize, 0xffffffff)
+
+
+	instructionText = "Todo:\n- Add onBeginContact / onEndContact handlers in Lua\n- Simulate Collectables\n- Add Interactable objects (switches, levers, doors)\n - Scene Transition to another Scene";
+	_x, _y = Raylib.MeasureText(instructionText, fontSize)
+	pos = {x = Raylib.GetScreenWidth() - (_x + fontSize), y = Raylib.GetScreenHeight() - (_y + fontSize)};
+
+	
+	Raylib.DrawRectangle(pos.x - fontSize/2, pos.y - (fontSize/2), _x + fontSize, _y + fontSize, 0x00CE007F)
+	Raylib.DrawText(instructionText, pos.x, pos.y , fontSize, 0xffffffff)
 end
 
 function LoadBackgroundTextures()

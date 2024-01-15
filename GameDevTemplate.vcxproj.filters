@@ -508,7 +508,7 @@
     <None Include="Scripts\Scenes\MissleCommander.lua">
       <Filter>Scripts\Scenes</Filter>
     </None>
-    <None Include="Scripts\Scenes\Action.lua">
+    <None Include="Scripts\Scenes\platformerII.lua">
       <Filter>Scripts\Scenes</Filter>
     </None>
     <None Include="Assets\Textures\dummy_animations.json">
@@ -517,5 +517,6 @@
     <None Include="Assets\Textures\dummy.json">
       <Filter>Assets</Filter>
     </None>
+    <None Include="Scripts\Scenes\platformerIII.lua" />
   </ItemGroup>
 </Project>

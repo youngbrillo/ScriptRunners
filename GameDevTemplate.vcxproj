@@ -283,13 +283,14 @@
   <ItemGroup>
     <None Include="Assets\Textures\dummy.json" />
     <None Include="Assets\Textures\dummy_animations.json" />
-    <None Include="Scripts\Scenes\Action.lua" />
+    <None Include="Scripts\Scenes\platformerII.lua" />
     <None Include="Scripts\Scenes\BreakoutScene.lua" />
     <None Include="Scripts\Scenes\demoScene.lua" />
     <None Include="Scripts\Manager\TextureManager.lua" />
     <None Include="Scripts\Scenes\MissleCommander.lua" />
     <None Include="Scripts\Scenes\platformer.lua" />
     <None Include="Scripts\Components\Player.lua" />
+    <None Include="Scripts\Scenes\platformerIII.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
