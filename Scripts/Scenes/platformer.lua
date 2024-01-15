@@ -54,7 +54,7 @@ function DrawInstructions()
 	Raylib.DrawText(text, pos.x, pos.y - _y, fontSize, 0xffffffff)
 
 
-	instructionText = "Todo:\n- Add onBeginContact / onEndContact handlers in Lua\n- Simulate Collectables\n- Add Interactable objects (switches, levers, doors)\n - Scene Transition to another Scene";
+	instructionText = "Todo:\n- Simulate Collectables\n- Add Interactable objects (switches, levers, doors)\n- Pickup/Drop Objects\n- Particle System";
 	_x, _y = Raylib.MeasureText(instructionText, fontSize)
 	pos = {x = Raylib.GetScreenWidth() - (_x + fontSize), y = Raylib.GetScreenHeight() - (_y + fontSize)};
 
@@ -154,7 +154,7 @@ function GenEnvironment2()
 	mPlayer.textureScale:set(4, 2)
 
 	App.GetCamera().zoom = 34;
-	--GenerateBreakableBoxes();
+	GenerateBreakableBoxes();
 	AddCameraControllers();
 	BuildPullySystem();
 
