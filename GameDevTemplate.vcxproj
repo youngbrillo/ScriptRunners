@@ -196,7 +196,7 @@
     <ClCompile Include="ModelLoading.cpp" />
     <ClCompile Include="Node2d.cpp" />
     <ClCompile Include="PlatformerController.cpp" />
-    <ClCompile Include="miss_commander.cpp" />
+    <ClCompile Include="Scene2dExample.cpp" />
     <ClCompile Include="RayExtend.cpp" />
     <ClCompile Include="RaylibTemplateScene.cpp" />
     <ClCompile Include="rlImGui.cpp" />
@@ -204,6 +204,7 @@
     <ClCompile Include="Scene2d.cpp" />
     <ClCompile Include="Scene3d.cpp" />
     <ClCompile Include="Scene3dExample.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Script2d.cpp" />
     <ClCompile Include="Snake.cpp" />
     <ClCompile Include="platformerScene.cpp" />
@@ -274,6 +275,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Scene2d.h" />
     <ClInclude Include="Scene3d.h" />
+    <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Script2d.h" />
     <ClInclude Include="Sprite2d.h" />
     <ClInclude Include="TextureManager.h" />
@@ -287,7 +289,7 @@
     <None Include="Scripts\Manager\TextureManager.lua" />
     <None Include="Scripts\Scenes\MissleCommander.lua" />
     <None Include="Scripts\Scenes\platformer.lua" />
-    <None Include="Scripts\Scenes\Player.lua" />
+    <None Include="Scripts\Components\Player.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

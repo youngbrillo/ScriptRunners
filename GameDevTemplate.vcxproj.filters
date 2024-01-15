@@ -237,7 +237,7 @@
     <ClCompile Include="Scene2d.cpp">
       <Filter>Scenes\base</Filter>
     </ClCompile>
-    <ClCompile Include="miss_commander.cpp">
+    <ClCompile Include="Scene2dExample.cpp">
       <Filter>Scenes</Filter>
     </ClCompile>
     <ClCompile Include="Extentions2d.cpp">
@@ -281,6 +281,9 @@
     </ClCompile>
     <ClCompile Include="Scene3dExample.cpp">
       <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -482,6 +485,9 @@
     <ClInclude Include="Scene3d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\Manager\TextureManager.lua">
@@ -496,7 +502,7 @@
     <None Include="Scripts\Scenes\platformer.lua">
       <Filter>Scripts\Scenes</Filter>
     </None>
-    <None Include="Scripts\Scenes\Player.lua">
+    <None Include="Scripts\Components\Player.lua">
       <Filter>Scripts\components</Filter>
     </None>
     <None Include="Scripts\Scenes\MissleCommander.lua">
