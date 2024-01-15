@@ -39,7 +39,7 @@ public:
     ECS::Camera2d camera;
     std::vector<std::shared_ptr<ECS::Node2d>> Nodes;
     int NodeA = -1, NodeB = -1;
-    bool tryUpdate, tryDraw, tryUIDraw, tryPoll;
+    bool tryUpdate, tryDraw, tryUIDraw, tryPoll, tryBeginContact, tryEndContact;
 
     b2World* world;
     ECS::Box2dDraw b2drawer;

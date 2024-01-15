@@ -11,6 +11,8 @@ Scene2d::Scene2d(const char* path)
 	, tryDraw(true)
 	, tryUIDraw(true)
 	, tryPoll(true)
+	, tryBeginContact(true)
+	, tryEndContact(true)
 	, world(NULL)
 	, b2drawer()
 	, boxMouse(NULL)
@@ -183,6 +185,18 @@ void Scene2d::BeginContact(b2Contact* contact)
 	if (!validateContact(contact, A, B)) return;
 	A->BeginContact(contact, B.get());
 	B->BeginContact(contact, A.get());
+
+	if (tryBeginContact && script.enabled)
+	{
+		try {
+			luabridge::LuaRef func = luabridge::getGlobal(script.L, "onBeginContact");
+			func(A.get(), B.get());
+		}
+		catch (luabridge::LuaException const& e) {
+			printf("error in '%s'\t%s\n", "onBeginContact", e.what());
+			tryBeginContact = false;
+		}
+	}
 }
 
 void Scene2d::EndContact(b2Contact* contact)
@@ -192,6 +206,19 @@ void Scene2d::EndContact(b2Contact* contact)
 	if (!validateContact(contact, A, B)) return;
 	A->EndContact(contact, B.get());
 	B->EndContact(contact, A.get());
+
+
+	if (tryEndContact && script.enabled)
+	{
+		try {
+			luabridge::LuaRef func = luabridge::getGlobal(script.L, "onEndContact");
+			func(A.get(), B.get());
+		}
+		catch (luabridge::LuaException const& e) {
+			printf("error in '%s'\t%s\n", "onEndContact", e.what());
+			tryEndContact = false;
+		}
+	}
 }
 
 void Scene2d::PreSolve(b2Contact* contact, const b2Manifold* oldManifold)
