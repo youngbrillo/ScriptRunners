@@ -132,6 +132,15 @@ namespace ECS
 			.endNamespace();
 	}
 	void ExtendNode2d(lua_State* L) {
+		std::function<void(ECS::Node2d*, float, float)> setPosition = [](ECS::Node2d* n, float x, float y) {
+			n->transform.position.x = x;
+			n->transform.position.y = y;
+			if (n->rigidbody.enabled())
+			{
+				n->rigidbody.body->SetTransform(b2Vec2{ x, y }, n->rigidbody.body->GetAngle());
+			}
+		};
+
 
 		luabridge::getGlobalNamespace(L)
 			.beginNamespace("ECS")
@@ -147,6 +156,7 @@ namespace ECS
 			.addData("speed", &ECS::Node2d::speed)
 			.addData("solid", &ECS::Node2d::solid)
 			.addData("textureScale", &ECS::Node2d::textureScale)
+			.addFunction("setPosition", setPosition)
 			.endClass()
 			.endNamespace();
 	}

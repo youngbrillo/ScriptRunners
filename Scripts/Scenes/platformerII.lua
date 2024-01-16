@@ -62,6 +62,9 @@ function CreateEnvironments()
          , {name="sub wall.l", x = -15,	y = 12.75,	w=.5,  h=5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
          , {name="sub wall.r", x = 0.5,	y = 12.75,	w=.5,  h=5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
          , {name="float floor 1", x = 7.75,	y = 5,	w=15,  h=.5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
+         , {name="Large obstacle a", x = -11,	y = 7.225,	w=15,  h=5 , blocking =true, color = 0x6ca3c3ff , density = 10.0, dynamic = true}
+         , {name="Large obstacle b", x = 12.75,	y =2.25,	w=5,  h=5 , blocking =true, color = 0x6ca3c3ff , density = 5.0, dynamic = true}
+         , {name="top wall.r", x = 15.5,	y = 2.75,	w=.5,  h=5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
 	}
 
 	for k, v in ipairs(elements) do
@@ -72,21 +75,23 @@ function CreateEnvironments()
 		e.material:SetColor(v.color);
 		if(v.dynamic) then
 			e.rigidbody.bdyDef.type = 2
-			e.rigidbody.fixDef.density = 1.0;
+			e.rigidbody.fixDef.density = v.density
 		end
 		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
 	end
-	App.GetCamera().zoom = 18;
+	App.GetCamera().zoom = 48;
+	App.GetCamera().target:set(-3, 8.5);
 end
 function CreateObjects() 
 	TextureManager.Add("Assets/Textures/dummy", "dummy")
 	mPlayer = Scene.CreatePlayerController("Player Controller", "dummy");
 	mPlayer.textureScale:set(4, 2)
+	mPlayer:setPosition(-3.0, 8.5)
 
 	--add camera controller to floor
 	local camControllers = 
 	{
-		{pos = {x = 0, y = 7.25}, size = {x=85, y=5}, onEnter = 34, onExit = 18, name  = "Floor Cam Controller"},
+	--	{pos = {x = 0, y = 7.25}, size = {x=85, y=5}, onEnter = 34, onExit = 18, name  = "Floor Cam Controller"},
 	}
 
 	for k, v in ipairs(camControllers) do
@@ -106,7 +111,7 @@ function CreateObjects()
 	exitListeners = 
 	{
 		  {pos = {x = -12.5,  y = 12.5}, size = {x = 4.5, y = 4.5}, name="Exit to Platformer I", destination = "Platforming"}
-		, {pos = {x = 13,  y = 2.5}, size = {x = 4.5, y = 4.5}, name="Exit to Platformer III", destination = "Platforming III"}
+		, {pos = {x = 13,  y = 2.5}, size = {x = 4, y = 4}, name="Exit to Platformer III", destination = "Platforming III"}
 	}
 	
 	for k, v in ipairs(exitListeners) do
