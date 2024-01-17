@@ -126,6 +126,23 @@ function CreateObjects()
 		v.node = e;
 	end
 
+
+	--//create triggers to move the boxes
+	interactables = {
+		{name="big box mover", pos={x = 7, y=8.75}, size={x = 2, y = 2}}
+	}
+	for k, v in ipairs(interactables) do
+		local e = Scene.CreateInteractableNode(v.name);
+
+		e.transform.position:set(v.pos.x, v.pos.y);
+		e.transform.size:set(v.size.x, v.size.y);
+		e.transform:Center();
+		v.node = e;
+		
+		e.rigidbody.fixDef.isSensor = true;
+		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
+		e:setObserver(mPlayer);
+	end
 end
 function DrawInstructions() 
 	Raylib.DrawText("Platformer II", 25, 25, 25, 0xffffffff)

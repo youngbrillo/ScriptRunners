@@ -286,6 +286,8 @@ void Scene2d::InitScript(const char* path)
 #include "PlatformerController.h"
 #include "Sprite2d.h"
 #include "CameraController2d.h"
+#include "InteractableNode.h"
+
 static ECS::Node2d* CreatePlayerControllerNode(const char* name, const char* alias)
 {
 	Scene2d::Instance()->Nodes.emplace_back(std::make_shared<ECS::PlatformerController>(name, alias));
@@ -308,6 +310,13 @@ static ECS::CameraController2d* CreateCameraController2dNode(const char* name)
 	return node.get();
 }
 
+static ECS::InteractableNode* CreateInteractableNode(const char* name)
+{
+	auto  node =
+		std::make_shared<ECS::InteractableNode>(name);
+	Scene2d::Instance()->Nodes.emplace_back(node);
+	return node.get();
+}
 void Scene2d::Extend(lua_State* L)
 {
 	auto getCameraFunction = std::function<Camera2D* (void)>([]() {return &Scene2d::Instance()->camera.cam; });
@@ -327,10 +336,12 @@ void Scene2d::Extend(lua_State* L)
 			.addFunction("CreatePlayerController", CreatePlayerControllerNode)
 			.addFunction("CreateSprite2d", CreateSprite2dNode)
 			.addFunction("CreateCameraController2d", CreateCameraController2dNode)
+			.addFunction("CreateInteractableNode", CreateInteractableNode)
 			.addFunction("GetWorld", GetWorld)
 		.endNamespace();
 
 	ECS::Sprite2d::Extend(L);
 	ECS::CameraController2d::Extend(L);
+	ECS::InteractableNode::Extend(L);
 
 }
