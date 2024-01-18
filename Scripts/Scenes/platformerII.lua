@@ -20,12 +20,18 @@ end
 
 function onBeginContact(A, B)
 	ListenForSceneTransitionContact(A, B);
+	handleInteractableContact(A, B, true);
 end
 
 function onEndContact(A, B)
+	handleInteractableContact(A, B, false);
 
 end
 
+function onKeyPress(key)
+	--print(key)
+	listenForKeyPress(key);
+end
 
 
 function CreateBackGrounds() 
@@ -56,13 +62,13 @@ end
 function CreateEnvironments() 
 
 	elements =  {
-         {name="floor", x = 22.5,	y = 10,	w=55,  h=.5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
+           {name="floor", x = 22.5,	y = 10,	w=55,  h=.5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
          , {name="floor frag.1", x = -32.375,	y = 10,	w=35.25,  h=.5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
          , {name="sub floor 1", x = -7.25,	y = 15,	w=15,  h=.5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
          , {name="sub wall.l", x = -15,	y = 12.75,	w=.5,  h=5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
          , {name="sub wall.r", x = 0.5,	y = 12.75,	w=.5,  h=5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
          , {name="float floor 1", x = 7.75,	y = 5,	w=15,  h=.5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
-         , {name="Large obstacle a", x = -11,	y = 7.225,	w=15,  h=5 , blocking =true, color = 0x6ca3c3ff , density = 10.0, dynamic = true}
+         , {name="Large obstacle a", x = -8.325,	y = 7.225,	w=17,  h=5 , blocking =true, color = 0x6ca3c3ff , density = 10.0, dynamic = true}
          , {name="Large obstacle b", x = 12.75,	y =2.25,	w=5,  h=5 , blocking =true, color = 0x6ca3c3ff , density = 5.0, dynamic = true}
          , {name="top wall.r", x = 15.5,	y = 2.75,	w=.5,  h=5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
 	}
@@ -78,20 +84,23 @@ function CreateEnvironments()
 			e.rigidbody.fixDef.density = v.density
 		end
 		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
+
+		v.node = e;
+		v.alive = true;
 	end
 	App.GetCamera().zoom = 48;
-	App.GetCamera().target:set(-3, 8.5);
+	App.GetCamera().target:set(3, 8.5);
 end
 function CreateObjects() 
 	TextureManager.Add("Assets/Textures/dummy", "dummy")
 	mPlayer = Scene.CreatePlayerController("Player Controller", "dummy");
 	mPlayer.textureScale:set(4, 2)
-	mPlayer:setPosition(-3.0, 8.5)
+	mPlayer:setPosition(3.0, 8.5)
 
 	--add camera controller to floor
 	local camControllers = 
 	{
-		{pos = {x = 0, y = 7.25}, size = {x=85, y=5}, onEnter = 34, onExit = 18, name  = "Floor Cam Controller"},
+		--{pos = {x = 0, y = 7.25}, size = {x=85, y=5}, onEnter = 34, onExit = 18, name  = "Floor Cam Controller"},
 	}
 
 	for k, v in ipairs(camControllers) do
@@ -105,6 +114,7 @@ function CreateObjects()
 		e.onEnter.zoom = v.onEnter;
 		e.onExit.zoom = v.onExit;
 		e.visible = false;
+		v.node = e;
 	end
 	
 	
@@ -124,13 +134,53 @@ function CreateObjects()
 		e.rigidbody.fixDef.isSensor = true;
 		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
 		v.node = e;
+		v.alive = true;
 	end
 
 
-	TextureManager.Add("Assets/Textures/buttons", "buttons")
 	--//create triggers to move the boxes
+	--TextureManager.Add("Assets/Textures/buttons", "buttons")
+	TextureManager.Add("Assets/Textures/kenny/inputs", "inputs")
+
+
+	local function _destroy_node_7()
+		if elements[7].alive then 
+			elements[7].node.alive = false;
+			elements[7].alive = false;
+			print("Good by buck-o!")
+		end
+	end
+	
+	local function _destroy_node_8()
+		if elements[8].alive then 
+			elements[8].node.alive = false;
+			elements[8].alive = false;
+			print("Good by buck-o!")
+		end
+	end
+
 	interactables = {
-		{name="big box mover", pos={x = 7, y=9.25}, size={x = 2, y = 1}, texture="buttons"}
+		{
+			name="big box mover", 
+			pos={x = 7, y=9.25}, 
+			size={x = 1, y = 1}, 
+			color = 0xffffff7E, 
+			icon={texture="inputs", frame = {x=323, y= 170, w= 16,h= 16}},
+			onBeginContact = _destroy_node_7,
+			Activation_key = 69,
+			isActivated = false
+		}
+		,{
+			name="small box mover", 
+			pos={x = -21, y=9.25}, 
+			size={x = 1, y = 1}, 
+			color = 0xffffff7E, 
+			icon={texture="inputs", frame = {x=323, y= 170, w= 16,h= 16}},
+			onBeginContact = _destroy_node_8,
+			Activation_key = 69,
+			isActivated = false
+		}
+
 	}
 	for k, v in ipairs(interactables) do
 		local e = Scene.CreateInteractableNode(v.name);
@@ -138,15 +188,15 @@ function CreateObjects()
 		e.transform.position:set(v.pos.x, v.pos.y);
 		e.transform.size:set(v.size.x, v.size.y);
 		e.transform:Center();
-		v.node = e;
-		e.material:SetTexture(v.texture)
-		e.material.source:set(0, 5, 64, 64);
-		e.textureScale.y = 2;
-
-		e.rigidbody.fixDef.isSensor = false;
+		e.material:SetColor(v.color)
+		e.rigidbody.fixDef.isSensor = true;
 		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
 		e:setIconDestination(0, -(e.transform.size.y + 0.5), 1.0, 1.0)
+		e:setIconTexture(v.icon.texture)
+		e:setIconFrame(v.icon.frame.x, v.icon.frame.y, v.icon.frame.w, v.icon.frame.h)
 		e:setObserver(mPlayer);
+		v.node = e;
+
 	end
 end
 function DrawInstructions() 
@@ -175,3 +225,52 @@ function ListenForSceneTransitionContact(A, B)
 		end
 	end
 end
+
+function handleInteractableContact(A, B, BeginingContact)
+	local other = nil;
+	local target = nil
+	local object = nil;
+	for k, v in ipairs(interactables) do
+		if(v.node.Name == A.Name) then
+			target = v;
+			other = B;
+			object = v;
+			break;
+		elseif v.node.Name == B.Name then
+			target = v;
+			other = A;
+			object = v;
+			break;
+		end
+	end
+
+	if other ~= nil and target ~= nil then
+		if other.Name == target.node.observer.Name then
+			onInteractableAction(object, target.node.observer, BeginingContact);
+		end
+	end
+end
+
+
+function onInteractableAction(obj, trigger, isBeginContact)
+	--print("is Begin Contact? ", isBeginContact, "object: ", obj.name, "Trigger: ", trigger.Name)
+
+	obj.isActivated = isBeginContact;
+	--[[
+	if(isBeginContact and obj.onBeginContact ~= nil) then
+		obj.isActivated;
+	elseif obj.onEndContact ~= nil then
+		obj.onEndContact();
+	end
+	]]
+
+end
+
+function listenForKeyPress(key)
+	for k, v in ipairs(interactables) do
+		if v.isActivated and key == v.Activation_key and v.onBeginContact ~= nil then
+			v.onBeginContact();
+		end
+	end
+end
+
