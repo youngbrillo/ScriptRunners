@@ -78,10 +78,8 @@ function LoadBackgroundTextures()
 	table.insert(bgTextures, {id = TextureManager.Add(base_path..cloud_path.."6", "bg_6"), name = "bg_6"});
 	
 
-	print(">>>>>>>>>>>>>>>");
 	for k, v in ipairs(bgTextures)
 	do
-		print(">>>>>", k, v.id, v.name);
 		local p = Scene.CreateNode2d("Background-"..v.name);
 		p.transform.size.x = 100;
 		p.transform.size.y = 40;
@@ -90,7 +88,6 @@ function LoadBackgroundTextures()
 		p.material.uv_scroll:set(2 * (k-1), 0)
 
 	end
-	print(">>>>>>>>>>>>>>>\n\n\n\n");
 
 
 
@@ -147,8 +144,6 @@ function GenEnvironment2()
 		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
 	end
 
-
-
 	TextureManager.Add("Assets/Textures/dummy", "dummy")
 	mPlayer = Scene.CreatePlayerController("Player Controller", "dummy");
 	mPlayer.textureScale:set(4, 2)
@@ -157,8 +152,6 @@ function GenEnvironment2()
 	GenerateBreakableBoxes();
 	AddCameraControllers();
 	BuildPullySystem();
-
-
 	
 	exitListeners = 
 	{

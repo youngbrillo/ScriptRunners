@@ -68,9 +68,7 @@ function CreateEnvironments()
          , {name="sub wall.l", x = -15,	y = 12.75,	w=.5,  h=5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
          , {name="sub wall.r", x = 0.5,	y = 12.75,	w=.5,  h=5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
          , {name="float floor 1", x = 7.75,	y = 5,	w=15,  h=.5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
-         , {name="Large obstacle a", x = -8.325,	y = 7.225,	w=17,  h=5 , blocking =true, color = 0x6ca3c3ff , density = 10.0, dynamic = true}
-         , {name="Large obstacle b", x = 12.75,	y =2.25,	w=5,  h=5 , blocking =true, color = 0x6ca3c3ff , density = 5.0, dynamic = true}
-         , {name="top wall.r", x = 15.5,	y = 2.75,	w=.5,  h=5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
+         ,  {name="top wall.r", x = 15.5,	y = 2.75,	w=.5,  h=5 , blocking =true, color = 0x6ca3c3ff , hasShadow = false, dynamic = false}
 	}
 
 	for k, v in ipairs(elements) do
@@ -88,6 +86,38 @@ function CreateEnvironments()
 		v.node = e;
 		v.alive = true;
 	end
+
+
+	doors = {
+		{	name="Large obstacle a", x = -8.325,	y = 7.225,	w=17,  h=5 , blocking =true, color = 0x6ca3c3ff , density = 10.0, 
+			definition = {
+				x = 1, y = 0, motorSpeed = -10.0, maxMotorForce = 10000.0, enableMotor = false, enableLimit = true,
+				lowerTranslation = -15, upperTranslation = 0
+			}
+		},
+		{	name="Large obstacle b", x = 12.75,	y =2.25,	w=4.5,  h=4.5 , blocking =true, color = 0x6ca3c3ff , density = 5.0, 
+			definition = {
+				x = 0, y = 1, motorSpeed = -10.0, maxMotorForce = 10000.0, enableMotor = false, enableLimit = true,
+				lowerTranslation = -10, upperTranslation = 5
+			}
+		}
+	}
+	
+	for k, v in ipairs(doors) do
+		local e = Scene.CreateNode2d(v.name);
+		e.transform.position:set(v.x, v.y);
+		e.transform.size:set(v.w, v.h);
+		e.transform:Center();
+		e.material:SetColor(v.color);
+		e.rigidbody.bdyDef.type = 2
+		e.rigidbody.fixDef.density = v.density
+		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
+		v.node = e;
+		v.joint = b2d.CreatePrismaticJoint(Scene.GetWorld(), elements[1].node, e, v.definition)
+		v.motorEnabled = false;
+	end
+
+
 	App.GetCamera().zoom = 48;
 	App.GetCamera().target:set(3, 8.5);
 end
@@ -100,7 +130,8 @@ function CreateObjects()
 	--add camera controller to floor
 	local camControllers = 
 	{
-		--{pos = {x = 0, y = 7.25}, size = {x=85, y=5}, onEnter = 34, onExit = 18, name  = "Floor Cam Controller"},
+		--{pos = {x = 5.25, y = 7.25}, size = {x=10, y=5}, onEnter = 34, onExit = 18, name  = "Floor Cam Controller"},
+		--{pos = {x = -7, y = 7.25}, size = {x=20, y=5}, onEnter = 18, onExit = 18, name  = "wide view CCTV"},
 	}
 
 	for k, v in ipairs(camControllers) do
@@ -144,19 +175,12 @@ function CreateObjects()
 
 
 	local function _destroy_node_7()
-		if elements[7].alive then 
-			elements[7].node.alive = false;
-			elements[7].alive = false;
-			print("Good by buck-o!")
-		end
+		doors[1].motorEnabled = not doors[1].motorEnabled;
+		doors[1].joint:EnableMotor(doors[1].motorEnabled)
 	end
 	
 	local function _destroy_node_8()
-		if elements[8].alive then 
-			elements[8].node.alive = false;
-			elements[8].alive = false;
-			print("Good by buck-o!")
-		end
+		print("Good by buck-ooooooo!")
 	end
 
 	interactables = {
@@ -196,8 +220,10 @@ function CreateObjects()
 		e:setIconFrame(v.icon.frame.x, v.icon.frame.y, v.icon.frame.w, v.icon.frame.h)
 		e:setObserver(mPlayer);
 		v.node = e;
-
 	end
+
+
+
 end
 function DrawInstructions() 
 	Raylib.DrawText("Platformer II", 25, 25, 25, 0xffffffff)
