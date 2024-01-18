@@ -91,7 +91,7 @@ function CreateObjects()
 	--add camera controller to floor
 	local camControllers = 
 	{
-	--	{pos = {x = 0, y = 7.25}, size = {x=85, y=5}, onEnter = 34, onExit = 18, name  = "Floor Cam Controller"},
+		{pos = {x = 0, y = 7.25}, size = {x=85, y=5}, onEnter = 34, onExit = 18, name  = "Floor Cam Controller"},
 	}
 
 	for k, v in ipairs(camControllers) do
@@ -127,9 +127,10 @@ function CreateObjects()
 	end
 
 
+	TextureManager.Add("Assets/Textures/buttons", "buttons")
 	--//create triggers to move the boxes
 	interactables = {
-		{name="big box mover", pos={x = 7, y=8.75}, size={x = 2, y = 2}}
+		{name="big box mover", pos={x = 7, y=9.25}, size={x = 2, y = 1}, texture="buttons"}
 	}
 	for k, v in ipairs(interactables) do
 		local e = Scene.CreateInteractableNode(v.name);
@@ -138,9 +139,13 @@ function CreateObjects()
 		e.transform.size:set(v.size.x, v.size.y);
 		e.transform:Center();
 		v.node = e;
-		
-		e.rigidbody.fixDef.isSensor = true;
+		e.material:SetTexture(v.texture)
+		e.material.source:set(0, 5, 64, 64);
+		e.textureScale.y = 2;
+
+		e.rigidbody.fixDef.isSensor = false;
 		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
+		e:setIconDestination(0, -(e.transform.size.y + 0.5), 1.0, 1.0)
 		e:setObserver(mPlayer);
 	end
 end
