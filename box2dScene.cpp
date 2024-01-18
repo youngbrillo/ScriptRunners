@@ -23,6 +23,8 @@ public:
 		world->SetDebugDraw(&drawer);
 		camera.cam.zoom = 1.0f;
 		boxMouse = new Box2dMouse(world);
+		drawer.e_joint = true;
+		drawer.setInternalFlags();
 	}
 	virtual ~Box2dBaseScene()
 	{
@@ -514,9 +516,430 @@ public:
 
 	static Scene* Create() { return new Box2dScene_PullyJoint; }
 };
+class GearJoint : Box2dBaseScene
+{
+private:
+	b2RevoluteJoint* m_joint1, * m_joint2;
+	b2PrismaticJoint* m_joint3;
+	b2GearJoint * m_joint4, * m_joint5;
 
+public: 
+	GearJoint() : Box2dBaseScene() 
+	{
+
+		b2Body* ground = NULL;
+		{
+			b2BodyDef bd;
+			ground = world->CreateBody(&bd);
+
+			b2EdgeShape shape;
+			shape.SetTwoSided(b2Vec2(50.0f, 0.0f), b2Vec2(-50.0f, 0.0f));
+			ground->CreateFixture(&shape, 0.0f);
+		}
+
+		{
+			b2CircleShape circle1;
+			circle1.m_radius = 1.0f;
+
+			b2PolygonShape box;
+			box.SetAsBox(0.5f, 5.0f);
+
+			b2CircleShape circle2;
+			circle2.m_radius = 2.0f;
+
+			b2BodyDef bd1;
+			bd1.type = b2_staticBody;
+			bd1.position.Set(10.0f, 9.0f);
+			b2Body* body1 = world->CreateBody(&bd1);
+			body1->CreateFixture(&circle1, 5.0f);
+
+			b2BodyDef bd2;
+			bd2.type = b2_dynamicBody;
+			bd2.position.Set(10.0f, 8.0f);
+			b2Body* body2 = world->CreateBody(&bd2);
+			body2->CreateFixture(&box, 5.0f);
+
+			b2BodyDef bd3;
+			bd3.type = b2_dynamicBody;
+			bd3.position.Set(10.0f, 6.0f);
+			b2Body* body3 = world->CreateBody(&bd3);
+			body3->CreateFixture(&circle2, 5.0f);
+
+			b2RevoluteJointDef jd1;
+			jd1.Initialize(body1, body2, bd1.position);
+			b2Joint* joint1 = world->CreateJoint(&jd1);
+
+			b2RevoluteJointDef jd2;
+			jd2.Initialize(body2, body3, bd3.position);
+			b2Joint* joint2 = world->CreateJoint(&jd2);
+
+			b2GearJointDef jd4;
+			jd4.bodyA = body1;
+			jd4.bodyB = body3;
+			jd4.joint1 = joint1;
+			jd4.joint2 = joint2;
+			jd4.ratio = circle2.m_radius / circle1.m_radius;
+			world->CreateJoint(&jd4);
+		}
+
+		{
+			b2CircleShape circle1;
+			circle1.m_radius = 1.0f;
+
+			b2CircleShape circle2;
+			circle2.m_radius = 2.0f;
+
+			b2PolygonShape box;
+			box.SetAsBox(0.5f, 5.0f);
+
+			b2BodyDef bd1;
+			bd1.type = b2_dynamicBody;
+			bd1.position.Set(-3.0f, 12.0f);
+			b2Body* body1 = world->CreateBody(&bd1);
+			body1->CreateFixture(&circle1, 5.0f);
+
+			b2RevoluteJointDef jd1;
+			jd1.bodyA = ground;
+			jd1.bodyB = body1;
+			jd1.localAnchorA = ground->GetLocalPoint(bd1.position);
+			jd1.localAnchorB = body1->GetLocalPoint(bd1.position);
+			jd1.referenceAngle = body1->GetAngle() - ground->GetAngle();
+			m_joint1 = (b2RevoluteJoint*)world->CreateJoint(&jd1);
+
+			b2BodyDef bd2;
+			bd2.type = b2_dynamicBody;
+			bd2.position.Set(0.0f, 12.0f);
+			b2Body* body2 = world->CreateBody(&bd2);
+			body2->CreateFixture(&circle2, 5.0f);
+
+			b2RevoluteJointDef jd2;
+			jd2.Initialize(ground, body2, bd2.position);
+			m_joint2 = (b2RevoluteJoint*)world->CreateJoint(&jd2);
+
+			b2BodyDef bd3;
+			bd3.type = b2_dynamicBody;
+			bd3.position.Set(2.5f, 12.0f);
+			b2Body* body3 = world->CreateBody(&bd3);
+			body3->CreateFixture(&box, 5.0f);
+
+			b2PrismaticJointDef jd3;
+			jd3.Initialize(ground, body3, bd3.position, b2Vec2(0.0f, 1.0f));
+			jd3.lowerTranslation = -5.0f;
+			jd3.upperTranslation = 5.0f;
+			jd3.enableLimit = true;
+
+			m_joint3 = (b2PrismaticJoint*)world->CreateJoint(&jd3);
+
+			b2GearJointDef jd4;
+			jd4.bodyA = body1;
+			jd4.bodyB = body2;
+			jd4.joint1 = m_joint1;
+			jd4.joint2 = m_joint2;
+			jd4.ratio = circle2.m_radius / circle1.m_radius;
+			m_joint4 = (b2GearJoint*)world->CreateJoint(&jd4);
+
+			b2GearJointDef jd5;
+			jd5.bodyA = body2;
+			jd5.bodyB = body3;
+			jd5.joint1 = m_joint2;
+			jd5.joint2 = m_joint3;
+			jd5.ratio = -1.0f / circle2.m_radius;
+			m_joint5 = (b2GearJoint*)world->CreateJoint(&jd5);
+		}
+	}
+	static Scene* Create() { return new GearJoint(); }
+};
+
+class sliderCrank1 : Box2dBaseScene
+{
+public:
+	sliderCrank1() : Box2dBaseScene() {
+
+		b2Body* ground = NULL;
+		{
+			b2BodyDef bd;
+			bd.position.Set(0.0f, 17.0f);
+			ground = world->CreateBody(&bd);
+		}
+
+		{
+			b2Body* prevBody = ground;
+
+			// Define crank.
+			{
+				b2PolygonShape shape;
+				shape.SetAsBox(4.0f, 1.0f);
+
+				b2BodyDef bd;
+				bd.type = b2_dynamicBody;
+				bd.position.Set(-8.0f, 20.0f);
+				b2Body* body = world->CreateBody(&bd);
+				body->CreateFixture(&shape, 2.0f);
+
+				b2RevoluteJointDef rjd;
+				rjd.Initialize(prevBody, body, b2Vec2(-12.0f, 20.0f));
+				world->CreateJoint(&rjd);
+
+				prevBody = body;
+			}
+
+			// Define connecting rod
+			{
+				b2PolygonShape shape;
+				shape.SetAsBox(8.0f, 1.0f);
+
+				b2BodyDef bd;
+				bd.type = b2_dynamicBody;
+				bd.position.Set(4.0f, 20.0f);
+				b2Body* body = world->CreateBody(&bd);
+				body->CreateFixture(&shape, 2.0f);
+
+				b2RevoluteJointDef rjd;
+				rjd.Initialize(prevBody, body, b2Vec2(-4.0f, 20.0f));
+				world->CreateJoint(&rjd);
+
+				prevBody = body;
+			}
+
+			// Define piston
+			{
+				b2PolygonShape shape;
+				shape.SetAsBox(3.0f, 3.0f);
+
+				b2BodyDef bd;
+				bd.type = b2_dynamicBody;
+				bd.fixedRotation = true;
+				bd.position.Set(12.0f, 20.0f);
+				b2Body* body = world->CreateBody(&bd);
+				body->CreateFixture(&shape, 2.0f);
+
+				b2RevoluteJointDef rjd;
+				rjd.Initialize(prevBody, body, b2Vec2(12.0f, 20.0f));
+				world->CreateJoint(&rjd);
+
+				b2PrismaticJointDef pjd;
+				pjd.Initialize(ground, body, b2Vec2(12.0f, 17.0f), b2Vec2(1.0f, 0.0f));
+				world->CreateJoint(&pjd);
+			}
+		}
+	}
+	static Scene* Create() { return new sliderCrank1(); }
+};
+
+class sliderCrank2 : Box2dBaseScene
+{
+public:
+	sliderCrank2() : Box2dBaseScene() {
+
+		b2Body* ground = NULL;
+		{
+			b2BodyDef bd;
+			ground = world->CreateBody(&bd);
+
+			b2EdgeShape shape;
+			shape.SetTwoSided(b2Vec2(-40.0f, 0.0f), b2Vec2(40.0f, 0.0f));
+			ground->CreateFixture(&shape, 0.0f);
+		}
+
+		{
+			b2Body* prevBody = ground;
+
+			// Define crank.
+			{
+				b2PolygonShape shape;
+				shape.SetAsBox(0.5f, 2.0f);
+
+				b2BodyDef bd;
+				bd.type = b2_dynamicBody;
+				bd.position.Set(0.0f, -7.0f);
+				b2Body* body = world->CreateBody(&bd);
+				body->CreateFixture(&shape, 2.0f);
+
+				b2RevoluteJointDef rjd;
+				rjd.Initialize(prevBody, body, b2Vec2(0.0f, -5.0f));
+				rjd.motorSpeed = 1.0f * b2_pi;
+				rjd.maxMotorTorque = 10000.0f;
+				rjd.enableMotor = true;
+				m_joint1 = (b2RevoluteJoint*)world->CreateJoint(&rjd);
+
+				prevBody = body;
+			}
+
+			// Define follower.
+			{
+				b2PolygonShape shape;
+				shape.SetAsBox(0.5f, 4.0f);
+
+				b2BodyDef bd;
+				bd.type = b2_dynamicBody;
+				bd.position.Set(0.0f, -13.0f);
+				b2Body* body = world->CreateBody(&bd);
+				body->CreateFixture(&shape, 2.0f);
+
+				b2RevoluteJointDef rjd;
+				rjd.Initialize(prevBody, body, b2Vec2(0.0f, -9.0f));
+				rjd.enableMotor = false;
+				world->CreateJoint(&rjd);
+
+				prevBody = body;
+			}
+
+			// Define piston
+			{
+				b2PolygonShape shape;
+				shape.SetAsBox(1.5f, 1.5f);
+
+				b2BodyDef bd;
+				bd.type = b2_dynamicBody;
+				bd.fixedRotation = true;
+				bd.position.Set(0.0f, -17.0f);
+				b2Body* body = world->CreateBody(&bd);
+				body->CreateFixture(&shape, 2.0f);
+
+				b2RevoluteJointDef rjd;
+				rjd.Initialize(prevBody, body, b2Vec2(0.0f, -17.0f));
+				world->CreateJoint(&rjd);
+
+				b2PrismaticJointDef pjd;
+				pjd.Initialize(ground, body, b2Vec2(0.0f, -17.0f), b2Vec2(0.0f, 1.0f));
+
+				pjd.maxMotorForce = 1000.0f;
+				pjd.enableMotor = true;
+
+				m_joint2 = (b2PrismaticJoint*)world->CreateJoint(&pjd);
+			}
+
+			// Create a payload
+			{
+				b2PolygonShape shape;
+				shape.SetAsBox(1.5f, 1.5f);
+
+				b2BodyDef bd;
+				bd.type = b2_dynamicBody;
+				bd.position.Set(0.0f, -23.0f);
+				b2Body* body = world->CreateBody(&bd);
+				body->CreateFixture(&shape, 2.0f);
+			}
+		}
+	}
+	virtual void Draw() override
+	{
+		Box2dBaseScene::Draw();
+		DrawText("[F] Engage Motor 1\n[M] Engage Motor 2", 25, 25, 20, RAYWHITE);
+	}
+	virtual void PollEvents() override
+	{
+		Box2dBaseScene::PollEvents();
+		if (IsKeyPressed(KEY_F))
+		{
+			m_joint2->EnableMotor(!m_joint2->IsMotorEnabled());
+			m_joint2->GetBodyB()->SetAwake(true);
+		}
+		if (IsKeyPressed(KEY_M))
+		{
+
+			m_joint1->EnableMotor(!m_joint1->IsMotorEnabled());
+			m_joint1->GetBodyB()->SetAwake(true);
+		}
+	}
+
+	static Scene* Create() { return new sliderCrank2(); }
+
+	b2RevoluteJoint* m_joint1;
+	b2PrismaticJoint* m_joint2;
+};
+
+class PrismaticJointScene : public Box2dBaseScene
+{
+public:
+	PrismaticJointScene()  : Box2dBaseScene()
+	{
+
+		b2Body* ground = NULL;
+		{
+			b2BodyDef bd;
+			ground = world->CreateBody(&bd);
+
+			b2EdgeShape shape;
+			shape.SetTwoSided(b2Vec2(-40.0f, 0.0f), b2Vec2(40.0f, 0.0f));
+			ground->CreateFixture(&shape, 0.0f);
+		}
+
+		m_enableLimit = true;
+		m_enableMotor = false;
+		m_motorSpeed = 10.0f;
+
+		{
+			b2PolygonShape shape;
+			shape.SetAsBox(1.0f, 1.0f);
+
+			b2BodyDef bd;
+			bd.type = b2_dynamicBody;
+			bd.position.Set(0.0f, 10.0f);
+			bd.angle = 0.5f * b2_pi;
+			bd.allowSleep = false;
+			b2Body* body = world->CreateBody(&bd);
+			body->CreateFixture(&shape, 5.0f);
+
+			b2PrismaticJointDef pjd;
+
+			// Horizontal
+			pjd.Initialize(ground, body, bd.position, b2Vec2(1.0f, 0.0f));
+
+			pjd.motorSpeed = m_motorSpeed;
+			pjd.maxMotorForce = 10000.0f;
+			pjd.enableMotor = m_enableMotor;
+			pjd.lowerTranslation = -10.0f;
+			pjd.upperTranslation = 10.0f;
+			pjd.enableLimit = m_enableLimit;
+
+			m_joint = (b2PrismaticJoint*)world->CreateJoint(&pjd);
+		}
+	}
+
+	b2PrismaticJoint* m_joint;
+	float m_motorSpeed;
+	bool m_enableMotor;
+	bool m_enableLimit;
+
+	virtual void PollEvents() override {
+		Box2dBaseScene::PollEvents();
+
+	}
+	virtual void Debug() override {
+		Box2dBaseScene::Debug();
+
+		ImGui::SetNextWindowPos(ImVec2(10.0f, 100.0f));
+		ImGui::SetNextWindowSize(ImVec2(200.0f, 100.0f));
+		ImGui::Begin("Joint Controls", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
+		if (ImGui::Checkbox("Limit", &m_enableLimit))
+		{
+			m_joint->EnableLimit(m_enableLimit);
+		}
+
+		if (ImGui::Checkbox("Motor", &m_enableMotor))
+		{
+			m_joint->EnableMotor(m_enableMotor);
+		}
+
+		if (ImGui::SliderFloat("Speed", &m_motorSpeed, -100.0f, 100.0f, "%.0f"))
+		{
+			m_joint->SetMotorSpeed(m_motorSpeed);
+		}
+
+		ImGui::End();
+
+	}
+
+	static Scene* Create() { return new PrismaticJointScene(); }
+};
 
 
 static int scene000 = RegisterScene("Box2d", "Car", Box2dScene_CarScene::Create);
 static int scene001 = RegisterScene("Box2d", "Tiles", Box2dScene_Tiles::Create);
 static int scene002 = RegisterScene("Box2d", "Pully Joint", Box2dScene_PullyJoint::Create);
+static int scene003 = RegisterScene("Box2d", "Gear Joint", GearJoint::Create);
+static int scene004 = RegisterScene("Box2d", "Slider Crank One", sliderCrank1::Create);
+static int scene005 = RegisterScene("Box2d", "Slider Crank Two", sliderCrank2::Create);
+static int scene006 = RegisterScene("Box2d", "Prismatic Joint", PrismaticJointScene::Create);
