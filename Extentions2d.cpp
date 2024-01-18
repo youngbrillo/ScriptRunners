@@ -207,8 +207,8 @@ namespace ECS
 
 		if (tableRef.type() == LUA_TTABLE)
 		{
-			axis.x = tableRef["x"].cast<float>();
-			axis.y = tableRef["y"].cast<float>();
+			axis.x = tableRef["x"].isNil() ? 0.0f : tableRef["x"].cast<float>();
+			axis.y = tableRef["y"].isNil() ? 0.0f : tableRef["y"].cast<float>();
 
 		}
 		pjd.Initialize(
@@ -220,12 +220,12 @@ namespace ECS
 
 		if (tableRef.type() == LUA_TTABLE)
 		{
-			pjd.motorSpeed = tableRef["motorSpeed"].cast<float>();
-			pjd.maxMotorForce = tableRef["maxMotorForce"].cast<float>();
-			pjd.enableMotor = tableRef["enableMotor"].cast<bool>();
-			pjd.lowerTranslation = tableRef["lowerTranslation"].cast<float>();
-			pjd.upperTranslation = tableRef["upperTranslation"].cast<float>();
-			pjd.enableLimit = tableRef["enableLimit"].cast<bool>();
+			pjd.motorSpeed			= tableRef["motorSpeed"].isNil() ? 0.0f : tableRef["motorSpeed"].cast<float>();
+			pjd.maxMotorForce		= tableRef["maxMotorForce"].isNil() ? 100.0f : tableRef["maxMotorForce"].cast<float>();
+			pjd.enableMotor			= tableRef["enableMotor"].isNil() ? false : tableRef["enableMotor"].cast<bool>();
+			pjd.lowerTranslation	= tableRef["lowerTranslation"].isNil() ? -1.0f : tableRef["lowerTranslation"].cast<float>();
+			pjd.upperTranslation	= tableRef["upperTranslation"].isNil() ?  1.0f : tableRef["upperTranslation"].cast<float>();
+			pjd.enableLimit			= tableRef["enableLimit"].isNil() ? false : tableRef["enableLimit"].cast<bool>();
 
 		}
 
