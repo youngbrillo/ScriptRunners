@@ -98,7 +98,7 @@ function CreateEnvironments()
 		{	name="Large obstacle b", x = 12.75,	y =2.25,	w=4.5,  h=4.5 , blocking =true, color = 0x6ca3c3ff , density = 5.0, 
 			definition = {
 				x = 0, y = 1, motorSpeed = -10.0, maxMotorForce = 10000.0, enableMotor = false, enableLimit = true,
-				lowerTranslation = -10, upperTranslation = 5
+				lowerTranslation = -10, upperTranslation = 1
 			}
 		}
 	}
@@ -175,12 +175,24 @@ function CreateObjects()
 
 
 	local function _destroy_node_7()
-		doors[1].motorEnabled = not doors[1].motorEnabled;
-		doors[1].joint:EnableMotor(doors[1].motorEnabled)
+
+		if(doors[1].motorEnabled == false) then
+			doors[1].motorEnabled = true; --not doors[1].motorEnabled;
+			doors[1].joint:EnableMotor(doors[1].motorEnabled)
+		else 
+			doors[1].definition.motorSpeed = -1 * doors[1].definition.motorSpeed;
+			doors[1].joint:SetMotorSpeed(doors[1].definition.motorSpeed);
+		end
 	end
 	
 	local function _destroy_node_8()
-		print("Good by buck-ooooooo!")
+		if(doors[2].motorEnabled == false) then
+			doors[2].motorEnabled = true; --not doors[1].motorEnabled;
+			doors[2].joint:EnableMotor(doors[2].motorEnabled)
+		else 
+			doors[2].definition.motorSpeed = -1 * doors[2].definition.motorSpeed;
+			doors[2].joint:SetMotorSpeed(doors[2].definition.motorSpeed);
+		end
 	end
 
 	interactables = {
@@ -196,7 +208,7 @@ function CreateObjects()
 		}
 		,{
 			name="small box mover", 
-			pos={x = -21, y=9.25}, 
+			pos={x = 3, y=9.25}, 
 			size={x = 1, y = 1}, 
 			color = 0xffffff7E, 
 			icon={texture="inputs", frame = {x=323, y= 170, w= 16,h= 16}},
