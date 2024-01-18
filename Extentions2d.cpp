@@ -199,12 +199,50 @@ namespace ECS
 		pulleyDef.Initialize(body1->rigidbody.body, body2->rigidbody.body, groundAnchor1, groundAnchor2, anchor1, anchor2, ratio);
 		world->CreateJoint(&pulleyDef);
 	}
+	static b2PrismaticJoint* CreatePrismaticJoint(b2World* world, ECS::Node2d* node1, ECS::Node2d* node2, luabridge::LuaRef tableRef)
+	{
+		b2PrismaticJoint* m_joint = NULL;
+		b2PrismaticJointDef pjd;
+		b2Vec2 axis = b2Vec2_zero;
 
+		if (tableRef.type() == LUA_TTABLE)
+		{
+			axis.x = tableRef["x"].cast<float>();
+			axis.y = tableRef["y"].cast<float>();
+
+		}
+		pjd.Initialize(
+			node1->rigidbody.body, 
+			node2->rigidbody.body, 
+			node2->rigidbody.body->GetPosition(), 
+			axis
+		);
+
+		if (tableRef.type() == LUA_TTABLE)
+		{
+			pjd.motorSpeed = tableRef["motorSpeed"].cast<float>();
+			pjd.maxMotorForce = tableRef["maxMotorForce"].cast<float>();
+			pjd.enableMotor = tableRef["enableMotor"].cast<bool>();
+			pjd.lowerTranslation = tableRef["lowerTranslation"].cast<float>();
+			pjd.upperTranslation = tableRef["upperTranslation"].cast<float>();
+			pjd.enableLimit = tableRef["enableLimit"].cast<bool>();
+
+		}
+
+		m_joint = (b2PrismaticJoint*)world->CreateJoint(&pjd);
+		return m_joint;
+	}
 	static void ExtendBox2d(lua_State* L)
 	{
 		luabridge::getGlobalNamespace(L)
 			.beginNamespace("b2d")
+				.beginClass<b2PrismaticJoint>("b2PrismaticJoint")
+					.addFunction("EnableLimit", &b2PrismaticJoint::EnableLimit)
+					.addFunction("EnableMotor", &b2PrismaticJoint::EnableMotor)
+					.addFunction("SetMotorSpeed", &b2PrismaticJoint::SetMotorSpeed)
+				.endClass()
 				.addFunction("CreatePullyJoint", ECS::mCreatePullyJoint)
+				.addFunction("CreatePrismaticJoint", ECS::CreatePrismaticJoint)
 			.endNamespace();
 	}
 }
