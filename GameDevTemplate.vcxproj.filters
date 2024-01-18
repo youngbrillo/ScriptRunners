@@ -286,7 +286,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="InteractableNode.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Components\2d\Nodes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -525,6 +525,9 @@
     </None>
     <None Include="Scripts\Scenes\platformerIII.lua">
       <Filter>Scripts\Scenes</Filter>
+    </None>
+    <None Include="Assets\Textures\kenny\inputs.json">
+      <Filter>Assets</Filter>
     </None>
   </ItemGroup>
 </Project>

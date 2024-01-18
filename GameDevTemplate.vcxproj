@@ -285,6 +285,7 @@
   <ItemGroup>
     <None Include="Assets\Textures\dummy.json" />
     <None Include="Assets\Textures\dummy_animations.json" />
+    <None Include="Assets\Textures\kenny\inputs.json" />
     <None Include="Scripts\Scenes\platformerII.lua" />
     <None Include="Scripts\Scenes\BreakoutScene.lua" />
     <None Include="Scripts\Scenes\demoScene.lua" />
