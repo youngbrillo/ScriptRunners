@@ -141,6 +141,7 @@
     <ClCompile Include="box2dScene.cpp" />
     <ClCompile Include="BoxMouse.cpp" />
     <ClCompile Include="CameraController2d.cpp" />
+    <ClCompile Include="CanvasNode.cpp" />
     <ClCompile Include="Components2d.cpp" />
     <ClCompile Include="Extentions2d.cpp" />
     <ClCompile Include="FogShaderScene.cpp" />
@@ -222,6 +223,7 @@
     <ClInclude Include="BoxMouse.h" />
     <ClInclude Include="Breakout.h" />
     <ClInclude Include="CameraController2d.h" />
+    <ClInclude Include="CanvasNode.h" />
     <ClInclude Include="Extentions2d.h" />
     <ClInclude Include="GlobalManager.h" />
     <ClInclude Include="Components2d.h" />

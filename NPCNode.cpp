@@ -8,6 +8,7 @@ ECS::KeyInput ECS::NPCNode::interact_key = ECS::KeyInput{KEY_E};
 ECS::NPCNode::NPCNode(const char* name, const char* alias, const char* iconAlias, const char* script)
 	: Sprite2d(name, alias)
 	, approached(false)
+	, inInteraction(false)
 {
 	icon.texture = TextureManager::Instance()->GetTexture(iconAlias);
 	icon.frame = Rectangle{ 0, 0, 1.0f * icon.texture.width, 1.0f * icon.texture.height };
@@ -70,18 +71,31 @@ void ECS::NPCNode::inspect()
 	Sprite2d::inspect();
 	icon.Inspect();
 	ImGui::Checkbox("Approached", &approached);
+	ImGui::Checkbox("in Interaction", &inInteraction);
 }
+
+#include "Scene2d.h"
 
 void ECS::NPCNode::doInteract()
 {
 	//get the scene
-
+	lua_State* L = Scene2d::Instance()->script.L;
 	//call a function
+	this->inInteraction = true;
+	if (L == NULL) return;
+	try {
+		luabridge::LuaRef func = luabridge::getGlobal(L, "HandleNPCInteraction");
+		func(this);
+	}
+	catch (luabridge::LuaException const& e) {
+		printf("error in '%s'\t%s\n", "HandleNPCInteraction", e.what());
+	}
+	this->inInteraction = false;
 
 	//call it a day
 
 	//but for now
-	printf("HEY, I'm not hooked up to anything yet...\n");
+	//printf("HEY, I'm not hooked up to anything yet...\n");
 }
 
 void ECS::NPCNode::setIconFrame(float x, float y, float w, float h)
@@ -96,6 +110,7 @@ void ECS::NPCNode::Extend(lua_State* L)
 		.deriveClass<ECS::NPCNode, ECS::Sprite2d>("NPCNode")
 			.addData("icon", &ECS::NPCNode::icon)
 			.addData("prompter", &ECS::NPCNode::prompter)
+			.addData("inInteraction", &ECS::NPCNode::inInteraction)
 		.endClass()
 		.endNamespace();
 }

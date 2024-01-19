@@ -291,6 +291,9 @@
     <ClCompile Include="NPCNode.cpp">
       <Filter>Source Files\Components\2d\Nodes</Filter>
     </ClCompile>
+    <ClCompile Include="CanvasNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -498,6 +501,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NPCNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CanvasNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

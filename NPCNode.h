@@ -25,6 +25,7 @@ namespace ECS
         static ECS::KeyInput interact_key;
         ECS::Icon icon;
         bool approached;
+        bool inInteraction;
     };
 
 }
