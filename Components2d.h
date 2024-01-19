@@ -185,16 +185,21 @@ namespace ECS
 	public:
 		float fracLen = 0.0f;
 		bool contact = false;
+		b2Fixture* contactFixture = NULL;
+
 		virtual float ReportFixture(b2Fixture* fixture, const b2Vec2& point, const b2Vec2& normal, float fraction)
 		{
 			if (fixture->IsSensor()) return -1;
 			fracLen = fraction;
 			contact = true;
+			contactFixture = fixture;
 		}
 		void evaluate(b2Body* body, float width, float height)
 		{
 			this->contact = false;
-			fracLen = 0.0f;
+			this->fracLen = 0.0f;
+			this->contactFixture = NULL;
+
 			if (body == NULL) return;
 			b2Vec2 origin = b2Vec2(body->GetTransform().p.x, body->GetTransform().p.y);
 			b2Vec2 p2 = origin;

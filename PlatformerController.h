@@ -168,12 +168,20 @@ namespace ECS
 
 		void handleInvincibility() {};
 		void restoreMovement() {}//if movement is restricted see if we can enable it again
+		void proccessObjectHandling();
+		void pickupObject(b2Body* contact);
+		void releaseObject();
 
 	protected: //variables
 		ECS::RayCastCallback rayCaster;
 		Player::Inputs mInputs;
 		Player::State mState;
 		Player::Parameters mfields;
+
+		b2WeldJoint* mHoldingJoint;
+		b2WeldJointDef mHoldJointDef;
+		b2Vec2 throwForce = b2Vec2(1.0f, -0.5f);
+		float throwMag = 2.0f;
 	};
 
 

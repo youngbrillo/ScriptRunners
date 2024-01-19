@@ -239,7 +239,7 @@ function GenerateSimpleBoxes(count, size, position, offset)
 		e.transform.size:set(size.x, size.y);
 		e.transform:Center();
 		e.rigidbody.bdyDef.type = 2;
-		e.rigidbody.fixDef.density = 2 * i;
+		e.rigidbody.fixDef.density = 1.0;
 		e.rigidbody.fixDef.friction = 1.0;
 		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
 		e.material:SetColorVec(math.random(), math.random(), math.random(), 0.7)

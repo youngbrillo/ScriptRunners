@@ -9,9 +9,11 @@ ECS::PlatformerController::PlatformerController(const char* name, const char* al
 	, mInputs()
 	, mState()
 	, mfields()
+	, mHoldingJoint(NULL)
 {
 	speed = 1.0f;
-
+	//throwForce = b2Vec2(5.0f, -10.0f);
+	throwMag = 3.5f;
 	transform.size = Vector2{ .5, 1 };
 	transform.Align(0.5, 0.5);
 
@@ -84,6 +86,18 @@ void ECS::PlatformerController::inspect()
 	mInputs.Debug();
 	mState.debug();
 	mfields.Debug();
+	if (ImGui::TreeNode("Holding Joint (weld)"))
+	{
+		ImGui::SliderFloat2("Throw Force", &throwForce.x, -1, 1.0f);
+		ImGui::SliderFloat("Throw Magnitude", &throwMag, 0, 4.0f);
+
+		ImGui::Checkbox("collide connected", &mHoldJointDef.collideConnected);
+		ImGui::SliderAngle("reference Angle", &mHoldJointDef.referenceAngle);
+		ImGui::SliderFloat("stiffness", &mHoldJointDef.stiffness, 0.0f, 100.0f);
+		ImGui::SliderFloat("damping",&mHoldJointDef.damping, 0.0f, 100.0f);
+
+		ImGui::TreePop();
+	}
 
 }
 void ECS::PlatformerController::updateState(const float& dt)
@@ -253,6 +267,7 @@ void ECS::PlatformerController::handleAnimations(const float& deltaTime)
 }
 void ECS::PlatformerController::handleActions(const float& deltaTime)
 {
+#if false
 	if (mInputs.action.just_pressed && !mState.grabbing)
 	{
 		mState.grabbing = mState.front_contact && mState.grounded;
@@ -261,5 +276,74 @@ void ECS::PlatformerController::handleActions(const float& deltaTime)
 	{
 		mState.grabbing = false;
 	}
+#else
+	mState.grabbing = mState.front_contact && mState.sprinting && mState.grounded;
+#endif
+	proccessObjectHandling();
+}
 
+void ECS::PlatformerController::proccessObjectHandling()
+{
+	if (mState.front_contact && !mState.holding && mInputs.action.just_pressed)
+	{
+		//raycaster should still be holding the most recent fixture in memory here
+		pickupObject(rayCaster.contactFixture->GetBody());
+	}
+	else if (mState.holding && !mInputs.action.isDown)
+	{
+		releaseObject();
+	}
+}
+
+void ECS::PlatformerController::pickupObject(b2Body* contact)
+{
+	if (contact->GetType() != b2BodyType::b2_dynamicBody) return;
+
+	b2WeldJointDef jd = mHoldJointDef;
+	b2Vec2 anchor = this->rigidbody.body->GetPosition();
+	//anchor.x += this->mInputs.lastDirection * (this->transform.size.x * 0.5f);
+	anchor.y -= (this->transform.size.y * 0.5f);
+	//attempt to place the object above the player's head
+	float obj_size = 0.0f;
+	b2Shape* shape = contact->GetFixtureList()->GetShape();
+	if (shape->GetType() == b2Shape::Type::e_polygon)
+	{
+		b2PolygonShape* s = (b2PolygonShape*)shape;
+		b2Vec2 center = s->m_centroid;
+	
+		for (int i = 0; i < s->m_count; i++)
+		{
+			if (s->m_vertices[i].y > obj_size) obj_size = s->m_vertices[i].y;
+		}
+		obj_size += center.y;
+	}
+	else if (shape->GetType() == b2Shape::Type::e_circle)
+	{
+		b2CircleShape* s = (b2CircleShape*)shape;
+		obj_size = s->m_radius;
+	}
+
+	contact->SetTransform(
+		b2Vec2(
+			this->transform.position.x, 
+			this->transform.position.y - (this->transform.size.x * 0.5 + obj_size * 1.5f) 
+		), 0.0f);
+	jd.Initialize(this->rigidbody.body, contact, anchor);
+
+	b2World* world = this->rigidbody.body->GetWorld();
+	this-> mHoldingJoint =  (b2WeldJoint*) world->CreateJoint(&jd);
+	mState.holding = true;
+}
+
+void ECS::PlatformerController::releaseObject()
+{
+	b2Body* object = mHoldingJoint->GetBodyB();
+	this->rigidbody.body->GetWorld()->DestroyJoint(mHoldingJoint);
+	b2Vec2 force = throwForce;
+	force.x *= throwMag * mInputs.lastDirection;
+	force.y *= throwMag;
+	object->ApplyLinearImpulseToCenter(force, true);
+
+	mHoldingJoint = NULL;
+	mState.holding = false;
 }
