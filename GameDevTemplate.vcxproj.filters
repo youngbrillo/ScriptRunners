@@ -288,6 +288,9 @@
     <ClCompile Include="InteractableNode.cpp">
       <Filter>Source Files\Components\2d\Nodes</Filter>
     </ClCompile>
+    <ClCompile Include="NPCNode.cpp">
+      <Filter>Source Files\Components\2d\Nodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -492,6 +495,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="InteractableNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NPCNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

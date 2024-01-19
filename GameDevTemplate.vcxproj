@@ -196,6 +196,7 @@
     <ClCompile Include="MIssleCommander.cpp" />
     <ClCompile Include="ModelLoading.cpp" />
     <ClCompile Include="Node2d.cpp" />
+    <ClCompile Include="NPCNode.cpp" />
     <ClCompile Include="PlatformerController.cpp" />
     <ClCompile Include="Scene2dExample.cpp" />
     <ClCompile Include="RayExtend.cpp" />
@@ -265,6 +266,7 @@
     <ClInclude Include="Lua\lzio.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="Node2d.h" />
+    <ClInclude Include="NPCNode.h" />
     <ClInclude Include="PlatformerController.h" />
     <ClInclude Include="RayExtend.h" />
     <ClInclude Include="rlights.h" />

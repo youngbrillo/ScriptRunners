@@ -54,7 +54,7 @@ function DrawInstructions()
 	Raylib.DrawText(text, pos.x, pos.y - _y, fontSize, 0xffffffff)
 
 
-	instructionText = "Todo:\n- Pickup/Drop Objects\n- Simple dialog";
+	instructionText = "Todo:\n- Simple dialog";
 	_x, _y = Raylib.MeasureText(instructionText, fontSize)
 	pos = {x = Raylib.GetScreenWidth() - (_x + fontSize), y = Raylib.GetScreenHeight() - (_y + fontSize)};
 
@@ -151,7 +151,8 @@ function GenEnvironment2()
 	App.GetCamera().zoom = 34;
 	--GenerateBreakableBoxes();
 	GenerateSimpleBoxes(10, {x=1, y = 1}, {x = -5, y = 2}, {x = 0.5, y=0.0});
-	--AddCameraControllers();
+	AddNPCS();
+	AddCameraControllers();
 	BuildPullySystem();
 	
 	exitListeners = 
@@ -247,7 +248,30 @@ function GenerateSimpleBoxes(count, size, position, offset)
 		last_offset = offset.x + position.x + i;
 	end
 end
+function AddNPCS()
+	TextureManager.Add("Assets/Textures/kenny/inputs", "inputs");
 
+	npcs = {
+		{	name = "MR. Guy", pos = {x= -30, y = 3}, size = {x = 0.5, y = 1}, alias = "dummy", 
+			icon = {alias = "inputs", frame = {x=323, y= 170, w= 16,h= 16}}
+		}
+	}
+	for k, v in ipairs(npcs) do
+		local e = Scene.CreateNPCNode(v.name, v.alias, v.icon.alias, "no script");
+
+		e.transform.position:set(v.pos.x, v.pos.y);
+		e.transform.size:set(v.size.x, v.size.y);
+		e.transform:Center();
+		e.textureScale:set(4, 2)
+		e.rigidbody.bdyDef.type = 2;
+		e.rigidbody.fixDef.density = 1.0;
+		e.rigidbody.fixDef.friction = 1.0;
+		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
+		e.icon.frame:set(v.icon.frame.x,v.icon.frame.y,v.icon.frame.w, v.icon.frame.h)
+		e.prompter = mPlayer;
+		v.node = e;
+	end
+end
 function  GenerateBreakableBoxes()
 	xLimit = {min = -45, max = 45}
 	yLimit = {min = -15, max = 15}
