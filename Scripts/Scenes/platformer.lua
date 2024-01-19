@@ -54,7 +54,7 @@ function DrawInstructions()
 	Raylib.DrawText(text, pos.x, pos.y - _y, fontSize, 0xffffffff)
 
 
-	instructionText = "Todo:\n- Simulate Collectables\n- Add Interactable objects (switches, levers, doors)\n- Pickup/Drop Objects\n- Particle System";
+	instructionText = "Todo:\n- Pickup/Drop Objects\n- Simple dialog";
 	_x, _y = Raylib.MeasureText(instructionText, fontSize)
 	pos = {x = Raylib.GetScreenWidth() - (_x + fontSize), y = Raylib.GetScreenHeight() - (_y + fontSize)};
 
@@ -149,8 +149,9 @@ function GenEnvironment2()
 	mPlayer.textureScale:set(4, 2)
 
 	App.GetCamera().zoom = 34;
-	GenerateBreakableBoxes();
-	AddCameraControllers();
+	--GenerateBreakableBoxes();
+	GenerateSimpleBoxes(10, {x=1, y = 1}, {x = -5, y = 2}, {x = 0.5, y=0.0});
+	--AddCameraControllers();
 	BuildPullySystem();
 	
 	exitListeners = 
@@ -229,6 +230,23 @@ function AddCameraControllers()
 	end
 end
 
+function GenerateSimpleBoxes(count, size, position, offset)
+
+	local last_offset = 0;
+	for i = 1, count , 1 do
+		local e = Scene.CreateNode2d("crate-"..i);
+		e.transform.position:set(position.x + i + last_offset, position.y + offset.y);
+		e.transform.size:set(size.x, size.y);
+		e.transform:Center();
+		e.rigidbody.bdyDef.type = 2;
+		e.rigidbody.fixDef.density = 2 * i;
+		e.rigidbody.fixDef.friction = 1.0;
+		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
+		e.material:SetColorVec(math.random(), math.random(), math.random(), 0.7)
+
+		last_offset = offset.x + position.x + i;
+	end
+end
 
 function  GenerateBreakableBoxes()
 	xLimit = {min = -45, max = 45}

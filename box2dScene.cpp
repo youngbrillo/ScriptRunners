@@ -39,7 +39,7 @@ public:
 	virtual void Draw()
 	{
 		BeginMode2D(camera.cam);
-		
+
 		world->DebugDraw();
 
 		EndMode2D();
@@ -455,7 +455,7 @@ public:
 			b2CircleShape circle;
 			circle.m_radius = 2.0f;
 
-			circle.m_p.Set(-10.0f, y -(+ b + L));
+			circle.m_p.Set(-10.0f, y - (+b + L));
 			ground->CreateFixture(&circle, 0.0f);
 
 			circle.m_p.Set(10.0f, y - (+b + L));
@@ -504,10 +504,10 @@ public:
 
 		float ratio = m_joint1->GetRatio();
 		float L = m_joint1->GetCurrentLengthA() + ratio * m_joint1->GetCurrentLengthB();
-		DrawText(TextFormat("L1 + %4.2f * L2 = %4.2f", (float)ratio, (float)L), 25, 25,20, RAYWHITE);
+		DrawText(TextFormat("L1 + %4.2f * L2 = %4.2f", (float)ratio, (float)L), 25, 25, 20, RAYWHITE);
 	}
 	//virtual void Update(const float& deltaTime){}
-	virtual void FixedUpdate(const float& timeStep){
+	virtual void FixedUpdate(const float& timeStep) {
 		Box2dBaseScene::FixedUpdate(timeStep);
 
 	}
@@ -521,10 +521,10 @@ class GearJoint : Box2dBaseScene
 private:
 	b2RevoluteJoint* m_joint1, * m_joint2;
 	b2PrismaticJoint* m_joint3;
-	b2GearJoint * m_joint4, * m_joint5;
+	b2GearJoint* m_joint4, * m_joint5;
 
-public: 
-	GearJoint() : Box2dBaseScene() 
+public:
+	GearJoint() : Box2dBaseScene()
 	{
 
 		b2Body* ground = NULL;
@@ -852,7 +852,7 @@ public:
 class PrismaticJointScene : public Box2dBaseScene
 {
 public:
-	PrismaticJointScene()  : Box2dBaseScene()
+	PrismaticJointScene() : Box2dBaseScene()
 	{
 
 		b2Body* ground = NULL;
@@ -934,6 +934,188 @@ public:
 
 	static Scene* Create() { return new PrismaticJointScene(); }
 };
+// a sort of 'weld' joint ^_^
+class CantileverScene : public Box2dBaseScene
+{
+public:
+	int e_count = 8;
+	CantileverScene() : Box2dBaseScene()
+	{
+
+		b2Body* ground = NULL;
+		{
+			b2BodyDef bd;
+			ground = world->CreateBody(&bd);
+
+			b2EdgeShape shape;
+			shape.SetTwoSided(b2Vec2(-40.0f, 0.0f), b2Vec2(40.0f, 0.0f));
+			ground->CreateFixture(&shape, 0.0f);
+		}
+
+		{
+			b2PolygonShape shape;
+			shape.SetAsBox(0.5f, 0.125f);
+
+			b2FixtureDef fd;
+			fd.shape = &shape;
+			fd.density = 20.0f;
+
+			b2WeldJointDef jd;
+
+			b2Body* prevBody = ground;
+			for (int32 i = 0; i < e_count; ++i)
+			{
+				b2BodyDef bd;
+				bd.type = b2_dynamicBody;
+				bd.position.Set(-14.5f + 1.0f * i, -5.0f);
+				b2Body* body = world->CreateBody(&bd);
+				body->CreateFixture(&fd);
+
+				b2Vec2 anchor(-15.0f + 1.0f * i, -5.0f);
+				jd.Initialize(prevBody, body, anchor);
+				world->CreateJoint(&jd);
+
+				prevBody = body;
+			}
+		}
+
+		{
+			b2PolygonShape shape;
+			shape.SetAsBox(1.0f, 0.125f);
+
+			b2FixtureDef fd;
+			fd.shape = &shape;
+			fd.density = 20.0f;
+
+			b2WeldJointDef jd;
+			jd.damping = 5.0f;
+			jd.stiffness = 0.7f;
+			//jd.frequencyHz = 5.0f;
+			//jd.dampingRatio = 0.7f;
+
+			b2Body* prevBody = ground;
+			for (int32 i = 0; i < 3; ++i)
+			{
+				b2BodyDef bd;
+				bd.type = b2_dynamicBody;
+				bd.position.Set(-14.0f + 2.0f * i, -15.0f);
+				b2Body* body = world->CreateBody(&bd);
+				body->CreateFixture(&fd);
+
+				b2Vec2 anchor(-15.0f + 2.0f * i, -15.0f);
+				jd.Initialize(prevBody, body, anchor);
+				world->CreateJoint(&jd);
+
+				prevBody = body;
+			}
+		}
+
+		{
+			b2PolygonShape shape;
+			shape.SetAsBox(0.5f, 0.125f);
+
+			b2FixtureDef fd;
+			fd.shape = &shape;
+			fd.density = 20.0f;
+
+			b2WeldJointDef jd;
+
+			b2Body* prevBody = ground;
+			for (int32 i = 0; i < e_count; ++i)
+			{
+				b2BodyDef bd;
+				bd.type = b2_dynamicBody;
+				bd.position.Set(-4.5f + 1.0f * i, -5.0f);
+				b2Body* body = world->CreateBody(&bd);
+				body->CreateFixture(&fd);
+
+				if (i > 0)
+				{
+					b2Vec2 anchor(-5.0f + 1.0f * i, -5.0f);
+					jd.Initialize(prevBody, body, anchor);
+					world->CreateJoint(&jd);
+				}
+
+				prevBody = body;
+			}
+		}
+
+		{
+			b2PolygonShape shape;
+			shape.SetAsBox(0.5f, 0.125f);
+
+			b2FixtureDef fd;
+			fd.shape = &shape;
+			fd.density = 20.0f;
+
+			b2WeldJointDef jd;
+			//jd.frequencyHz = 8.0f;
+			//jd.dampingRatio = 0.7f;
+			jd.damping = 8.0f;
+			jd.stiffness = 0.7f;
+			b2Body* prevBody = ground;
+			for (int32 i = 0; i < e_count; ++i)
+			{
+				b2BodyDef bd;
+				bd.type = b2_dynamicBody;
+				bd.position.Set(5.5f + 1.0f * i, -10.0f);
+				b2Body* body = world->CreateBody(&bd);
+				body->CreateFixture(&fd);
+
+				if (i > 0)
+				{
+					b2Vec2 anchor(5.0f + 1.0f * i, -10.0f);
+					jd.Initialize(prevBody, body, anchor);
+					world->CreateJoint(&jd);
+				}
+
+				prevBody = body;
+			}
+		}
+
+		for (int32 i = 0; i < 2; ++i)
+		{
+			b2Vec2 vertices[3];
+			vertices[0].Set(-0.5f, 0.0f);
+			vertices[1].Set(0.5f, 0.0f);
+			vertices[2].Set(0.0f, -1.5f);
+
+			b2PolygonShape shape;
+			shape.Set(vertices, 3);
+
+			b2FixtureDef fd;
+			fd.shape = &shape;
+			fd.density = 1.0f;
+
+			b2BodyDef bd;
+			bd.type = b2_dynamicBody;
+			bd.position.Set(-8.0f + 8.0f * i, -12.0f);
+			b2Body* body = world->CreateBody(&bd);
+			body->CreateFixture(&fd);
+		}
+
+		for (int32 i = 0; i < 2; ++i)
+		{
+			b2CircleShape shape;
+			shape.m_radius = 0.5f;
+
+			b2FixtureDef fd;
+			fd.shape = &shape;
+			fd.density = 1.0f;
+
+			b2BodyDef bd;
+			bd.type = b2_dynamicBody;
+			bd.position.Set(-6.0f + 6.0f * i, -10.0f);
+			b2Body* body = world->CreateBody(&bd);
+			body->CreateFixture(&fd);
+		}
+
+		this->camera.cam.zoom = 16.0;
+	}
+	static Scene* Create() { return new CantileverScene(); }
+
+	b2Body* m_middle;
+};
 
 
 static int scene000 = RegisterScene("Box2d", "Car", Box2dScene_CarScene::Create);
@@ -943,3 +1125,4 @@ static int scene003 = RegisterScene("Box2d", "Gear Joint", GearJoint::Create);
 static int scene004 = RegisterScene("Box2d", "Slider Crank One", sliderCrank1::Create);
 static int scene005 = RegisterScene("Box2d", "Slider Crank Two", sliderCrank2::Create);
 static int scene006 = RegisterScene("Box2d", "Prismatic Joint", PrismaticJointScene::Create);
+static int scene007 = RegisterScene("Box2d", "Cantilever", CantileverScene::Create);
