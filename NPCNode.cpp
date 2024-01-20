@@ -1,6 +1,8 @@
 #include "NPCNode.h"
 #include <LuaBridge/LuaBridge.h>
 #include "TextureManager.h"
+#include "functionality2d.h"
+#include "Scene2d.h"
 
 ECS::KeyInput ECS::NPCNode::interact_key = ECS::KeyInput{KEY_E};
 
@@ -24,6 +26,17 @@ void ECS::NPCNode::Update(const float& dt)
 	if (this->approached && interact_key.just_pressed)
 	{
 		doInteract();
+	}
+	if (!isTalking) return;
+
+	if (text.cursor > -1 && text.cursor < text.string.length())
+	{
+		text.timer += dt;
+		if (text.timer >= text.writeSpeed)
+		{
+			text.timer = 0.0f;
+			text.cursor += text.inc_size;
+		}
 	}
 }
 
@@ -49,6 +62,79 @@ void ECS::NPCNode::Draw()
 	}
 }
 
+void ECS::NPCNode::UIDraw()
+{
+
+	if (!canTalk) return;
+
+	float scale = 1.0f;
+
+	if (isTalking)
+	{
+		
+		Vector2 position = { 0, (float)GetScreenHeight() * 0.75f };
+		Vector2 size = { (float)GetScreenWidth(), (float)GetScreenHeight() - position.y };
+		Rectangle rec = Rectangle{
+			position.x, position.y,
+			size.x , size.y 
+		};
+
+
+		DrawRectangleRec(rec, Color{ 0, 0, 0, 170 });
+
+
+		Rectangle destination = {
+			rec.x + rec.width - text.fontSize - 10,
+			rec.y + rec.height - text.fontSize - 10,
+			text.fontSize * scale, text.fontSize * scale
+		};
+
+
+
+		rec.x += text_padding.x;
+		rec.y += text_padding.y;
+		rec.width -= text_padding.width;
+		rec.height -= text_padding.height;
+
+		ECS::DrawWrappedText(
+			GetFontDefault(),//TextManager::Instance()->getFont(this->text.fontId),
+			TextSubtext(text.string.c_str(), 0, text.cursor >= 0 ? text.cursor : text.string.length()),
+			rec,
+			text.fontSize,
+			text.fontSpacing,
+			text.color,
+			Color{ 0, 0, 0, 0 }
+		);
+
+		DrawTexturePro(
+			icon.texture,
+			icon.frame,
+			destination,
+			icon.origin,
+			icon.rotation,
+			interact_key.isDown ? YELLOW: icon.color
+		);
+
+	}
+	else
+	{
+		Vector2 screenPosition = GetWorldToScreen2D(transform.position, Scene2d::Instance()->camera.cam);
+		Rectangle destination = {
+			screenPosition.x + prompt_offset.x, screenPosition.y + prompt_offset.y,
+			icon.destination.width * scale, icon.destination.height * scale
+		};
+		DrawTexturePro(
+			icon.texture,
+			icon.frame,
+			destination, 
+			icon.origin, 
+			icon.rotation, 
+			interact_key.isDown ? YELLOW : icon.color
+		);
+
+	}
+}
+
 void ECS::NPCNode::Poll()
 {
 	interact_key.Poll();
@@ -64,6 +150,11 @@ void ECS::NPCNode::EndContact(b2Contact* contact, ECS::Node2d* other)
 {
 	if (other != ECS::NPCNode::prompter) return;
 	approached = false;
+	if (isTalking || canTalk)
+	{
+		isTalking = false;
+		canTalk = false;
+	}
 }
 
 void ECS::NPCNode::inspect()
@@ -72,15 +163,17 @@ void ECS::NPCNode::inspect()
 	icon.Inspect();
 	ImGui::Checkbox("Approached", &approached);
 	ImGui::Checkbox("in Interaction", &inInteraction);
+	ImGui::Checkbox("can Talk", &canTalk);
+	ImGui::Checkbox("in Talking", &isTalking);
+	text.inspect();
 }
 
-#include "Scene2d.h"
 
 void ECS::NPCNode::doInteract()
 {
 	//get the scene
 	lua_State* L = Scene2d::Instance()->script.L;
-	//call a function
+#if false
 	this->inInteraction = true;
 	if (L == NULL) return;
 	try {
@@ -91,11 +184,36 @@ void ECS::NPCNode::doInteract()
 		printf("error in '%s'\t%s\n", "HandleNPCInteraction", e.what());
 	}
 	this->inInteraction = false;
+#else
+	bool in_range = text.cursor > text.cursor > -1 && text.cursor < text.string.length();
 
-	//call it a day
+	if (!isTalking)
+	{
+		isTalking = true;
+		canTalk = true;
+		luabridge::LuaRef func = luabridge::getGlobal(L, "onDialogueStart");
+		try { func(this, this->prompter); }
+		catch (luabridge::LuaException const& e) {
+			printf("%s\n", e.what());
+		}
+	}
+	else if (isTalking && in_range)
+	{
+		text.cursor = text.string.length();
+	}
+	else if (isTalking && !in_range)
+	{
+		isTalking = false;
+		text.cursor = 0;
 
-	//but for now
-	//printf("HEY, I'm not hooked up to anything yet...\n");
+		luabridge::LuaRef func = luabridge::getGlobal(L, "onDialogueEnd");
+		try { func(this, this->prompter); }
+		catch (luabridge::LuaException const& e) {
+			printf("%s\n", e.what());
+		}
+	}
+
+#endif
 }
 
 void ECS::NPCNode::setIconFrame(float x, float y, float w, float h)
@@ -111,6 +229,9 @@ void ECS::NPCNode::Extend(lua_State* L)
 			.addData("icon", &ECS::NPCNode::icon)
 			.addData("prompter", &ECS::NPCNode::prompter)
 			.addData("inInteraction", &ECS::NPCNode::inInteraction)
+			.addData("text", &ECS::NPCNode::text)
+			.addData("canTalk", &ECS::NPCNode::canTalk)
+			.addData("isTalking", &ECS::NPCNode::isTalking)
 		.endClass()
 		.endNamespace();
 }

@@ -292,6 +292,9 @@
       <Filter>Source Files\Components\2d\Nodes</Filter>
     </ClCompile>
     <ClCompile Include="CanvasNode.cpp">
+      <Filter>Source Files\Components\2d\Nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="functionality2d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -505,6 +508,9 @@
     </ClInclude>
     <ClInclude Include="CanvasNode.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="functionality2d.h">
+      <Filter>Source Files\Components\2d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

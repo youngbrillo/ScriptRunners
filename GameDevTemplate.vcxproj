@@ -145,6 +145,7 @@
     <ClCompile Include="Components2d.cpp" />
     <ClCompile Include="Extentions2d.cpp" />
     <ClCompile Include="FogShaderScene.cpp" />
+    <ClCompile Include="functionality2d.cpp" />
     <ClCompile Include="GlobalManager.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
@@ -225,6 +226,7 @@
     <ClInclude Include="CameraController2d.h" />
     <ClInclude Include="CanvasNode.h" />
     <ClInclude Include="Extentions2d.h" />
+    <ClInclude Include="functionality2d.h" />
     <ClInclude Include="GlobalManager.h" />
     <ClInclude Include="Components2d.h" />
     <ClInclude Include="imgui\imconfig.h" />

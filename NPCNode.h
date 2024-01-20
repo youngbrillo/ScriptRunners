@@ -12,6 +12,7 @@ namespace ECS
 
         virtual void Update(const float& dt) override;
         virtual void Draw() override;
+        virtual void UIDraw() override;
         virtual void Poll() override;
         virtual void BeginContact(b2Contact* contact, ECS::Node2d* other) override;
         virtual void EndContact(b2Contact* contact, ECS::Node2d* other) override;
@@ -24,8 +25,14 @@ namespace ECS
         ECS::Node2d* prompter;
         static ECS::KeyInput interact_key;
         ECS::Icon icon;
+        ECS::Text text;
         bool approached;
         bool inInteraction;
+        Rectangle text_padding = Rectangle{ 20, 20 , 20, 20 };
+        Vector2 prompt_offset = Vector2{ 10, 10};
+
+        bool canTalk = false;
+        bool isTalking = false;
     };
 
 }

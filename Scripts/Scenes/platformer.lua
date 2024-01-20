@@ -467,3 +467,11 @@ function GenPlayer()
 end
 
 
+
+function onDialogueStart(NPC, Audience)
+	NPC.text:setText("I have GOT to get to that upper platform, bruv.", true)
+end
+
+function onDialogueEnd(NPC, Audience )
+
+end

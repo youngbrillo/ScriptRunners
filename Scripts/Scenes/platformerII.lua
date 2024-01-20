@@ -3,6 +3,8 @@ function onSceneStart()
 	CreateBackGrounds();
 	CreateEnvironments();
 	CreateObjects();
+	CreateNPCS();
+	
 end
 
 function onSceneEnd() 
@@ -173,9 +175,10 @@ function CreateObjects()
 	--TextureManager.Add("Assets/Textures/buttons", "buttons")
 	TextureManager.Add("Assets/Textures/kenny/inputs", "inputs")
 
-
+	big_obstacle_moved = false;
+	small_obstacle_moved = false;
 	local function _destroy_node_7()
-
+		big_obstacle_moved = true;
 		if(doors[1].motorEnabled == false) then
 			doors[1].motorEnabled = true; --not doors[1].motorEnabled;
 			doors[1].joint:EnableMotor(doors[1].motorEnabled)
@@ -186,6 +189,7 @@ function CreateObjects()
 	end
 	
 	local function _destroy_node_8()
+		small_obstacle_moved = true;
 		if(doors[2].motorEnabled == false) then
 			doors[2].motorEnabled = true; --not doors[1].motorEnabled;
 			doors[2].joint:EnableMotor(doors[2].motorEnabled)
@@ -208,7 +212,7 @@ function CreateObjects()
 		}
 		,{
 			name="small box mover", 
-			pos={x = 3, y=9.25}, 
+			pos={x = 3, y=4}, 
 			size={x = 1, y = 1}, 
 			color = 0xffffff7E, 
 			icon={texture="inputs", frame = {x=323, y= 170, w= 16,h= 16}},
@@ -312,3 +316,72 @@ function listenForKeyPress(key)
 	end
 end
 
+
+function CreateNPCS()
+	local function saySomething(npc)
+	end
+	npcs = {
+		{	name = "MR. Guy", pos = {x= 1, y = 6}, size = {x = 0.5, y = 1}, alias = "dummy", 
+			icon = {alias = "inputs", frame = {x=323, y= 170, w= 16,h= 16}},
+			onInteract = saySomething,
+			text  = "Oh it's you!"
+		}
+	}
+	for k, v in ipairs(npcs) do
+		local e = Scene.CreateNPCNode(v.name, v.alias, v.icon.alias, "no script");
+
+		e.transform.position:set(v.pos.x, v.pos.y);
+		e.transform.size:set(v.size.x, v.size.y);
+		e.transform:Center();
+		e.textureScale:set(4, 2)
+		e.rigidbody.bdyDef.type = 2;
+		e.rigidbody.bdyDef.fixedRotation = true;
+		e.rigidbody.fixDef.density = 1.0;
+		e.rigidbody.fixDef.friction = 1.0;
+		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
+		e.icon.frame:set(v.icon.frame.x,v.icon.frame.y,v.icon.frame.w, v.icon.frame.h)
+		e.prompter = mPlayer;
+		e.text:setText(v.text, true)
+		v.node = e;
+	end
+
+	
+	DialogueText ={
+		"Check out that box over there",
+		"Well don't be shy, it don't bite now!",
+		"Just press the interact key when you get there, same as you did with me.",
+		"gosh your a timid fella aint ya..."
+	}
+	
+	DialogueText2 ={
+		"You did it!",
+		"Now you can get to the next zone!",
+		"If you try to interact with the box above us and see where that leads..."
+	}
+	DialogueText_index = 1;
+	DialogueText_index2 = 1;
+end
+
+function onDialogueStart(NPC, Audience)
+
+	if(big_obstacle_moved) then
+		NPC.text:setText(DialogueText2[DialogueText_index2], true)
+		
+		DialogueText_index2 = DialogueText_index2 + 1;
+		if DialogueText_index2 > #DialogueText2 then 
+			DialogueText_index2 = 1
+		end
+	end
+end
+
+function onDialogueEnd(NPC, Audience )
+
+	if(not big_obstacle_moved) then
+		NPC.text:setText(DialogueText[DialogueText_index], true)
+
+		DialogueText_index = DialogueText_index + 1;
+		if DialogueText_index > #DialogueText then 
+			DialogueText_index = 1
+		end
+	end
+end
