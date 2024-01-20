@@ -245,6 +245,25 @@ namespace ECS
 				.addFunction("CreatePrismaticJoint", ECS::CreatePrismaticJoint)
 			.endNamespace();
 	}
+
+	static void ExtendText(lua_State* L)
+	{
+		luabridge::getGlobalNamespace(L)
+			.beginNamespace("ECS")
+				.beginClass<ECS::Text>("Text")
+					.addData("string", &ECS::Text::string)
+					.addData("cursor", &ECS::Text::cursor)
+					.addData("inc_size", &ECS::Text::inc_size)
+					.addData("writeSpeed", &ECS::Text::writeSpeed)
+					.addData("expirationLimit", &ECS::Text::expirationLimit)
+					.addData("visible", &ECS::Text::visible)
+					.addData("expires", &ECS::Text::expires)
+					.addData("fontSize", &ECS::Text::fontSize)
+					.addData("fontSpacing", &ECS::Text::fontSpacing)
+					.addFunction("setText", &ECS::Text::setText)
+				.endClass()
+			.endNamespace();
+	}
 }
 
 
@@ -258,4 +277,5 @@ void ECS::ExtendAll(lua_State* L){
 	ECS::ExtendNode2d(L);
 	ECS::ExtendCamera(L);
 	ECS::ExtendBox2d(L);
+	ECS::ExtendText(L);
 }
