@@ -324,7 +324,7 @@ function CreateNPCS()
 		{	name = "MR. Guy", pos = {x= 1, y = 6}, size = {x = 0.5, y = 1}, alias = "dummy", 
 			icon = {alias = "inputs", frame = {x=323, y= 170, w= 16,h= 16}},
 			onInteract = saySomething,
-			text  = {string = "Oh it's you!", fontSize = 32}
+			text  = {string = "Oh it's you!", fontSize = 32, fontAlias = "comic"}
 		}
 	}
 	for k, v in ipairs(npcs) do
@@ -343,6 +343,7 @@ function CreateNPCS()
 		e.prompter = mPlayer;
 		e.text:setText(v.text.string, true)
 		e.text.fontSize = v.text.fontSize
+		e.text:SetFont(v.text.fontAlias)
 		v.node = e;
 	end
 

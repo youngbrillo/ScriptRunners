@@ -297,6 +297,9 @@
     <ClCompile Include="functionality2d.cpp">
       <Filter>Source Files\Components\2d</Filter>
     </ClCompile>
+    <ClCompile Include="FontManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -512,6 +515,9 @@
     <ClInclude Include="functionality2d.h">
       <Filter>Source Files\Components\2d</Filter>
     </ClInclude>
+    <ClInclude Include="FontManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\Manager\TextureManager.lua">
@@ -546,6 +552,9 @@
     </None>
     <None Include="Assets\Textures\kenny\inputs.json">
       <Filter>Assets</Filter>
+    </None>
+    <None Include="Scripts\Manager\FontManager.lua">
+      <Filter>Scripts</Filter>
     </None>
   </ItemGroup>
 </Project>

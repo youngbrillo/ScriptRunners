@@ -606,6 +606,7 @@ void ECS::Text::update(const float& dt)
 		}
 	}
 }
+#include "FontManager.h"
 
 void ECS::Text::inspect(const char* title)
 {
@@ -613,6 +614,22 @@ void ECS::Text::inspect(const char* title)
 	{
 		ImGui::Checkbox("visible", &visible);
 		ImGui::Checkbox("expires", &expires);
+		if (ImGui::BeginCombo("Font", FontManager::Instance()->fonts[this->fontId].alias.c_str()))
+		{
+			for (auto& pair : FontManager::Instance()->alias_to_Font)
+			{
+				const char* previewValue = pair.first.c_str();
+				const bool is_selected = pair.second == this->fontId;
+				if (ImGui::Selectable(previewValue, is_selected))
+				{
+					this->fontId = pair.second;
+				}
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+
 
 		ImGui::InputText("string", &string);
 		ImGui::SliderInt("cursor", &cursor, 0, string.length());

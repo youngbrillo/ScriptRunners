@@ -145,6 +145,7 @@
     <ClCompile Include="Components2d.cpp" />
     <ClCompile Include="Extentions2d.cpp" />
     <ClCompile Include="FogShaderScene.cpp" />
+    <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="functionality2d.cpp" />
     <ClCompile Include="GlobalManager.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
@@ -226,6 +227,7 @@
     <ClInclude Include="CameraController2d.h" />
     <ClInclude Include="CanvasNode.h" />
     <ClInclude Include="Extentions2d.h" />
+    <ClInclude Include="FontManager.h" />
     <ClInclude Include="functionality2d.h" />
     <ClInclude Include="GlobalManager.h" />
     <ClInclude Include="Components2d.h" />
@@ -292,6 +294,7 @@
     <None Include="Assets\Textures\dummy.json" />
     <None Include="Assets\Textures\dummy_animations.json" />
     <None Include="Assets\Textures\kenny\inputs.json" />
+    <None Include="Scripts\Manager\FontManager.lua" />
     <None Include="Scripts\Scenes\platformerII.lua" />
     <None Include="Scripts\Scenes\BreakoutScene.lua" />
     <None Include="Scripts\Scenes\demoScene.lua" />

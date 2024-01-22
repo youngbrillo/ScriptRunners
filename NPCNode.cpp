@@ -3,6 +3,7 @@
 #include "TextureManager.h"
 #include "functionality2d.h"
 #include "Scene2d.h"
+#include "FontManager.h"
 
 ECS::KeyInput ECS::NPCNode::interact_key = ECS::KeyInput{KEY_E};
 
@@ -107,7 +108,8 @@ void ECS::NPCNode::UIDraw()
 		rec.height -= text_padding.height;
 
 		ECS::DrawWrappedText(
-			GetFontDefault(),//TextManager::Instance()->getFont(this->text.fontId),
+			//GetFontDefault(),//TextManager::Instance()->getFont(this->text.fontId),
+			FontManager::Instance()->getFont(this->text.fontId),
 			TextSubtext(text.string.c_str(), 0, text.cursor >= 0 ? text.cursor : text.string.length()),
 			rec,
 			text.fontSize,

@@ -337,7 +337,7 @@ static ECS::CanvasNode* CreateCanvasNode(const char* name)
 
 
 
-
+#include "FontManager.h"
 void Scene2d::Extend(lua_State* L)
 {
 	auto getCameraFunction = std::function<Camera2D* (void)>([]() {return &Scene2d::Instance()->camera.cam; });
@@ -368,4 +368,5 @@ void Scene2d::Extend(lua_State* L)
 	ECS::InteractableNode::Extend(L);
 	ECS::NPCNode::Extend(L);
 	ECS::CanvasNode::Extend(L);
+	FontManager::Extend(L);
 }

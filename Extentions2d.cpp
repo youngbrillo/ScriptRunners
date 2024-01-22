@@ -3,6 +3,7 @@
 #include "Components2d.h"
 #include "RayExtend.h"
 #include "Node2d.h"
+#include "FontManager.h"
 
 void ECS::ExtendRayLib(lua_State* L){
 	ERaylib::Extend(L);
@@ -248,6 +249,11 @@ namespace ECS
 
 	static void ExtendText(lua_State* L)
 	{
+
+		std::function<void(ECS::Text*, const char* )> SetFont = [](ECS::Text* n, const char* a) {
+			n->fontId = FontManager::GetFont(a);
+		};
+
 		luabridge::getGlobalNamespace(L)
 			.beginNamespace("ECS")
 				.beginClass<ECS::Text>("Text")
@@ -260,9 +266,11 @@ namespace ECS
 					.addData("expires", &ECS::Text::expires)
 					.addData("fontSize", &ECS::Text::fontSize)
 					.addData("fontSpacing", &ECS::Text::fontSpacing)
+					.addData("fontId", &ECS::Text::fontId)
 					.addFunction("setText", &ECS::Text::setText)
 					.addFunction("setFontColor", &ECS::Text::setFontColor)
 					.addFunction("setBackgroundColor", &ECS::Text::setBackgroundColor)
+					.addFunction("SetFont", SetFont)
 				.endClass()
 			.endNamespace();
 	}
