@@ -1,13 +1,13 @@
 #pragma once
 #include "Node2d.h"
 #include <vector>
-
+#include <glm/glm.hpp>
 namespace ECS
 {
     struct Tile
     {
-        Vector2 position = { 0.0f, 0.0f };
-        Vector2 Size = { 1.0f, 1.0f };
+        glm::ivec2 position = glm::ivec2(0, 0);
+        glm::ivec2 size = glm::ivec2(1);
         Rectangle frame = { 0.0f, 0.0f, 16.0f, 16.0f };
         Color tint = RAYWHITE;
         int layer = 0;
@@ -41,11 +41,17 @@ namespace ECS
         virtual void Poll();
         virtual void inspect();
         static void Extend(lua_State* L);
+    protected:
+        void GenerateFixtures();
+
     public:
         tile_mode mTileMode = tile_mode::tile_mode_draw;
         std::vector<ECS::Tile> mTiles;
         ECS::Tile newTile;
         ECS::Grid grid;
+
+        Vector2 fMousePosition;
+        glm::ivec2 iMousePosition;
     };
 }
 
