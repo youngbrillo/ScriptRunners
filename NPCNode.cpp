@@ -106,9 +106,8 @@ void ECS::NPCNode::UIDraw()
 		rec.y += text_padding.y;
 		rec.width -= text_padding.width;
 		rec.height -= text_padding.height;
-
+#if false
 		ECS::DrawWrappedText(
-			//GetFontDefault(),//TextManager::Instance()->getFont(this->text.fontId),
 			FontManager::Instance()->getFont(this->text.fontId),
 			TextSubtext(text.string.c_str(), 0, text.cursor >= 0 ? text.cursor : text.string.length()),
 			rec,
@@ -117,6 +116,25 @@ void ECS::NPCNode::UIDraw()
 			text.fontColor,
 			Color{ 0, 0, 0, 0 }
 		);
+#else
+		const char* text_string = TextSubtext(text.string.c_str(), 0, text.cursor >= 0 ? text.cursor : text.string.length());
+		Font f = FontManager::Instance()->getFont(this->text.fontId);
+		Vector2 dim = MeasureTextEx(f, text_string, text.fontSize, text.fontSpacing);
+		
+		DrawTextEx(
+			f,
+			text_string,
+			Vector2{
+				rec.x + rec.width * 0.5f - (dim.x * 0.5f),
+				rec.y + rec.height * 0.5f - (dim.y * 0.5f + text.fontSize *0.5f)
+			},
+			text.fontSize,
+			text.fontSpacing,
+			text.fontColor
+		);
+#endif
+		
+
 
 		DrawTexturePro(
 			icon.texture,
