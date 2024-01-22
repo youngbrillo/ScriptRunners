@@ -30,6 +30,9 @@ namespace ECS
         bool inInteraction;
         Rectangle text_padding = Rectangle{ 20, 20 , 20, 20 };
         Vector2 prompt_offset = Vector2{ 10, 10};
+        
+        Rectangle text_rec_background = { 10, 10, 100, 100 };
+
 
         bool canTalk = false;
         bool isTalking = false;

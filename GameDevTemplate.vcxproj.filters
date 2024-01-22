@@ -295,7 +295,7 @@
       <Filter>Source Files\Components\2d\Nodes</Filter>
     </ClCompile>
     <ClCompile Include="functionality2d.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Components\2d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

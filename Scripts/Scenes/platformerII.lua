@@ -132,8 +132,8 @@ function CreateObjects()
 	--add camera controller to floor
 	local camControllers = 
 	{
-		--{pos = {x = 5.25, y = 7.25}, size = {x=10, y=5}, onEnter = 34, onExit = 18, name  = "Floor Cam Controller"},
-		--{pos = {x = -7, y = 7.25}, size = {x=20, y=5}, onEnter = 18, onExit = 18, name  = "wide view CCTV"},
+		{pos = {x = 5.25, y = 7.25}, size = {x=10, y=5}, onEnter = 34, onExit = 18, name  = "Floor Cam Controller"},
+		{pos = {x = -11, y = 7.25}, size = {x=20, y=5}, onEnter = 18, onExit = 18, name  = "wide view CCTV"},
 	}
 
 	for k, v in ipairs(camControllers) do
@@ -324,7 +324,7 @@ function CreateNPCS()
 		{	name = "MR. Guy", pos = {x= 1, y = 6}, size = {x = 0.5, y = 1}, alias = "dummy", 
 			icon = {alias = "inputs", frame = {x=323, y= 170, w= 16,h= 16}},
 			onInteract = saySomething,
-			text  = "Oh it's you!"
+			text  = {string = "Oh it's you!", fontSize = 32}
 		}
 	}
 	for k, v in ipairs(npcs) do
@@ -341,7 +341,8 @@ function CreateNPCS()
 		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
 		e.icon.frame:set(v.icon.frame.x,v.icon.frame.y,v.icon.frame.w, v.icon.frame.h)
 		e.prompter = mPlayer;
-		e.text:setText(v.text, true)
+		e.text:setText(v.text.string, true)
+		e.text.fontSize = v.text.fontSize
 		v.node = e;
 	end
 

@@ -14,6 +14,23 @@ ECS::NPCNode::NPCNode(const char* name, const char* alias, const char* iconAlias
 {
 	icon.texture = TextureManager::Instance()->GetTexture(iconAlias);
 	icon.frame = Rectangle{ 0, 0, 1.0f * icon.texture.width, 1.0f * icon.texture.height };
+
+
+
+	Vector2 position = { 0, (float)GetScreenHeight() * 0.75f };
+	Vector2 size = { (float)GetScreenWidth(), (float)GetScreenHeight() - position.y };
+	Rectangle rec = Rectangle{
+		position.x, position.y,
+		size.x , size.y
+	};
+
+	text_rec_background = Rectangle{
+		10, 
+		(float)GetScreenHeight() * 0.75f,
+		(float)GetScreenWidth() - 20, 
+		(float)GetScreenHeight() - (10+(float)GetScreenHeight() * 0.75f)
+	};
+
 }
 
 ECS::NPCNode::~NPCNode()
@@ -71,16 +88,9 @@ void ECS::NPCNode::UIDraw()
 
 	if (isTalking)
 	{
-		
-		Vector2 position = { 0, (float)GetScreenHeight() * 0.75f };
-		Vector2 size = { (float)GetScreenWidth(), (float)GetScreenHeight() - position.y };
-		Rectangle rec = Rectangle{
-			position.x, position.y,
-			size.x , size.y 
-		};
 
-
-		DrawRectangleRec(rec, Color{ 0, 0, 0, 170 });
+		Rectangle rec = text_rec_background;
+		DrawRectangleRec(rec, text.backgroundColor);
 
 
 		Rectangle destination = {
@@ -102,7 +112,7 @@ void ECS::NPCNode::UIDraw()
 			rec,
 			text.fontSize,
 			text.fontSpacing,
-			text.color,
+			text.fontColor,
 			Color{ 0, 0, 0, 0 }
 		);
 

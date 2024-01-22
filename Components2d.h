@@ -215,6 +215,7 @@ namespace ECS
 	struct Text
 	{
 		std::string string = "";
+		unsigned int fontId = 0;
 		int cursor = 0;
 		int inc_size = 2;
 		float writeSpeed = 0.1f;
@@ -225,7 +226,10 @@ namespace ECS
 		bool visible = false;
 		bool expires = true;
 
-		Color color = RAYWHITE;
+		Color fontColor = RAYWHITE;
+		Color backgroundColor = Color{0, 0, 0, 120};
+		void setFontColor(unsigned int hexValue) { fontColor = GetColor(hexValue); }
+		void setBackgroundColor(unsigned int hexValue) { backgroundColor = GetColor(hexValue); }
 		void update(const float& dt);
 		void setText(std::string s, bool resetCursor) { string = s; cursor = resetCursor ? 0 : s.length(); visible = true; }
 		void inspect(const char* title = "Text");

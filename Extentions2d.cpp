@@ -261,6 +261,8 @@ namespace ECS
 					.addData("fontSize", &ECS::Text::fontSize)
 					.addData("fontSpacing", &ECS::Text::fontSpacing)
 					.addFunction("setText", &ECS::Text::setText)
+					.addFunction("setFontColor", &ECS::Text::setFontColor)
+					.addFunction("setBackgroundColor", &ECS::Text::setBackgroundColor)
 				.endClass()
 			.endNamespace();
 	}

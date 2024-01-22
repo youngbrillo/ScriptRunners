@@ -623,10 +623,16 @@ void ECS::Text::inspect(const char* title)
 		ImGui::InputFloat("fontSize", &fontSize, 1.0f, 10.0f);
 		ImGui::InputFloat("fontSpacing", &fontSpacing, 1.0f, 10.0f);
 
-		Vector4 a = ColorNormalize(color);
-		if (ImGui::ColorEdit4("Color", &a.x))
+		Vector4 a = ColorNormalize(fontColor);
+		if (ImGui::ColorEdit4("font Color", &a.x))
 		{
-			color = ColorFromNormalized(a);
+			fontColor = ColorFromNormalized(a);
+		}
+
+		Vector4 b = ColorNormalize(backgroundColor);
+		if (ImGui::ColorEdit4("back groundColor", &b.x))
+		{
+			backgroundColor = ColorFromNormalized(b);
 		}
 		ImGui::TreePop();
 	}

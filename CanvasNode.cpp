@@ -37,7 +37,7 @@ void ECS::CanvasNode::UIDraw()
 		transform.position,
 		mText.fontSize,
 		mText.fontSpacing,
-		mText.color
+		mText.fontColor
 	);
 
 }
