@@ -261,7 +261,7 @@ void ECS::Box2dDraw::DrawCircle(const b2Vec2& center, float radius, const b2Colo
 
 void ECS::Box2dDraw::DrawSolidCircle(const b2Vec2& center, float radius, const b2Vec2& axis, const b2Color& color)
 {
-	Color _color = Color{ (unsigned char)(color.r * 255), (unsigned char)(color.g * 255), (unsigned char)(color.b * 255), (unsigned char)(color.a * 255) };
+	Color _color = Color{ (unsigned char)(color.r * 255), (unsigned char)(color.g * 255), (unsigned char)(color.b * 255), (unsigned char)(color.a * 154) };
 	DrawCircleV({ center.x, center.y }, radius, _color);
 }
 

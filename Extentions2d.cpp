@@ -233,6 +233,18 @@ namespace ECS
 		m_joint = (b2PrismaticJoint*)world->CreateJoint(&pjd);
 		return m_joint;
 	}
+
+	void AddCircleSensor(ECS::RigidBody* rb, float radius)
+	{
+		b2CircleShape shape;
+		shape.m_radius = radius;
+		b2FixtureDef fix;
+		fix.isSensor = true;
+		fix.shape = &shape;
+
+		rb->body->CreateFixture(&fix);
+	}
+
 	static void ExtendBox2d(lua_State* L)
 	{
 		luabridge::getGlobalNamespace(L)
@@ -244,6 +256,7 @@ namespace ECS
 				.endClass()
 				.addFunction("CreatePullyJoint", ECS::mCreatePullyJoint)
 				.addFunction("CreatePrismaticJoint", ECS::CreatePrismaticJoint)
+				.addFunction("AddCircleSensor", ECS::AddCircleSensor)
 			.endNamespace();
 	}
 

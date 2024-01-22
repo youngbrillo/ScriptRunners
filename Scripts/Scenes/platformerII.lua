@@ -324,7 +324,7 @@ function CreateNPCS()
 		{	name = "MR. Guy", pos = {x= 1, y = 6}, size = {x = 0.5, y = 1}, alias = "dummy", 
 			icon = {alias = "inputs", frame = {x=323, y= 170, w= 16,h= 16}},
 			onInteract = saySomething,
-			text  = {string = "Oh it's you!", fontSize = 32, fontAlias = "comic"}
+			text  = {string = "Oh it's you!", fontSize = 32, fontAlias = "comic", contactRadius = 1.0}
 		}
 	}
 	for k, v in ipairs(npcs) do
@@ -344,6 +344,7 @@ function CreateNPCS()
 		e.text:setText(v.text.string, true)
 		e.text.fontSize = v.text.fontSize
 		e.text:SetFont(v.text.fontAlias)
+		b2d.AddCircleSensor(e.rigidbody, v.text.contactRadius)
 		v.node = e;
 	end
 
