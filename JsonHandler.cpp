@@ -4,6 +4,7 @@
 #include "sajson.h"
 #include <fstream>
 #include <iostream>
+#include <sstream>      // std::stringstream
 
 bool JSONParse::LoadFile(char*& data, int& size, const char* file_path)
 {
@@ -223,6 +224,41 @@ jsonObjects& jsonObjects::findOrCreate(const char* name)
 
 }
 
+jsonObjects& jsonObjects::AddArrayEntry()
+{
+	jsonObjects new_obj;
+	std::stringstream ss;
+	ss << this->name << "-child-" << this->children.size();
+	new_obj.name = ss.str();
+	new_obj.isObject = true;
+	this->children.push_back(new_obj);
+	return this->children[this->children.size() - 1];
+}
+
+jsonObjects& jsonObjects::AddArrayEntry(int value)
+{
+	this->integers.push_back(value);
+	return *this;
+}
+
+jsonObjects& jsonObjects::AddArrayEntry(float value)
+{
+	this->doubles.push_back(value);
+	return *this;
+}
+
+jsonObjects& jsonObjects::AddArrayEntry(std::string value)
+{
+	this->strings.push_back(value);
+	return *this;
+}
+
+jsonObjects& jsonObjects::AddArrayEntry(bool value)
+{
+	this->booleans.push_back(value);
+	return *this;
+}
+
 jsonObjects& jsonObjects::GetNumber(const char* name, float& reference, char dilimeter)
 {
 	const jsonObjects& nNode = find(name);
@@ -286,16 +322,7 @@ jsonObjects& jsonObjects::Getboolean(const char* fieldName, bool& reference, cha
 }
 jsonObjects& jsonObjects::SetNumberAt(const char* fieldName, float value, char dilimeter)
 {
-	jsonObjects& nNode = find(fieldName);
-	bool valid = strcmp(nNode.name.c_str(), fieldName) == 0;
-	if (valid)
-		nNode.doubles[0] = value;
 
-	return  *this;
-}
-
-jsonObjects& jsonObjects::SetNumberAtAndAdd(const char* fieldName, float value, char dilimeter)
-{
 	// // O: insert return statement here
 	jsonObjects& nNode = find(fieldName);
 	bool found = strcmp(nNode.name.c_str(), fieldName) == 0;

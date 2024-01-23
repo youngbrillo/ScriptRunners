@@ -67,6 +67,11 @@ struct jsonObjects
 	std::string debugPrint(int l = 0) const;
 	jsonObjects& find(const char* name);
 	jsonObjects& findOrCreate(const char* name);
+	jsonObjects& AddArrayEntry(); //empty object;
+	jsonObjects& AddArrayEntry(int value);
+	jsonObjects& AddArrayEntry(float value);
+	jsonObjects& AddArrayEntry(std::string value);
+	jsonObjects& AddArrayEntry(bool value);
 	//getters
 	jsonObjects& GetNumber(const char* fieldName, float& reference, char dilimeter = '.');
 	jsonObjects& GetInteger(const char* fieldName, float& reference, char dilimeter = '.');
@@ -75,8 +80,6 @@ struct jsonObjects
 	jsonObjects& Getboolean(const char* fieldName, bool& reference, char dilimeter = '.');
 	//setters
 	jsonObjects& SetNumberAt(const char* fieldName, float value, char dilimeter = '.');
-	//does set SetNumberAt adds the field if it is not found as a child
-	jsonObjects& SetNumberAtAndAdd(const char* fieldName, float value, char dilimeter = '.');
 	jsonObjects& SetIntegerAt(const char* fieldName, int value, char dilimeter = '.');
 	jsonObjects& SetBooleanAt(const char* fieldName, bool value);
 	jsonObjects& SetStringAt(const char* fieldName, std::string value);
