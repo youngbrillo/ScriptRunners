@@ -62,15 +62,16 @@ void Inspector::InspectWindows(AppSettings* settings)
 		if (ImGui::MenuItem(view_demo ?"Hide Demo": "View Demo", NULL, view_demo)){
 			this->view_demo = !this->view_demo;
 		}
-		settings->Debug();
+		//settings->Debug();
 
 		ImGui::EndMenu();
 	}
 
 }
-
+#include "SceneManager.h"
 void Inspector::InspectScenes(SceneManager* sm, AppSettings* s)
 {
+#if false
 	if (ImGui::BeginMenu("Scenes"))
 	{
 		if (!!sm)
@@ -95,6 +96,15 @@ void Inspector::InspectScenes(SceneManager* sm, AppSettings* s)
 		}
 		ImGui::EndMenu();
 	}
+#else
+	if (GlobalSceneManager::Get()->Inspect(s->lastScene_id, "Scenes"))
+	{
+		SceneEntryPro* entry = GlobalSceneManager::GetScene(s->lastScene_id);
+		s->last_scene_name = entry->name;
+		s->last_scene_cat = entry->category;
+		s->restart = true;
+	}
+#endif
 }
 
 void Inspector::InspectObjects(GameObjectManager* objectManager)

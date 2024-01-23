@@ -2,14 +2,20 @@
 
 GlobalSceneManager* GlobalSceneManager::Instance = NULL;
 
-int GlobalSceneManager::RegisterScene(const char* category, const char* name, SceneCreationFunctionNoArgs* func)
+int GlobalSceneManager::RegisterScene(const char* category, const char* name, const char* path, std::function<Scene* (const char*)> func)
 {
-	return Get()->AddScene1(category, name, func);
+	SceneEntryPro entry{ category, name, path, func };
+	return Get()->AddScene(entry);
 }
 
-int GlobalSceneManager::RegisterScene(const char* category, const char* name, SceneCreationFunctionString* func, const char* path)
+ SceneEntryPro* GlobalSceneManager::GetScene(const char* name)
 {
-	return Get()->AddScene2(category, name, func, path);
+	 return Get()->get_scene(name);
+}
+
+ SceneEntryPro* GlobalSceneManager::GetScene(const int& id)
+{
+	 return Get()->get_scene(id);
 }
 
 GlobalSceneManager* GlobalSceneManager::Get()
@@ -20,24 +26,71 @@ GlobalSceneManager* GlobalSceneManager::Get()
 	}
 	return Instance;
 }
+GlobalSceneManager::GlobalSceneManager()
+	: sceneCount(0)
+{
 
-int GlobalSceneManager::AddScene1(const char* category, const char* name, SceneCreationFunction* func)
-{
-	SceneEntryPro entry{ category, name, func, NULL, ""};
-	return AddScene(entry);
 }
-int GlobalSceneManager::AddScene2(const char* category, const char* name, SceneCreationFunctionString* func, const char* path)
+
+GlobalSceneManager::~GlobalSceneManager()
 {
-	SceneEntryPro entry{ category, name, NULL, func, path };
-	return AddScene(entry);
 }
-int GlobalSceneManager::AddScene(const SceneEntryPro& entry)
+
+int GlobalSceneManager::AddScene(SceneEntryPro& entry)
 {
-	entries.push_back(entry);
-	int id = entries.size() - 1;
+	int id = this->sceneCount++;
+	entry.id = id;
+	entries[id] = entry;
 	entry_name_lookup[entry.name] = id;
 	entry_name_reverse_lookup[id] = entry.name;
 	category_entry_lookup[entry.category].push_back(id);
 
 	return id;
+}
+
+SceneEntryPro* GlobalSceneManager::get_scene(const char* name)
+{
+	for (auto&& pair : entry_name_lookup)
+	{
+		if (strcmp(name, pair.first) == 0)
+		{
+			return &entries.at(entry_name_lookup.at(pair.first));
+		}
+	}
+	return nullptr;
+}
+
+SceneEntryPro* GlobalSceneManager::get_scene(const int& id)
+{
+	if (entries.find(id) != entries.end())
+	{
+		return &entries.at(id);
+	}
+	return nullptr;
+}
+#include  <imgui.h>
+
+bool GlobalSceneManager::Inspect(int& current_scene, const char* title)
+{
+	bool changed = false;
+	if (ImGui::BeginMenu("Scenes"))
+	{
+		for (auto&& pair : category_entry_lookup)
+		{
+			if (ImGui::BeginMenu(pair.first))
+			{
+				for (auto&& scene_id : pair.second)
+				{
+					if (ImGui::MenuItem(entry_name_reverse_lookup[scene_id], TextFormat("id: %d", scene_id), current_scene == scene_id))
+					{
+						changed = true;
+						current_scene = scene_id;
+					}
+				}
+				ImGui::EndMenu();
+			}
+		}
+		ImGui::EndMenu();
+	}
+	return changed;
 }

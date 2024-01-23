@@ -25,7 +25,7 @@ public:
 	virtual void Draw();
 	virtual void Debug() override;
 	virtual void PollEvents() override;
-    static Scene* Register() { return new FogShaderScene(); }
+    static Scene* Register(const char* path) { return new FogShaderScene(); }
 
 public:
     Shader shader;
@@ -394,7 +394,7 @@ public:
             SetModel(current_model);
         }
     }
-    static Scene* Register() { return new PostProcessingScene(); }
+    static Scene* Register(const char* path) { return new PostProcessingScene(); }
 
 public:
 };

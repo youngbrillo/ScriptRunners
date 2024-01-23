@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 
 class Scene
 {
@@ -13,17 +14,4 @@ public:
 	virtual void PollEvents() {};
 };
 
-
-#define MAX_SCENE_COUNT 64
-
-typedef Scene* SceneCreationFunction();
-int RegisterScene(const char* category, const char* name, SceneCreationFunction* func);
-struct SceneEntry
-{
-	const char* category;
-	const char* name;
-	SceneCreationFunction* creationFunction;
-};
-
-extern SceneEntry GlobalSceneList[MAX_SCENE_COUNT];
-extern int GlobalSceneCount;
+int RegisterScene(const char* category, const char* name, std::function<Scene*(const char*)> func, const char* path = "");

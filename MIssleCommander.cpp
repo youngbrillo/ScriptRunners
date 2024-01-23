@@ -70,7 +70,7 @@ public:
 	virtual void Run(const float& delta);
 	virtual void Draw();
 	virtual void PollEvents() override;
-	static Scene* Create() { return new MissleCommanderScene(); }
+	static Scene* Create(const char* path) { return new MissleCommanderScene(); }
     void UpdateOutgoingFire();
     void UpdateIncomingFire();
 

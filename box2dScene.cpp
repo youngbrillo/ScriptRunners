@@ -352,7 +352,7 @@ public:
 	}
 
 public:
-	static Scene* Create() { return new Box2dScene_CarScene(); }
+	static Scene* Create(const char* path) { return new Box2dScene_CarScene(); }
 };
 
 
@@ -429,7 +429,7 @@ public:
 			}
 		}
 	}
-	static Scene* Create() { return new Box2dScene_Tiles; }
+	static Scene* Create(const char* path) { return new Box2dScene_Tiles; }
 
 };
 
@@ -514,7 +514,7 @@ public:
 	//virtual void PollEvents() override {}
 	//virtual void Debug() override{}
 
-	static Scene* Create() { return new Box2dScene_PullyJoint; }
+	static Scene* Create(const char* path) { return new Box2dScene_PullyJoint; }
 };
 class GearJoint : Box2dBaseScene
 {
@@ -647,7 +647,7 @@ public:
 			m_joint5 = (b2GearJoint*)world->CreateJoint(&jd5);
 		}
 	}
-	static Scene* Create() { return new GearJoint(); }
+	static Scene* Create(const char* path) { return new GearJoint(); }
 };
 
 class sliderCrank1 : Box2dBaseScene
@@ -723,7 +723,7 @@ public:
 			}
 		}
 	}
-	static Scene* Create() { return new sliderCrank1(); }
+	static Scene* Create(const char* path) { return new sliderCrank1(); }
 };
 
 class sliderCrank2 : Box2dBaseScene
@@ -843,7 +843,7 @@ public:
 		}
 	}
 
-	static Scene* Create() { return new sliderCrank2(); }
+	static Scene* Create(const char* path) { return new sliderCrank2(); }
 
 	b2RevoluteJoint* m_joint1;
 	b2PrismaticJoint* m_joint2;
@@ -932,7 +932,7 @@ public:
 
 	}
 
-	static Scene* Create() { return new PrismaticJointScene(); }
+	static Scene* Create(const char* path) { return new PrismaticJointScene(); }
 };
 // a sort of 'weld' joint ^_^
 class CantileverScene : public Box2dBaseScene
@@ -1112,7 +1112,7 @@ public:
 
 		this->camera.cam.zoom = 16.0;
 	}
-	static Scene* Create() { return new CantileverScene(); }
+	static Scene* Create(const char* path) { return new CantileverScene(); }
 
 	b2Body* m_middle;
 };

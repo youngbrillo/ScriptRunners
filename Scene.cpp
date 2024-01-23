@@ -1,15 +1,7 @@
 #include "Scene.h"
-SceneEntry GlobalSceneList[MAX_SCENE_COUNT] = { {nullptr} };
-int GlobalSceneCount = 0;
-
-int RegisterScene(const char* category, const char* name, SceneCreationFunction* func)
+#include "SceneManager.h"
+//int RegisterScene(const char* category, const char* name, SceneCreationFunction* func)
+int RegisterScene(const char* category, const char* name, std::function<Scene* (const char*)> func, const char* path)
 {
-	int index = GlobalSceneCount;
-	if (index < MAX_SCENE_COUNT)
-	{
-		GlobalSceneList[index] = { category, name, func };
-		++GlobalSceneCount;
-		return index;
-	}
-	return -1;
+	return GlobalSceneManager::RegisterScene(category, name, path, func);
 }

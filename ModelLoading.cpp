@@ -140,7 +140,7 @@ public:
     };
 
 
-	static Scene* Register() { return new ModelLoadingScene(); }
+	static Scene* Register(const char* path) { return new ModelLoadingScene(); }
 
 };
 

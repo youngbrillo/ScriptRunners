@@ -61,7 +61,7 @@ public:
 	virtual void Debug();
 	virtual void PollEvents() override;
 
-	static Scene* Create() { return new BreakoutScene(); }
+	static Scene* Create(const char* path) { return new BreakoutScene(); }
 	
 public:
 	int max_lives = 5;

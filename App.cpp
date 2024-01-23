@@ -4,6 +4,7 @@
 #include <cassert>
 #include "rlImGui.h"
 #include "GlobalManager.h"
+#include "SceneManager.h"
 
 App* App::Instance = NULL;
 void App::Start()
@@ -41,6 +42,7 @@ App* App::Get()
 
 void App::GoToScene(std::string name)
 {
+#if false
 	if (Get()->sceneManager.scene_to_globalIndex.find(name) !=
 		Get()->sceneManager.scene_to_globalIndex.end())
 	{
@@ -48,6 +50,19 @@ void App::GoToScene(std::string name)
 		Get()->settings.lastScene_id = id;
 		Get()->settings.restart = true;
 	}
+#else
+
+	SceneEntryPro* entry = GlobalSceneManager::GetScene(name.c_str());
+	if (!!entry)
+	{
+		int id = entry->id;
+		Get()->settings.lastScene_id = id;
+		Get()->settings.restart = true;
+	}
+
+#endif
+
+
 }
 
 App::App()
@@ -71,13 +86,6 @@ void App::Initialize()
 
 	rlImGuiSetup(true);
 	SetExitKey(settings.exitKey);
-
-
-	for (int i = 0; i < GlobalSceneCount; i++)
-	{
-		sceneManager.scenes_by_category[GlobalSceneList[i].category].push_back(GlobalSceneList[i].name);
-		sceneManager.scene_to_globalIndex[GlobalSceneList[i].name] = i;
-	}
 
 	GlobalManager::Begin();
 	startScene(settings.lastScene_id);
@@ -160,14 +168,24 @@ void App::startScene(int index)
 		settings.AutoSave();
 		GlobalManager::Reset();
 	}
-
+#if false
 	if (GlobalSceneCount > 0 && index > -1 && index < GlobalSceneCount)
 	{
 		GlobalManager::Set();
 		this->currentScene = GlobalSceneList[index].creationFunction();
 	}
-	settings.state = AppState_Play;
-	this->currentScene->Initialize();
+#else
+	SceneEntryPro* entry = GlobalSceneManager::GetScene(index);
+	if (!!entry)
+	{
+		GlobalManager::Set();
+		this->currentScene = entry->func(entry->path);
+
+		settings.state = AppState_Play;
+		this->currentScene->Initialize();
+	}
+
+#endif
 }
 
 
@@ -175,7 +193,7 @@ void App::startScene(int index)
 void App::Debug()
 {
 	rlImGuiBegin();
-	inspector.Render(&this->settings, &this->sceneManager, NULL);
+	inspector.Render(&this->settings, NULL, NULL);
 
 	ImGui::Begin(TextFormat("%s Debug", settings.wintitle.c_str()));
 	settings.Debug();
@@ -202,63 +220,8 @@ void App::DebugComponents()
 	{
 		if (ImGui::BeginTabItem("Controls"))
 		{
-
 			ImGui::Separator();
-
 			if (!!currentScene) currentScene->Debug();
-
-			ImGui::EndTabItem();
-		}
-
-		ImGuiTreeNodeFlags leafNodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
-		leafNodeFlags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-
-		ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
-
-		if (ImGui::BeginTabItem("Scenes"))
-		{
-			int categoryIndex = 0;
-			const char* category = GlobalSceneList[categoryIndex].category;
-			int i = 0;
-			while (i < GlobalSceneCount)
-			{
-				bool categorySelected = strcmp(category, GlobalSceneList[settings.lastScene_id].category) == 0;
-				ImGuiTreeNodeFlags nodeSelectionFlags = categorySelected ? ImGuiTreeNodeFlags_Selected : 0;
-				bool nodeOpen = ImGui::TreeNodeEx(category, nodeFlags | nodeSelectionFlags);
-
-				if (nodeOpen)
-				{
-					while (i < GlobalSceneCount && strcmp(category, GlobalSceneList[i].category) == 0)
-					{
-						ImGuiTreeNodeFlags selectionFlags = 0;
-						if (settings.lastScene_id == i)
-						{
-							selectionFlags = ImGuiTreeNodeFlags_Selected;
-						}
-						ImGui::TreeNodeEx((void*)(intptr_t)i, leafNodeFlags | selectionFlags, "%s", GlobalSceneList[i].name);
-						if (ImGui::IsItemClicked())
-						{
-							settings.lastScene_id = i;
-							this->startScene(i);
-						}
-						++i;
-					}
-					ImGui::TreePop();
-				}
-				else
-				{
-					while (i < GlobalSceneCount && strcmp(category, GlobalSceneList[i].category) == 0)
-					{
-						++i;
-					}
-				}
-
-				if (i < GlobalSceneCount)
-				{
-					category = GlobalSceneList[i].category;
-					categoryIndex = i;
-				}
-			}
 			ImGui::EndTabItem();
 		}
 		GlobalManager::Debug("Global Manager");

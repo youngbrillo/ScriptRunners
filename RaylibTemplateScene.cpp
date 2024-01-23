@@ -145,7 +145,7 @@ public:
 	
 	};
 
-	static Scene* Register() { return new Raylib_intro_scene(); }
+	static Scene* Register(const char* path) { return new Raylib_intro_scene(); }
 
 };
 
@@ -249,7 +249,7 @@ public:
 
 	}
 
-	static Scene* Register() { return new Raylib_custom_frameControl(); }
+	static Scene* Register(const char* path) { return new Raylib_custom_frameControl(); }
 };
 
 
@@ -337,7 +337,7 @@ public:
 			IsCursorHidden() ? EnableCursor() : DisableCursor();
 		}
 	}
-	static Scene* Register() { return new Raylib_core_world_scene(); }
+	static Scene* Register(const char* path) { return new Raylib_core_world_scene(); }
 
 };
 

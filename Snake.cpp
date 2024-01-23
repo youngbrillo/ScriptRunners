@@ -55,7 +55,7 @@ public:
 
 	}
 	virtual void PollEvents() override;
-	static Scene* Create() { return new SnakeScene(); }
+	static Scene* Create(const char* path) { return new SnakeScene(); }
 
 };
 

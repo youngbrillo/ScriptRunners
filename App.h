@@ -22,11 +22,7 @@ struct FrameSettings
 		ImGui::SliderFloat("Hertz", &hertz_target, 0.0f, 1.0f);
 	}
 };
-struct SceneManager
-{
-	std::map<std::string, std::vector<std::string>> scenes_by_category;
-	std::map<std::string, int> scene_to_globalIndex;
-};
+
 class App
 {
 public:
@@ -58,7 +54,6 @@ private:
 	FrameSettings fData;
 	Inspector inspector;
 	AppSettings settings;
-	SceneManager sceneManager;
 	Scene* currentScene;
 };
 

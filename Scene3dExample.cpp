@@ -8,7 +8,7 @@ public:
 	~PSXStyledScene();
 
 
-	static Scene* Register() { return new PSXStyledScene(""); }
+	static Scene* Register(const char* path) { return new PSXStyledScene(""); }
 };
 PSXStyledScene::PSXStyledScene(const char* title)
 	: Scene3d(title)
