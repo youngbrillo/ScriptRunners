@@ -23,10 +23,13 @@ ECS::TilemapNode2d::~TilemapNode2d()
 
 void ECS::TilemapNode2d::Import(const char* texture_alias, const char* dataFile_path)
 {
+	map.SetTexture(texture_alias);
+	map.LoadConfig(dataFile_path);
 }
 
 void ECS::TilemapNode2d::LoadData(const char* dataFile_path)
 {
+	map.LoadConfig(dataFile_path);
 }
 
 void ECS::TilemapNode2d::saveData()
@@ -139,6 +142,7 @@ void ECS::TilemapNode2d::Poll()
 void ECS::TilemapNode2d::inspect()
 {
 	Node2d::inspect();
+	map.Inspect();
 }
 
 
@@ -168,6 +172,8 @@ void ECS::TilemapNode2d::Extend(lua_State* L)
 		.endNamespace()
 		.beginNamespace("ECS")
 			.deriveClass<ECS::TilemapNode2d, ECS::Node2d>("TilemapNode")
+				.addFunction("Import", &ECS::TilemapNode2d::Import)
+				.addFunction("LoadData", &ECS::TilemapNode2d::LoadData)
 			.endClass()
 		.endNamespace();
 }

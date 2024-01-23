@@ -1,6 +1,8 @@
 #include "Tilemap.h"
 #include "JsonHandler.h"
 #include "Scene2d.h"
+#include <imgui.h>
+
 Tilemap::Tilemap()
 
 {
@@ -76,6 +78,30 @@ void Tilemap::LoadConfig(const char* config_path)
 
 	if(autoGen)
 		Generate();
+
+	valid_path = true;
+	m_config_path = config_path;
+}
+
+void Tilemap::SaveConfig(const char* config_path)
+{
+	jsonObjects saver;
+	saver.SetBooleanAt("autogenerate", true);
+	jsonObjects& verts =  saver.findOrCreate("verts");
+
+	if (legacy_edges.size() > 1)
+	{
+		for (int i = 0; i < legacy_edges.size()-1; i+=2)
+		{
+			if (i >= edges.size() - 1) continue;
+			auto& entry = verts.AddArrayEntry();
+			entry.findOrCreate("p1").SetNumberAt("x", legacy_edges[i].x).SetNumberAt("y", legacy_edges[i].y);
+			entry.findOrCreate("p2").SetNumberAt("x", legacy_edges[i+1].x).SetNumberAt("y", legacy_edges[i+1].y);
+
+		}
+	}
+
+	saver.SaveToFile(config_path);
 }
 
 void Tilemap::Generate()
@@ -152,4 +178,15 @@ void Tilemap::AddEdgeMouseClick(int x, int y, int key)
 
 void Tilemap::Inspect(const char* title)
 {
+	if (ImGui::TreeNode(title))
+	{
+		if (!valid_path) ImGui::BeginDisabled();
+		if (ImGui::Button("Save"))
+		{
+			this->SaveConfig(m_config_path.c_str());
+		}
+		if (!valid_path) ImGui::EndDisabled();
+
+		ImGui::TreePop();
+	}
 }

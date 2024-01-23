@@ -162,10 +162,10 @@ void AppSettings::SaveData()
 		.SetBooleanAt("undecorated", win_undecorated)
 		.SetBooleanAt("transparent", win_transparent)
 		.findOrCreate("bgColor")
-		.SetNumberAtAndAdd("r", bgColor.x)
-		.SetNumberAtAndAdd("g", bgColor.y)
-		.SetNumberAtAndAdd("b", bgColor.z)
-		.SetNumberAtAndAdd("a", bgColor.w);
+		.SetNumberAt("r", bgColor.x)
+		.SetNumberAt("g", bgColor.y)
+		.SetNumberAt("b", bgColor.z)
+		.SetNumberAt("a", bgColor.w);
 
 	obj.SaveToFile(configPath.c_str());
 

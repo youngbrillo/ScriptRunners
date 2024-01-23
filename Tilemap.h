@@ -3,7 +3,7 @@
 #include <box2d/box2d.h>
 #include <vector>
 #include "RenderPipeline.h"
-
+#include <string>
 namespace tilemap {
 	struct Tile
 	{
@@ -30,7 +30,7 @@ public:
 	static b2World* GetWorld();
 	void SetTexture(const char* texturePath);
 	void LoadConfig(const char* config_path);
-
+	void SaveConfig(const char* config_path);
 	void Generate();
 	void Draw() const;
 	void AddEdgeMouseClick(int x, int y, int key = MOUSE_BUTTON_LEFT);
@@ -48,5 +48,7 @@ private:
 	bool ownsBody = true;
 	std::vector<b2Vec2> legacy_edges;
 	bool mFistClick = false;
+	std::string m_config_path = "";
+	bool valid_path = false;
 };
 

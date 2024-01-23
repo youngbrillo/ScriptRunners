@@ -39,7 +39,9 @@ function drawGrid(min, max, spacing)
 end
 
 function GenTileMap() 
-	e = Scene.CreateTilemapNode("tile map")
+	map = Scene.CreateTilemapNode("tile map")
+	map:LoadData("./Assets/Textures/stringstar_fields/tileset.json");
+
 	App.GetCamera().zoom = 50.0;
 end
 
