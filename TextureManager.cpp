@@ -469,3 +469,5 @@ void textureDebug::Sprite::Debug(Rectangle& rec, const char* title)
 
 static int gManagerInstance = RegisterManager("Texture Manager", "", "", TextureManager::Register);
 //static int gExtentionEntry = RegisterComponentExtention("TextureManager", TextureManager::Extend);
+#include "Extentions2d.h"
+static int ck = ExtensionManager::Register(TextureManager::Extend);

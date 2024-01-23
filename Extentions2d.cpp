@@ -5,6 +5,7 @@
 #include "Node2d.h"
 #include "FontManager.h"
 
+std::vector<std::function<void(lua_State*)>> ExtensionManager::function_list = {};
 void ECS::ExtendRayLib(lua_State* L){
 	ERaylib::Extend(L);
 	luabridge::getGlobalNamespace(L)
@@ -301,4 +302,20 @@ void ECS::ExtendAll(lua_State* L){
 	ECS::ExtendCamera(L);
 	ECS::ExtendBox2d(L);
 	ECS::ExtendText(L);
+
+	ExtensionManager::Run(L);
+}
+
+void ExtensionManager::Run(lua_State* L)
+{
+	for (std::function<void(lua_State*)>& func : function_list)
+	{
+		func(L);
+	}
+}
+
+int ExtensionManager::Register(std::function<void(lua_State*)> func)
+{
+	function_list.emplace_back(func);
+	return function_list.size() - 1;
 }

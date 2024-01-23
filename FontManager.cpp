@@ -142,3 +142,5 @@ std::vector<std::pair<std::string, unsigned int>> FontManager::GetAllFonts() con
 	return k;
 }
 static int gManagerInstance = RegisterManager("Font Manager", "", "", FontManager::Register);
+#include "Extentions2d.h"
+static int ck = ExtensionManager::Register(FontManager::Extend);

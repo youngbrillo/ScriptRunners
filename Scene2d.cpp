@@ -350,7 +350,6 @@ void Scene2d::Extend(lua_State* L)
 	auto getCameraFunction = std::function<Camera2D* (void)>([]() {return &Scene2d::Instance()->camera.cam; });
 	auto isPausedFunction = std::function<bool(void)>([]() {return App::GetState() != AppState_::AppState_Play; });
 	ECS::ExtendAll(L);
-	TextureManager::Extend(L);
 	luabridge::getGlobalNamespace(L)
 		.beginNamespace("App")
 			.addFunction("GetCamera", getCameraFunction)
@@ -376,6 +375,5 @@ void Scene2d::Extend(lua_State* L)
 	ECS::InteractableNode::Extend(L);
 	ECS::NPCNode::Extend(L);
 	ECS::CanvasNode::Extend(L);
-	FontManager::Extend(L);
 	ECS::TilemapNode2d::Extend(L);
 }
