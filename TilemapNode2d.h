@@ -20,7 +20,8 @@ namespace ECS
     enum tile_mode {
         tile_mode_draw = 0,
         tile_mode_create,
-        tile_mode_edit
+        tile_mode_edit, 
+        tile_mode_point
     };
 
     class TilemapNode2d : public ECS::Node2d
@@ -43,7 +44,7 @@ namespace ECS
         static void Extend(lua_State* L);
     protected:
         void GenerateFixtures();
-
+        void GeneratePoint();
     public:
         tile_mode mTileMode = tile_mode::tile_mode_draw;
         std::vector<ECS::Tile> mTiles;
@@ -52,6 +53,9 @@ namespace ECS
 
         Vector2 fMousePosition;
         glm::ivec2 iMousePosition;
+
+        std::vector<b2Vec2> mPoints;
+        bool firstPointChosen;
     };
 }
 

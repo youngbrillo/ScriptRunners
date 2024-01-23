@@ -59,6 +59,10 @@ void ECS::TilemapNode2d::Draw()
 		Vector2 p;
 
 		DrawRectangleV(Vector2{ (float)iMousePosition.x, (float)iMousePosition.y }, Vector2{ 1, 1 }, Color{ 0, 255, 0, 255 / 6 });
+		for (auto& v : mPoints)
+		{
+			DrawRectangleV(Vector2{ (float)v.x, (float)v.y }, Vector2(0.5f, 0.5f), YELLOW);
+		}
 	}
 
 }
@@ -75,6 +79,9 @@ void ECS::TilemapNode2d::UIDraw()
 	case ECS::tile_mode_edit:
 		DrawText("Edit", 25, 25, 20, BLUE);
 		break;
+	case ECS::tile_mode_point:
+		DrawText("Point", 25, 25, 20, BLUE);
+		break;
 	default:
 		break;
 	}
@@ -85,8 +92,10 @@ void ECS::TilemapNode2d::Poll()
 	if (IsKeyReleased(KEY_TAB))
 	{
 		mTileMode = mTileMode == ECS::tile_mode_draw ?
-			tile_mode_create : mTileMode == ECS::tile_mode_create ?
-			tile_mode_edit : tile_mode_draw;
+			tile_mode_create: mTileMode == ECS::tile_mode_create ?
+			tile_mode_edit	: mTileMode == ECS::tile_mode_edit ?
+			tile_mode_point	:
+			tile_mode_draw;
 	}
 
 	Vector2 mp = GetMousePosition();
@@ -132,6 +141,8 @@ void ECS::TilemapNode2d::Poll()
 	{
 		GenerateFixtures();
 	}
+
+	GeneratePoint();
 }
 
 void ECS::TilemapNode2d::inspect()
@@ -149,17 +160,11 @@ void ECS::TilemapNode2d::Extend(lua_State* L)
 
 void ECS::TilemapNode2d::GenerateFixtures()
 {
-	if (mTiles.size() < 1) return;
-	std::vector<b2Vec2> edges;
+	if (mPoints.size() < 1) return;
 
-	for (auto& t : mTiles)
-	{
-		edges.push_back(b2Vec2(t.position.x, t.position.y));
-		edges.push_back(b2Vec2(t.position.x + t.size.x, t.position.y));
-		edges.push_back(b2Vec2(t.position.x + t.size.x, t.position.y + t.size.y));
-		edges.push_back(b2Vec2(t.position.x, t.position.y+t.size.y));
-	}
+
 	b2World* world = Scene2d::Instance()->world;
+#if false
 	if (rigidbody.body != NULL)
 	{
 		world->DestroyBody(rigidbody.body);
@@ -171,19 +176,43 @@ void ECS::TilemapNode2d::GenerateFixtures()
 	rigidbody.bdyDef.position = b2Vec2(this->transform.position.x, this->transform.position.y);
 
 	rigidbody.body = world->CreateBody(&rigidbody.bdyDef);
+#else
+	if (rigidbody.body == NULL)
+	{
+		rigidbody.bdyDef.type = b2_staticBody;
+		rigidbody.bdyDef.position = b2Vec2(this->transform.position.x, this->transform.position.y);
+		rigidbody.body = world->CreateBody(&rigidbody.bdyDef);
+	}
 
+#endif	
 
-	for (int i = 0; i <= edges.size() - 2; i++)
+	for (int i = 0; i <= mPoints.size() - 2; i++)
 	{
 		b2EdgeShape shape;
-		shape.SetTwoSided(edges[i], edges[i + 1]);
+		shape.SetTwoSided(mPoints[i], mPoints[i + 1]);
 
 		b2FixtureDef fx;
 		fx.shape = &shape;
 		rigidbody.body->CreateFixture(&fx);
 	}
 
+	mPoints.clear();
 
 
+}
 
+void ECS::TilemapNode2d::GeneratePoint()
+{
+	if (mTileMode != tile_mode_point)return;
+	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+	{
+		mPoints.emplace_back(b2Vec2(iMousePosition.x, iMousePosition.y));
+		firstPointChosen = true;
+	}
+
+	if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT) && firstPointChosen)
+	{
+		mPoints.emplace_back(b2Vec2(iMousePosition.x, iMousePosition.y));
+		firstPointChosen = false;
+	}
 }
