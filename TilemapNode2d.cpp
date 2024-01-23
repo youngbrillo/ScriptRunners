@@ -1,11 +1,20 @@
 #include "TilemapNode2d.h"
 #include <LuaBridge/LuaBridge.h>
 #include "Scene2d.h"
-
+#include <imgui.h>
 
 ECS::TilemapNode2d::TilemapNode2d(const char* name)
 	: Node2d(name)
 {
+
+	b2World* world = Scene2d::Instance()->world;
+	if (rigidbody.body == NULL)
+	{
+		rigidbody.bdyDef.type = b2_staticBody;
+		rigidbody.bdyDef.position = b2Vec2(this->transform.position.x, this->transform.position.y);
+		rigidbody.body = world->CreateBody(&rigidbody.bdyDef);
+	}
+	map.SetBody(rigidbody.body);
 }
 
 ECS::TilemapNode2d::~TilemapNode2d()
@@ -35,23 +44,7 @@ void ECS::TilemapNode2d::FixedUpdate(const float& timestep)
 void ECS::TilemapNode2d::Draw()
 {
 	if (!this->visible) return;
-
-	for (auto& tile : mTiles)
-	{
-		Rectangle destination = Rectangle
-		{
-			(float)tile.position.x, (float)tile.position.y,
-			(float)tile.size.x, (float)tile.size.y
-		};
-		DrawTexturePro(
-			material.texture,
-			tile.frame,
-			destination,
-			Vector2{0.0f, 0.0f},
-			transform.rotation,
-			material.color
-		);
-	}
+	map.Draw();
 
 	if (mTileMode != tile_mode_draw)
 	{
@@ -59,10 +52,7 @@ void ECS::TilemapNode2d::Draw()
 		Vector2 p;
 
 		DrawRectangleV(Vector2{ (float)iMousePosition.x, (float)iMousePosition.y }, Vector2{ 1, 1 }, Color{ 0, 255, 0, 255 / 6 });
-		for (auto& v : mPoints)
-		{
-			DrawRectangleV(Vector2{ (float)v.x, (float)v.y }, Vector2(0.5f, 0.5f), YELLOW);
-		}
+
 	}
 
 }
@@ -89,6 +79,7 @@ void ECS::TilemapNode2d::UIDraw()
 
 void ECS::TilemapNode2d::Poll()
 {
+	if (ImGui::GetIO().WantCaptureMouse || ImGui::GetIO().WantCaptureKeyboard) return;
 	if (IsKeyReleased(KEY_TAB))
 	{
 		mTileMode = mTileMode == ECS::tile_mode_draw ?
@@ -118,19 +109,19 @@ void ECS::TilemapNode2d::Poll()
 	if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT) && mTileMode == tile_mode_create)
 	{
 		//add tile
-		ECS::Tile n = newTile;
+		tilemap::Tile n = newTile;
 		n.position = iMousePosition;
-		mTiles.push_back(n);
+		map.tiles.push_back(n);
 	}
 
 	if (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT) && mTileMode != tile_mode_draw)
 	{
-		auto it = mTiles.begin();
-		while (it != mTiles.end())
+		auto it = map.tiles.begin();
+		while (it != map.tiles.end())
 		{
 			if ((it)->position.x == iMousePosition.x && (it)->position.y == iMousePosition.y)
 			{
-				it = mTiles.erase(it);
+				it = map.tiles.erase(it);
 			}
 			else
 				it++;
@@ -139,7 +130,7 @@ void ECS::TilemapNode2d::Poll()
 
 	if (IsKeyReleased(KEY_SPACE) && mTileMode != tile_mode_draw)
 	{
-		GenerateFixtures();
+		map.Generate();
 	}
 
 	GeneratePoint();
@@ -150,69 +141,35 @@ void ECS::TilemapNode2d::inspect()
 	Node2d::inspect();
 }
 
-void ECS::TilemapNode2d::Extend(lua_State* L)
-{
-	luabridge::getGlobalNamespace(L)
-		.deriveClass<ECS::TilemapNode2d, ECS::Node2d>("TilemapNode")
-
-		.endClass();
-}
-
-void ECS::TilemapNode2d::GenerateFixtures()
-{
-	if (mPoints.size() < 1) return;
-
-
-	b2World* world = Scene2d::Instance()->world;
-#if false
-	if (rigidbody.body != NULL)
-	{
-		world->DestroyBody(rigidbody.body);
-		rigidbody.body = NULL;
-		rigidbody.fixture = NULL;
-	}
-
-	rigidbody.bdyDef.type = b2_staticBody;
-	rigidbody.bdyDef.position = b2Vec2(this->transform.position.x, this->transform.position.y);
-
-	rigidbody.body = world->CreateBody(&rigidbody.bdyDef);
-#else
-	if (rigidbody.body == NULL)
-	{
-		rigidbody.bdyDef.type = b2_staticBody;
-		rigidbody.bdyDef.position = b2Vec2(this->transform.position.x, this->transform.position.y);
-		rigidbody.body = world->CreateBody(&rigidbody.bdyDef);
-	}
-
-#endif	
-
-	for (int i = 0; i <= mPoints.size() - 2; i++)
-	{
-		b2EdgeShape shape;
-		shape.SetTwoSided(mPoints[i], mPoints[i + 1]);
-
-		b2FixtureDef fx;
-		fx.shape = &shape;
-		rigidbody.body->CreateFixture(&fx);
-	}
-
-	mPoints.clear();
-
-
-}
 
 void ECS::TilemapNode2d::GeneratePoint()
 {
 	if (mTileMode != tile_mode_point)return;
-	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-	{
-		mPoints.emplace_back(b2Vec2(iMousePosition.x, iMousePosition.y));
-		firstPointChosen = true;
-	}
+	map.AddEdgeMouseClick(iMousePosition.x, iMousePosition.y, MOUSE_BUTTON_LEFT);
 
-	if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT) && firstPointChosen)
-	{
-		mPoints.emplace_back(b2Vec2(iMousePosition.x, iMousePosition.y));
-		firstPointChosen = false;
-	}
 }
+
+
+
+#include "Extentions2d.h"
+#include "Scene2d.h"
+
+static ECS::TilemapNode2d* CreateTilemapNode(const char* name)
+{
+	auto  node = std::make_shared<ECS::TilemapNode2d>(name);
+	Scene2d::Instance()->Nodes.emplace_back(node);
+	return node.get();
+}
+void ECS::TilemapNode2d::Extend(lua_State* L)
+{
+	luabridge::getGlobalNamespace(L)
+		.beginNamespace("Scene")
+			.addFunction("CreateTilemapNode", CreateTilemapNode)
+		.endNamespace()
+		.beginNamespace("ECS")
+			.deriveClass<ECS::TilemapNode2d, ECS::Node2d>("TilemapNode")
+			.endClass()
+		.endNamespace();
+}
+
+static int kc = ExtensionManager::Register(ECS::TilemapNode2d::Extend);

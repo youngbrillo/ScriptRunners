@@ -47,13 +47,26 @@ void ECS::CanvasNode::inspect()
 	Node2d::inspect();
 	mText.inspect();
 }
+#include "Extentions2d.h"
+#include "Scene2d.h"
 
+static ECS::CanvasNode* CreateCanvasNode(const char* name)
+{
+	auto  node = std::make_shared<ECS::CanvasNode>(name);
+	Scene2d::Instance()->Nodes.emplace_back(node);
+	return node.get();
+}
 void ECS::CanvasNode::Extend(lua_State* L)
 {
 	luabridge::getGlobalNamespace(L)
+		.beginNamespace("Scene")
+			.addFunction("CreateCanvasNode", CreateCanvasNode)
+		.endNamespace()
 		.beginNamespace("ECS")
-		.deriveClass<ECS::CanvasNode, ECS::Node2d>("CanvasNode")
-			.addData("mText", &ECS::CanvasNode::mText)
-		.endClass()
+			.deriveClass<ECS::CanvasNode, ECS::Node2d>("CanvasNode")
+				.addData("mText", &ECS::CanvasNode::mText)
+			.endClass()
 		.endNamespace();
 }
+
+static int kc = ExtensionManager::Register(ECS::CanvasNode::Extend);

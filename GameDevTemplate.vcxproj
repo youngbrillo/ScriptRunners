@@ -215,6 +215,7 @@
     <ClCompile Include="platformerScene.cpp" />
     <ClCompile Include="Sprite2d.cpp" />
     <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="Tilemap.cpp" />
     <ClCompile Include="TilemapNode2d.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -290,12 +291,14 @@
     <ClInclude Include="Script2d.h" />
     <ClInclude Include="Sprite2d.h" />
     <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="Tilemap.h" />
     <ClInclude Include="TilemapNode2d.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Textures\dummy.json" />
     <None Include="Assets\Textures\dummy_animations.json" />
     <None Include="Assets\Textures\kenny\inputs.json" />
+    <None Include="Assets\Textures\stringstar_fields\tileset.json" />
     <None Include="Scripts\Manager\FontManager.lua" />
     <None Include="Scripts\Scenes\platformerII.lua" />
     <None Include="Scripts\Scenes\BreakoutScene.lua" />

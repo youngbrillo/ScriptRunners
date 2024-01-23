@@ -303,6 +303,9 @@
     <ClCompile Include="TilemapNode2d.cpp">
       <Filter>Source Files\Components\2d\Nodes</Filter>
     </ClCompile>
+    <ClCompile Include="Tilemap.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -524,6 +527,9 @@
     <ClInclude Include="TilemapNode2d.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Tilemap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\Manager\TextureManager.lua">
@@ -564,6 +570,9 @@
     </None>
     <None Include="Scripts\Scenes\tilemaps.lua">
       <Filter>Scripts\Scenes</Filter>
+    </None>
+    <None Include="Assets\Textures\stringstar_fields\tileset.json">
+      <Filter>Assets</Filter>
     </None>
   </ItemGroup>
 </Project>

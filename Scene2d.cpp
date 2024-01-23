@@ -288,8 +288,6 @@ void Scene2d::InitScript(const char* path)
 #include "CameraController2d.h"
 #include "InteractableNode.h"
 #include "NPCNode.h"
-#include "CanvasNode.h"
-#include "TilemapNode2d.h"
 
 static ECS::Node2d* CreatePlayerControllerNode(const char* name, const char* alias)
 {
@@ -328,19 +326,7 @@ static ECS::NPCNode* CreateNPCNode(const char* name, const char* alias, const ch
 	return node.get();
 }
 
-static ECS::CanvasNode* CreateCanvasNode(const char* name)
-{
-	auto  node = std::make_shared<ECS::CanvasNode>(name);
-	Scene2d::Instance()->Nodes.emplace_back(node);
-	return node.get();
-}
 
-static ECS::TilemapNode2d* CreateTilemapNode(const char* name)
-{
-	auto  node = std::make_shared<ECS::TilemapNode2d>(name);
-	Scene2d::Instance()->Nodes.emplace_back(node);
-	return node.get();
-}
 
 
 
@@ -365,8 +351,6 @@ void Scene2d::Extend(lua_State* L)
 			.addFunction("CreateCameraController2d", CreateCameraController2dNode)
 			.addFunction("CreateInteractableNode", CreateInteractableNode)
 			.addFunction("CreateNPCNode", CreateNPCNode)
-			.addFunction("CreateCanvasNode", CreateCanvasNode)
-			.addFunction("CreateTilemapNode", CreateTilemapNode)
 			.addFunction("GetWorld", GetWorld)
 		.endNamespace();
 
@@ -374,6 +358,4 @@ void Scene2d::Extend(lua_State* L)
 	ECS::CameraController2d::Extend(L);
 	ECS::InteractableNode::Extend(L);
 	ECS::NPCNode::Extend(L);
-	ECS::CanvasNode::Extend(L);
-	ECS::TilemapNode2d::Extend(L);
 }
