@@ -82,6 +82,8 @@ void App::Initialize()
 {	
 	settings.LoadData();
 	SetConfigFlags(settings.windowFlags());
+	//todo: make log level customizable (in window settings)
+	SetTraceLogLevel(TraceLogLevel::LOG_ERROR); //hide all but error logs from showing up in the console
 	InitWindow(settings.window_width, settings.window_height, settings.wintitle.c_str());
 
 	rlImGuiSetup(true);
