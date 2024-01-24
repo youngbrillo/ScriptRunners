@@ -115,6 +115,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>box2d.lib;glfw3.lib;raylib.lib;winMM.Lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EntryPointSymbol>"mainCRTStartup"</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -131,6 +132,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EntryPointSymbol>"mainCRTStartup"</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
