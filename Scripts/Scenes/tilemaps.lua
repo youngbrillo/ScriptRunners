@@ -41,7 +41,10 @@ end
 function GenTileMap() 
 	map = Scene.CreateTilemapNode("tile map")
 	--map:LoadData("./Assets/Textures/stringstar_fields/tileset.json");
-	map:Import('./Assets/Textures/ruins/tiles.png', './Assets/Textures/ruins/ruins.json')
+	--map:Import('./Assets/Textures/ruins/tiles.png', './Assets/Textures/ruins/ruins.json')
+	map.transform.position.x = 8;
+	map:Import('./Assets/Textures/stringstar_fields/tileset.png', "./Assets/Textures/stringstar_fields/starfields.json")
+
 	App.GetCamera().zoom = 50.0;
 end
 

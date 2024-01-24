@@ -23,6 +23,7 @@ ECS::TilemapNode2d::~TilemapNode2d()
 
 void ECS::TilemapNode2d::Import(const char* texture_alias, const char* dataFile_path)
 {
+	map.offset = glm::vec2(this->transform.position.x, this->transform.position.y);
 	map.SetTexture(texture_alias);
 	map.LoadConfig(dataFile_path);
 }

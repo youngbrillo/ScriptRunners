@@ -69,8 +69,10 @@ void Tilemap::LoadConfig(const char* config_path)
 	{
 		b2Vec2 v;
 		vert.find("p1").GetNumber("x", v.x).GetNumber("y", v.y);
+		v.x += this->offset.x;v.y += this->offset.y;
 		edges.push_back(v);
 		vert.find("p2").GetNumber("x", v.x).GetNumber("y", v.y);
+		v.x += this->offset.x; v.y += this->offset.y;
 		edges.push_back(v);
 	}
 	bool autoGen = false;
@@ -192,7 +194,7 @@ void Tilemap::AddTileData(jsonObjects* data)
 			for (int x = 0; x < width; x++)
 			{
 				int index = dataArray.integers[width * y + x];
-				if (index == 0) continue;
+				if (index <= 0) continue;
 				index--;
 				tilemap::Tile r;
 				//r.frame = glm::ivec4(tile_width * index / tile_width, tile_height * y % tile_height, tile_width, tile_height);
