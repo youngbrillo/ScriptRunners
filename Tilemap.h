@@ -10,11 +10,13 @@ namespace tilemap {
 		glm::ivec2 position = glm::ivec2(0, 0);
 		glm::ivec2 size		= glm::ivec2(1);
 		glm::ivec4 frame	= glm::ivec4(0, 0, 32, 32);
+		int frame_id		= 0;
 		Color tint			= RAYWHITE;
 		int layer = 0;
 	};
 }
 
+class jsonObjects;
 
 class Tilemap
 {
@@ -32,6 +34,7 @@ public:
 	void LoadConfig(const char* config_path);
 	void SaveConfig(const char* config_path);
 	void Generate();
+	void AddTileData(jsonObjects* data);
 	void Draw() const;
 	void AddEdgeMouseClick(int x, int y, int key = MOUSE_BUTTON_LEFT);
 
@@ -42,6 +45,7 @@ public:
 	std::vector<tilemap::Tile> tiles;
 	std::vector<b2Vec2> edges;
 	glm::vec2 offset = glm::vec2(0.0f);
+
 private:
 	bool ownsTexture = false;
 	b2Body* mbody = NULL;
@@ -50,5 +54,10 @@ private:
 	bool mFistClick = false;
 	std::string m_config_path = "";
 	bool valid_path = false;
+
+
+private:
+	std::vector<Rectangle>Frames;
+	int currentFrame = 0;
 };
 

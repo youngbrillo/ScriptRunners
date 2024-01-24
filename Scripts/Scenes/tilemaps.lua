@@ -10,7 +10,7 @@ function Update(dt)
 end
 
 function Draw() 
-	drawGrid(-10, 10, 1);
+	--drawGrid(-10, 10, 1);
 end
 
 function UIDraw() 
@@ -40,8 +40,8 @@ end
 
 function GenTileMap() 
 	map = Scene.CreateTilemapNode("tile map")
-	map:LoadData("./Assets/Textures/stringstar_fields/tileset.json");
-
+	--map:LoadData("./Assets/Textures/stringstar_fields/tileset.json");
+	map:Import('./Assets/Textures/ruins/tiles.png', './Assets/Textures/ruins/ruins.json')
 	App.GetCamera().zoom = 50.0;
 end
 
