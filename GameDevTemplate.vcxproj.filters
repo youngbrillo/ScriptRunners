@@ -66,12 +66,6 @@
     <ClCompile Include="Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RaylibTemplateScene.cpp">
-      <Filter>Scenes\Template Scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="box2dScene.cpp">
-      <Filter>Scenes\Template Scenes</Filter>
-    </ClCompile>
     <ClCompile Include="JsonHandler.cpp">
       <Filter>Source Files\IO</Filter>
     </ClCompile>
@@ -213,23 +207,11 @@
     <ClCompile Include="TextureManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="Breakout.cpp">
-      <Filter>Scenes\Template Scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="Snake.cpp">
-      <Filter>Scenes\Template Scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="MIssleCommander.cpp">
-      <Filter>Scenes\Template Scenes</Filter>
-    </ClCompile>
     <ClCompile Include="AppSettings.cpp">
       <Filter>Source Files\App Utilities</Filter>
     </ClCompile>
     <ClCompile Include="Inspector.cpp">
       <Filter>Source Files\App Utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="platformerScene.cpp">
-      <Filter>Scenes\Template Scenes</Filter>
     </ClCompile>
     <ClCompile Include="Components2d.cpp">
       <Filter>Source Files\Components\2d</Filter>
@@ -269,18 +251,6 @@
     </ClCompile>
     <ClCompile Include="CameraController2d.cpp">
       <Filter>Source Files\Components\2d\Nodes</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelLoading.cpp">
-      <Filter>Scenes\Template Scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="FogShaderScene.cpp">
-      <Filter>Scenes\Template Scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene3d.cpp">
-      <Filter>Scenes\base</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene3dExample.cpp">
-      <Filter>Scenes</Filter>
     </ClCompile>
     <ClCompile Include="SceneManager.cpp">
       <Filter>Source Files</Filter>
@@ -455,9 +425,6 @@
     <ClInclude Include="TextureManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Breakout.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="AppSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -502,9 +469,6 @@
     </ClInclude>
     <ClInclude Include="rlights.h">
       <Filter>Scenes\Template Scenes</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene3d.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SceneManager.h">
       <Filter>Header Files</Filter>
