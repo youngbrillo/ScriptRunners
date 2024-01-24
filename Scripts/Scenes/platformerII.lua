@@ -4,7 +4,7 @@ function onSceneStart()
 	CreateEnvironments();
 	CreateObjects();
 	CreateNPCS();
-	
+	SetScreenResolution();
 end
 
 function onSceneEnd() 
@@ -35,6 +35,12 @@ function onKeyPress(key)
 	listenForKeyPress(key);
 end
 
+function SetScreenResolution()
+	Scene.SetScreenResolution(720, 480);
+	--Scene.SetScreenResolution(1280, 720);
+	Scene.SetScreenResolution(1920, 1080);
+	--Scene.setDrawToTarget(false);
+end
 
 function CreateBackGrounds() 
 	bgTextures = {};

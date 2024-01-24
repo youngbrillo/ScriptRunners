@@ -18,6 +18,8 @@ public:
     virtual void Update(const float& deltaTime);
     virtual void FixedUpdate(const float& timeStep);
     virtual void Draw();
+    void DrawContent();
+    void DrawToResolution();
     virtual void Debug() override;
     void DebugNode(ECS::Node2d* Node, const char* title);
     virtual void PollEvents() override;
@@ -33,7 +35,16 @@ public:
 public:
     static Scene* Create(const char* path) { return new Scene2d(path); }
     static Scene2d* Instance();
-    
+
+protected:
+    ECS::Node2d* CreateNode2d(const char* name);
+    static ECS::Node2d* iCreateNode2d(const char* name);
+
+    static b2World* GetWorld() { return Instance()->world; }
+    void removeDeadNodes();
+    void InitScript(const char* path);
+    static void Extend(lua_State* L);
+
 public:
     const char* scriptPath;
     ECS::Camera2d camera;
@@ -46,14 +57,11 @@ public:
     Box2dMouse* boxMouse;
     b2Vec2 Gravity;
     ECS::Script2d script;
-protected:
-    ECS::Node2d* CreateNode2d(const char* name);
-    static ECS::Node2d* iCreateNode2d(const char* name);
 
-    static b2World* GetWorld() { return Instance()->world; }
-    void removeDeadNodes();
-    void InitScript(const char* path);
-    static void Extend(lua_State* L);
-
+public:
+    RenderTexture2D target;
+    int sceneScreenWidth = 640;
+    int sceneScreenHeight = 480;
+    bool drawToTarget = true;
 };
 

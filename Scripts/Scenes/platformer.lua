@@ -253,11 +253,7 @@ function AddNPCS()
 	TextureManager.Add("Assets/Textures/kenny/inputs", "inputs");
 
 	local function saySomething(npc)
-		if not mCanvasNode.mText.visible then 
-			local someTextString = "Excuuusseeee you buddy!";
-			mCanvasNode.mText:setText(someTextString, true);
-			mCanvasNode.mText.expires = 3.0;
-		end
+		print("how did we get here?")
 	end
 	npcs = {
 		{	name = "MR. Guy", pos = {x= -12, y = 3}, size = {x = 0.5, y = 1}, alias = "dummy", 
@@ -281,12 +277,6 @@ function AddNPCS()
 		e.prompter = mPlayer;
 		v.node = e;
 	end
-
-
-	mCanvasNode = Scene.CreateCanvasNode("Scene Canvas Node");
-	mCanvasNode.transform.position:set(0.0, Raylib.GetScreenHeight() * 0.7);
-	mCanvasNode.transform.size:set(Raylib.GetScreenWidth(), Raylib.GetScreenHeight() * 0.25);
-	mCanvasNode.material:SetColor(0x000000a6);
 end
 
 function getNPCDialogue(NPC)

@@ -23,6 +23,9 @@ Scene2d::Scene2d(const char* path)
 	world->SetDebugDraw(&b2drawer);
 	boxMouse = new Box2dMouse(world);
 	world->SetContactListener(this);
+
+	target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+	SetTextureFilter(target.texture, TEXTURE_FILTER_BILINEAR);  // Texture scale filter to use
 }
 
 Scene2d::~Scene2d()
@@ -35,6 +38,8 @@ Scene2d::~Scene2d()
 	world = NULL;
 	delete boxMouse;
 	boxMouse = NULL;
+
+	UnloadRenderTexture(target);
 }
 
 void Scene2d::Initialize()
@@ -58,17 +63,48 @@ void Scene2d::FixedUpdate(const float& timeStep)
 	script.Update(timeStep);
 }
 
+#define MAX(a, b) ((a)>(b)? (a) : (b))
+#define MIN(a, b) ((a)<(b)? (a) : (b))
 void Scene2d::Draw()
 {
+	if (drawToTarget)
+		DrawToResolution();
+	else
+		DrawContent();
+}
+
+void Scene2d::DrawContent()
+{
 	BeginMode2D(camera.cam);
-		for (auto&& node : Nodes) node->Draw();
-		script.Draw();
-		world->DebugDraw();
+	for (auto&& node : Nodes) node->Draw();
+	script.Draw();
+	world->DebugDraw();
 	EndMode2D();
-		for (auto&& node : Nodes) node->UIDraw();
-		script.UIDraw();
+	for (auto&& node : Nodes) node->UIDraw();
+	script.UIDraw();
+}
+
+void Scene2d::DrawToResolution()
+{
+	float scale = MIN((float)GetScreenWidth() / sceneScreenWidth, (float)GetScreenHeight() / sceneScreenHeight);
+	BeginTextureMode(target);
+		ClearBackground(BLACK);
+		DrawContent();
+	EndTextureMode();
 
 
+	Rectangle source = Rectangle{ 0.0f, 0.0f, (float)target.texture.width, (float)-target.texture.height };
+	Rectangle destRec = Rectangle{
+			(GetScreenWidth() - (sceneScreenWidth * scale)) * 0.5f,
+			(GetScreenHeight() - (sceneScreenHeight * scale)) * 0.5f,
+			sceneScreenWidth * scale,
+			sceneScreenHeight * scale
+	};
+
+	//scale = (1.0f * sceneScreenWidth) / (1.0f * sceneScreenHeight);
+	//float virtualRatio = (float)GetScreenWidth() / (float)sceneScreenWidth;
+	//destRec = { -virtualRatio , -virtualRatio , GetScreenWidth() + (virtualRatio * 2), GetScreenHeight() + (virtualRatio * 2) };
+	DrawTexturePro(target.texture, source ,destRec ,Vector2{ 0, 0 }, 0.0f, WHITE);
 }
 
 void Scene2d::Debug()
@@ -78,6 +114,10 @@ void Scene2d::Debug()
 	boxMouse->Debug(world);
 	b2drawer.Debug();
 	script.Inspect();
+	ImGui::Checkbox("Draw to Target", &drawToTarget);
+	ImGui::SliderInt("resolution x", &sceneScreenWidth, 10, GetScreenWidth());
+	ImGui::SliderInt("resolution y", &sceneScreenHeight, 10, GetScreenHeight());
+
 	if (ImGui::TreeNode("Nodes"))
 	{
 		for (auto&& node : Nodes) node->Inspect();
@@ -335,6 +375,9 @@ void Scene2d::Extend(lua_State* L)
 {
 	auto getCameraFunction = std::function<Camera2D* (void)>([]() {return &Scene2d::Instance()->camera.cam; });
 	auto isPausedFunction = std::function<bool(void)>([]() {return App::GetState() != AppState_::AppState_Play; });
+	auto setScreenResolution = std::function<void(int, int)>([](int x, int y) { Scene2d::Instance()->sceneScreenWidth = x;Scene2d::Instance()->sceneScreenHeight = y;});
+	auto setDrawToTarget = std::function<void(bool)>([](bool v) { Scene2d::Instance()->drawToTarget = v;});
+
 	ECS::ExtendAll(L);
 	luabridge::getGlobalNamespace(L)
 		.beginNamespace("App")
@@ -352,6 +395,8 @@ void Scene2d::Extend(lua_State* L)
 			.addFunction("CreateInteractableNode", CreateInteractableNode)
 			.addFunction("CreateNPCNode", CreateNPCNode)
 			.addFunction("GetWorld", GetWorld)
+			.addFunction("SetScreenResolution", setScreenResolution)
+			.addFunction("setDrawToTarget", setDrawToTarget)
 		.endNamespace();
 
 	ECS::Sprite2d::Extend(L);
