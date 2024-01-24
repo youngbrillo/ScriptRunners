@@ -23,6 +23,7 @@ public: //scene settings
 	std::string last_scene_name = "";
 	std::string last_scene_cat = "";
 	std::string configPath = "./Configs/window.json";
+	bool drawToTargetTexture = false;
 public:
 
 public: //pause settings

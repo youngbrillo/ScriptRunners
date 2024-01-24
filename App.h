@@ -36,6 +36,7 @@ public:
 	static AppState_ GetState() { return Get()->settings.state; }
 	static AppState_ SetState(AppState_ s) { return Get()->settings.state = s; }
 	static void GoToScene(std::string name);
+	static AppSettings& Settings() { return Get()->settings; }
 private:
 	App();
 	~App();

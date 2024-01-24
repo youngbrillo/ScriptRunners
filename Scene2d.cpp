@@ -26,6 +26,8 @@ Scene2d::Scene2d(const char* path)
 
 	target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
 	SetTextureFilter(target.texture, TEXTURE_FILTER_BILINEAR);  // Texture scale filter to use
+	drawToTarget = App::Settings().drawToTargetTexture;
+
 }
 
 Scene2d::~Scene2d()
@@ -114,7 +116,10 @@ void Scene2d::Debug()
 	boxMouse->Debug(world);
 	b2drawer.Debug();
 	script.Inspect();
-	ImGui::Checkbox("Draw to Target", &drawToTarget);
+	if (ImGui::Checkbox("Draw to Target", &drawToTarget))
+	{
+		App::Settings().drawToTargetTexture = this->drawToTarget;
+	}
 	ImGui::SliderInt("resolution x", &sceneScreenWidth, 10, GetScreenWidth());
 	ImGui::SliderInt("resolution y", &sceneScreenHeight, 10, GetScreenHeight());
 
