@@ -538,6 +538,8 @@
     <None Include="Assets\Textures\stringstar_fields\tileset.json">
       <Filter>Assets</Filter>
     </None>
-    <None Include="Scripts\Scenes\ScriptRunners\todo.lua" />
+    <None Include="Scripts\Scenes\ScriptRunners\todo.lua">
+      <Filter>Scripts\Scenes</Filter>
+    </None>
   </ItemGroup>
 </Project>
