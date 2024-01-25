@@ -181,7 +181,7 @@ void App::startScene(int index)
 	if (!!entry)
 	{
 		GlobalManager::Set();
-		this->currentScene = entry->func(entry->path);
+		this->currentScene = entry->func(entry->path.c_str());
 
 		settings.state = AppState_Play;
 		this->currentScene->Initialize();

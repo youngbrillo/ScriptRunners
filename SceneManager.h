@@ -2,14 +2,20 @@
 #include "Scene2d.h"
 #include <vector>
 #include <map>
-
+#include <string>
 
 struct SceneEntryPro
 {
+#if false
 	const char* category;
 	const char* name;
 	const char* path;
 	//SceneCreationFunctionString* func = NULL;
+#else
+	std::string category ="uncatergorized";
+	std::string name = "unnamed";
+	std::string path = "no_path";
+#endif
 	std::function<Scene* (const char*)> func;
 	int id = -1;
 };
@@ -37,9 +43,9 @@ private:
 	 SceneEntryPro* get_scene(const int& id);
 	//state
 	std::map<int, SceneEntryPro> entries;
-	std::map<const char*, int> entry_name_lookup;
-	std::map<int, const char*> entry_name_reverse_lookup;
-	std::map<const char*, std::vector<int>> category_entry_lookup;
+	std::map<std::string, int> entry_name_lookup;
+	std::map<int, std::string> entry_name_reverse_lookup;
+	std::map<std::string, std::vector<int>> category_entry_lookup;
 	int sceneCount;
 
 public:

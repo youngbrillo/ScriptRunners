@@ -55,6 +55,9 @@
     <Filter Include="Source Files\Components\2d\Nodes">
       <UniqueIdentifier>{9392b81e-548f-4271-84e9-36133646a660}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scripts\Scenes\scriptRunners">
+      <UniqueIdentifier>{83b9b34f-a5c4-4158-b1ba-a323abddb9b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -538,8 +541,11 @@
     <None Include="Assets\Textures\stringstar_fields\tileset.json">
       <Filter>Assets</Filter>
     </None>
+    <None Include="Scripts\Scenes\ScriptRunners\obstacleCourse.lua">
+      <Filter>Scripts\Scenes\scriptRunners</Filter>
+    </None>
     <None Include="Scripts\Scenes\ScriptRunners\todo.lua">
-      <Filter>Scripts\Scenes</Filter>
+      <Filter>Scripts\Scenes\scriptRunners</Filter>
     </None>
   </ItemGroup>
 </Project>

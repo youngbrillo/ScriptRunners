@@ -52,7 +52,7 @@ SceneEntryPro* GlobalSceneManager::get_scene(const char* name)
 {
 	for (auto&& pair : entry_name_lookup)
 	{
-		if (strcmp(name, pair.first) == 0)
+		if (strcmp(name, pair.first.c_str()) == 0)
 		{
 			return &entries.at(entry_name_lookup.at(pair.first));
 		}
@@ -77,11 +77,11 @@ bool GlobalSceneManager::Inspect(int& current_scene, const char* title)
 	{
 		for (auto&& pair : category_entry_lookup)
 		{
-			if (ImGui::BeginMenu(pair.first))
+			if (ImGui::BeginMenu(pair.first.c_str()))
 			{
 				for (auto&& scene_id : pair.second)
 				{
-					if (ImGui::MenuItem(entry_name_reverse_lookup[scene_id], TextFormat("id: %d", scene_id), current_scene == scene_id))
+					if (ImGui::MenuItem(entry_name_reverse_lookup[scene_id].c_str(), TextFormat("id: %d", scene_id), current_scene == scene_id))
 					{
 						changed = true;
 						current_scene = scene_id;
