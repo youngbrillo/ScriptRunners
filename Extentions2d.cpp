@@ -254,6 +254,7 @@ namespace ECS
 					.addFunction("EnableLimit", &b2PrismaticJoint::EnableLimit)
 					.addFunction("EnableMotor", &b2PrismaticJoint::EnableMotor)
 					.addFunction("SetMotorSpeed", &b2PrismaticJoint::SetMotorSpeed)
+					.addFunction("IsMotorEnabled", &b2PrismaticJoint::IsMotorEnabled)
 				.endClass()
 				.addFunction("CreatePullyJoint", ECS::mCreatePullyJoint)
 				.addFunction("CreatePrismaticJoint", ECS::CreatePrismaticJoint)
