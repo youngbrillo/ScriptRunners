@@ -2,7 +2,7 @@
 function onSceneStart()
 	genMap();
 
-	description_text = "Course 1: door [-] | lift[-] | pulley [-] | switches [ ] | NPCs [ ] | trap floor[ ]"
+	description_text = "Course 1: door [-] | lift [-] | pulley [-] | switches [-] | NPCs [ ] | trap floor [ ]"
 end
 
 function onSceneEnd() 
@@ -73,12 +73,18 @@ function genObjects()
         , {name="red door", x = 28.5, y = -13.5, w=1, h=3, color = 0xc36c6cff, prismaticDef = {x = 0, y = 1, motorSpeed = -1.0, maxMotorForce = 10000.0, enableMotor = false, enableLimit = true, lowerTranslation = -3, upperTranslation = 0}}
         , {	name="elevator", x = -14.5, y = -25, w=4.75, h=1, color = 0x6c6ca3ff, 
 			prismaticDef = {x = 0, y = 1, motorSpeed = -7.0, maxMotorForce = 10000.0, enableMotor = false, enableLimit = true, lowerTranslation = -25, upperTranslation = 3},
-			switch = {x = -26, y = -26, w = 1, h= 2}
+			switch = {x = -17.5, y = -26, w = 1, h= 2}
 		}
         , {
 			name="motor", x = -14.5, y = -6, w=1, h=1, color = 0x6c6ca3ff, 
 			prismaticDef = {x = 0, y = 1, motorSpeed = -5.0, maxMotorForce = 10000.0, enableMotor = false, enableLimit = true, lowerTranslation = -5, upperTranslation = 0},
 			switch = {x = -11, y = -1, w = 1, h= 2}
+		}
+        , {name="down_motor", x = -34.5, y = -29, w=1, h=2, color = 0x7c7c7cff, prismaticDef = {x = 0, y = 1, motorSpeed = -5.0, lowerTranslation = 0, upperTranslation = 26, maxMotorForce = 10000.0, enableMotor = true, enableLimit = true},
+			switch = {x = -35, y = -7, w = 1, h = 2}			
+		}
+        , {name="up_motor", x = -30.5, y = -1, w=1, h=2, color = 0x7c7c7cff, prismaticDef = {x = 0, y = 1, motorSpeed = -5.0, lowerTranslation = -20, upperTranslation = 0, maxMotorForce = 10000.0, enableMotor = false, enableLimit = true},
+			switch = {x = -35, y = -7, w = 1, h = 2}			
 		}
 	}
 
@@ -129,7 +135,7 @@ function genSwitch(c_object, joint, joint_settings, config)
 		--e:setObserver(mPlayer);
 
 
-	local function toggleMotor()
+	local function switchMotorState()
 		if not joint:IsMotorEnabled() then
 			joint:EnableMotor(true);
 			print("Motor: ".. c_object.Name.." Activated! ("..joint_settings.motorSpeed.." N)");
@@ -141,6 +147,15 @@ function genSwitch(c_object, joint, joint_settings, config)
 		end
 	end
 	
+
+	local function toggleMotor()
+		if not joint:IsMotorEnabled() then
+			joint:EnableMotor(true);
+		end
+		joint:SetMotorSpeed(joint_settings.motorSpeed);
+		joint_settings.motorSpeed = -1 * joint_settings.motorSpeed;
+	end
+
 	mSwitch.node = e;
 	mSwitch.Activation_key = 69; -- KEY_E
 	mSwitch.onBeginContact = toggleMotor;
@@ -226,6 +241,7 @@ function genCamFollowers()
 	{
 		   {pos = {x = 18, y = -9}, size = {x=30, y=18}, onEnter = 20, onExit = 20, name  = "Door Cam"}
 		 , {pos = {x = -32, y = -16}, size = {x=38, y=31}, onEnter = 20, onExit = 20, name  = "warehouse Cam"}
+		 , {pos = {x = -15, y = -43}, size = {x=5, y=22}, onEnter = 20, onExit = 20, name  = "elevator Cam"}
 	}
 
 	for k, v in ipairs(camControllers) do
