@@ -41,9 +41,9 @@ end
 function UIDraw() 
 	
 
-	Raylib.DrawText(list, 25, 25, 20, 0xffffffff)
-	x, y = Raylib.MeasureText(list, 20);
-	Raylib.DrawText(list2, 50 + x , 25, 20, 0xffffffff )
+	Raylib.DrawTextEx("arial", list, 25, 25, 18,1.0, 0xffffffff)
+	x, y = Raylib.MeasureText(list, 18, "arial");
+	Raylib.DrawTextEx("comic", list2, 50 + x , 25, 18, 1, 0xffffffff )
 end
 
 

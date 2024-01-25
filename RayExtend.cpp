@@ -1,5 +1,6 @@
 #include "RayExtend.h"
 #include <LuaBridge/LuaBridge.h>
+#include "FontManager.h"
 
 namespace ERaylib
 {
@@ -47,12 +48,19 @@ namespace ERaylib
 	{
 		DrawTextEx(GetFontDefault(), string, Vector2{ x, y }, fontSize, 1.0f, GetColor(hex));
 	}
+	static void HandleTextDrawEx(const char* fontName, const char* string, float x, float y, float fontSize, float fontSpacing, unsigned int hex)
+	{
+		DrawTextEx(FontManager::Instance()->getFont(fontName), string, Vector2{ x, y }, fontSize, fontSpacing, GetColor(hex));
+	}
 	static int HandleMeasureText(lua_State* L)
 	{
 		int top = lua_gettop(L); int count = 1;
 		const char* text = lua_tostring(L, count++);
 		float fontSize =  lua_tonumber(L, count++);
-		Vector2 measurements = MeasureTextEx(GetFontDefault(), text, fontSize, 1.0f);
+		Font f= GetFontDefault();
+		if (top >= count) f = FontManager::Instance()->getFont(lua_tostring(L, count++));
+
+		Vector2 measurements = MeasureTextEx(f, text, fontSize, 1.0f);
 
 		lua_pushnumber(L, measurements.x);
 		lua_pushnumber(L, measurements.y);
@@ -89,6 +97,7 @@ void ERaylib::Extend(lua_State* L)
 			.addFunction("DrawCircle", ERaylib::DrawCircleHex)
 			.addFunction("DrawLine", ERaylib::DrawLineHex)
 			.addFunction("DrawText", ERaylib::HandleTextDraw)
+			.addFunction("DrawTextEx", ERaylib::HandleTextDrawEx)
 			.addFunction("CheckCollisionCircleRec", ERaylib::HandleCollisionCircleRec)
 			.addFunction("CheckCollisionCircles", ERaylib::HandleCollisionCircleCircle)
 			.addFunction("CheckCollisionRecs", ERaylib::HandleCollisionRecRec)
