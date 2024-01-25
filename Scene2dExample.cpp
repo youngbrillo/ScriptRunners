@@ -11,3 +11,5 @@ static int scene001 = RegisterScene("Demo", "Platforming", Scene2d::Create, "Scr
 static int scene002 = RegisterScene("Demo", "Platforming II", Scene2d::Create, "Scripts/Scenes/platformerII.lua");
 static int scene003 = RegisterScene("Demo", "Platforming III", Scene2d::Create, "Scripts/Scenes/platformerIII.lua");
 static int scene004 = RegisterScene("Demo", "tile map", Scene2d::Create, "Scripts/Scenes/tilemaps.lua");
+
+static int srs000 = RegisterScene("Script Runners", "ToDo", Scene2d::Create, "Scripts/Scenes/ScriptRunners/todo.lua");

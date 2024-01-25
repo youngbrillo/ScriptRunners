@@ -298,6 +298,7 @@
     <None Include="Scripts\Scenes\platformer.lua" />
     <None Include="Scripts\Components\Player.lua" />
     <None Include="Scripts\Scenes\platformerIII.lua" />
+    <None Include="Scripts\Scenes\ScriptRunners\todo.lua" />
     <None Include="Scripts\Scenes\tilemaps.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
