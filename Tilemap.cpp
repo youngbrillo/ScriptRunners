@@ -62,6 +62,8 @@ void Tilemap::LoadConfig(const char* config_path)
 	if (!JSONParse::ParseJSONFile(loader, config_path))
 	{
 		//something went wrong...
+		valid_path = true;
+		m_config_path = config_path;
 		return;
 	}
 	jsonObjects verticies = loader.find("verts");
@@ -330,19 +332,21 @@ void Tilemap::Inspect(const char* title)
 		ImTextureID my_tex_id = &texture.id;
 		float zoom = 3.0f;
 
-		ImVec2 uv0 = ImVec2( 
-			Frames[currentFrame].x / (float)texture.width, 
-			Frames[currentFrame].y / (float)texture.height
-		);
-		ImVec2 uv1 = ImVec2(
-			Frames[currentFrame].width / texture.width,
-			Frames[currentFrame].height / texture.height
-		);
+		if (Frames.size() > 0)
+		{
+			ImVec2 uv0 = ImVec2(
+				Frames[currentFrame].x / (float)texture.width,
+				Frames[currentFrame].y / (float)texture.height
+			);
+			ImVec2 uv1 = ImVec2(
+				Frames[currentFrame].width / texture.width,
+				Frames[currentFrame].height / texture.height
+			);
 
-		ImGui::Image(my_tex_id, ImVec2(texture.width * zoom, texture.height * zoom));
-		ImGui::SameLine();
-		ImGui::Image(my_tex_id, ImVec2(texture.width * zoom, texture.height * zoom), uv0, uv1);
-
+			ImGui::Image(my_tex_id, ImVec2(texture.width * zoom, texture.height * zoom));
+			ImGui::SameLine();
+			ImGui::Image(my_tex_id, ImVec2(texture.width * zoom, texture.height * zoom), uv0, uv1);
+		}
 		ImGui::TreePop();
 	}
 }
