@@ -1,5 +1,6 @@
 
 function onSceneStart()
+	TextureManager.Add("Assets/Textures/dummy", "dummy")
 	genMap();
 
 	description_text = "Course 1: door [-] | lift [-] | pulley [-] | switches [-] | NPCs [ ] | trap floor [ ]"
@@ -46,7 +47,6 @@ function SpawnPlayer()
 		RemoveCameraFollowers();
 	end
 
-	TextureManager.Add("Assets/Textures/dummy", "dummy")
 
 	mPlayer = Scene.CreatePlayerController("Player Controller", "dummy");
 	mPlayer.textureScale:set(4, 2)
@@ -244,6 +244,7 @@ end
 
 function genCamFollowers()
 	--add camera controller to floor
+
 	camControllers = 
 	{
 		   {pos = {x = 18, y = -9}, size = {x=30, y=18}, onEnter = 20, onExit = 20, name  = "Door Cam"}
@@ -275,6 +276,8 @@ function RemoveCameraFollowers()
 end
 
 function genCharacters()
+	NPCS = {}
+	--SpawnPlayer()
 
 	local icon = {alias = "inputs", frame = {x=323, y= 170, w= 16,h= 16}};
 	NPCS = {

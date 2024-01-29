@@ -224,7 +224,7 @@ void ECS::NPCNode::doInteract()
 		luabridge::LuaRef func = luabridge::getGlobal(L, "onDialogueStart");
 		try { func(this, this->prompter); }
 		catch (luabridge::LuaException const& e) {
-			printf("%s\n", e.what());
+			printf("onDialogueStart:\t%s\n", e.what());
 		}
 	}
 	else if (isTalking && in_range)
@@ -239,7 +239,7 @@ void ECS::NPCNode::doInteract()
 		luabridge::LuaRef func = luabridge::getGlobal(L, "onDialogueEnd");
 		try { func(this, this->prompter); }
 		catch (luabridge::LuaException const& e) {
-			printf("%s\n", e.what());
+			printf("onDialogueEnd:\t%s\n", e.what());
 		}
 	}
 
@@ -250,9 +250,23 @@ void ECS::NPCNode::setIconFrame(float x, float y, float w, float h)
 {
 	icon.frame = Rectangle{ x,y,w,h };
 }
+//#include "Extentions2d.h"
+//
+//static ECS::NPCNode* CreateNPCNode(const char* name, const char* alias, const char* iconAlias, const char* scriptPath)
+//{
+//	auto  node =
+//		std::make_shared<ECS::NPCNode>(name, alias, iconAlias, scriptPath);
+//	Scene2d::Instance()->Nodes.emplace_back(node);
+//	return node.get();
+//}
+
 
 void ECS::NPCNode::Extend(lua_State* L)
 {
+	//luabridge::getGlobalNamespace(L)
+	//	.beginNamespace("Scene")
+	//		.addFunction("CreateNPCNode", CreateNPCNode)
+	//	.endNamespace();
 	luabridge::getGlobalNamespace(L)
 		.beginNamespace("ECS")
 		.deriveClass<ECS::NPCNode, ECS::Sprite2d>("NPCNode")
@@ -265,3 +279,4 @@ void ECS::NPCNode::Extend(lua_State* L)
 		.endClass()
 		.endNamespace();
 }
+//static int kc = ExtensionManager::Register(ECS::NPCNode::Extend);
