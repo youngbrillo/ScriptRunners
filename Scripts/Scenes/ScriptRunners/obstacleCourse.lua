@@ -57,6 +57,10 @@ function SpawnPlayer()
 	for k, v in ipairs(Switches) do
 		v.node:setObserver(mPlayer);
 	end
+
+	for k, v in ipairs(NPCS) do
+		v.node.prompter = mPlayer;
+	end
 end
 
 function genMap()
@@ -64,12 +68,15 @@ function genMap()
 	map = Scene.CreateTilemapNode("map");
 	map:LoadData("./Assets/Textures/tileset.json");
 	genObjects();
+	genCharacters();
 	App.GetCamera().zoom = 7.0;
 end
 function genObjects()
 	Switches ={};
 	objects = {
-          {name="blue door", x = 12.5, y = -2.5, w=1, h=5, color = 0x6ca3c3ff, prismaticDef = {x = 0, y = 1, motorSpeed = -1.0, maxMotorForce = 10000.0, enableMotor = false, enableLimit = true, lowerTranslation = -3, upperTranslation = 0}}
+          {name="blue door", x = 12.5, y = -2.5, w=1, h=5, color = 0x6ca3c3ff, prismaticDef = {x = 0, y = 1, motorSpeed = -1.0, maxMotorForce = 10000.0, enableMotor = false, enableLimit = true, lowerTranslation = -3, upperTranslation = 0},
+			switch = {x = 32.5, y = -13, w = 1, h = 2}			
+		  }
         , {name="red door", x = 28.5, y = -13.5, w=1, h=3, color = 0xc36c6cff, prismaticDef = {x = 0, y = 1, motorSpeed = -1.0, maxMotorForce = 10000.0, enableMotor = false, enableLimit = true, lowerTranslation = -3, upperTranslation = 0}}
         , {	name="elevator", x = -14.5, y = -25, w=4.75, h=1, color = 0x6c6ca3ff, 
 			prismaticDef = {x = 0, y = 1, motorSpeed = -7.0, maxMotorForce = 10000.0, enableMotor = false, enableLimit = true, lowerTranslation = -25, upperTranslation = 3},
@@ -267,3 +274,34 @@ function RemoveCameraFollowers()
 
 end
 
+function genCharacters()
+
+	local icon = {alias = "inputs", frame = {x=323, y= 170, w= 16,h= 16}};
+	NPCS = {
+		{
+			name = "Handy Man", pos = {x= 1, y = 0}, size = {x = 0.5, y = 1}, alias = "dummy", 
+			text  = {string = "Can you Please open that red door?", fontSize = 32, fontAlias = "comic", contactRadius = 1.0}
+		}
+	}
+
+	for k, v in ipairs(NPCS) do
+	
+		local e = Scene.CreateNPCNode(v.name, v.alias, icon.alias, "no script");
+
+		e.transform.position:set(v.pos.x, v.pos.y);
+		e.transform.size:set(v.size.x, v.size.y);
+		e.transform:Center();
+		e.textureScale:set(4, 2)
+		e.rigidbody.bdyDef.type = 2;
+		e.rigidbody.bdyDef.fixedRotation = true;
+		e.rigidbody.fixDef.density = 1.0;
+		e.rigidbody.fixDef.friction = 1.0;
+		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
+		e.icon.frame:set(icon.frame.x,icon.frame.y,icon.frame.w, icon.frame.h)
+		e.text:setText(v.text.string, true)
+		e.text.fontSize = v.text.fontSize
+		e.text:SetFont(v.text.fontAlias)
+		b2d.AddCircleSensor(e.rigidbody, v.text.contactRadius)
+		v.node = e;
+	end
+end
