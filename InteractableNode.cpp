@@ -115,6 +115,7 @@ void ECS::InteractableNode::Extend(lua_State* L)
 				.addFunction("setIconFrame", &ECS::InteractableNode::setIconFrame)
 				.addData("observer", &ECS::InteractableNode::observer)
 				.addData("icon", &ECS::InteractableNode::icon)
+				.addData("isInteractive", &ECS::InteractableNode::isInteractive)
 			.endClass()
 		.endNamespace();
 }
