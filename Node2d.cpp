@@ -1,5 +1,9 @@
 #include "Node2d.h"
 #include <imgui_string_wrap_extension.h>
+#include <functional>
+#include <LuaBridge/LuaBridge.h>
+
+unsigned int ECS::Node2d::Instances = 0;
 
 ECS::Node2d::Node2d(std::string name)
 	:Name(name)
@@ -11,6 +15,7 @@ ECS::Node2d::Node2d(std::string name)
 	, solid(true)
 	, textureScale({ 1.0f, 1.0f })
 {
+	id = Node2d::Instances++;
 }
 
 ECS::Node2d::~Node2d()
@@ -82,7 +87,7 @@ void ECS::Node2d::Poll()
 void ECS::Node2d::Inspect()
 {
 
-	if (ImGui::TreeNode(Name.c_str()))
+	if (ImGui::TreeNode(TextFormat("%03d: %s", this->id, Name.c_str())))
 	{
 		ImGui::PushItemWidth(250.0f);
 		this->inspect();
@@ -108,4 +113,35 @@ void ECS::Node2d::inspect()
 	ImGui::SliderFloat2("direction", &direction.x, -1, 1);
 	ImGui::SliderFloat2("textureScale", &textureScale.x, 1, 5);
 
+}
+
+void ECS::Node2d::Extend(lua_State* L)
+{
+	std::function<void(ECS::Node2d*, float, float)> setPosition = [](ECS::Node2d* n, float x, float y) {
+		n->transform.position.x = x;
+		n->transform.position.y = y;
+		if (n->rigidbody.enabled())
+		{
+			n->rigidbody.body->SetTransform(b2Vec2{ x, y }, n->rigidbody.body->GetAngle());
+		}
+	};
+
+	luabridge::getGlobalNamespace(L)
+		.beginNamespace("ECS")
+			.beginClass<ECS::Node2d>("Node2d")
+				.addData("Name", &ECS::Node2d::Name)
+				.addData("transform", &ECS::Node2d::transform)
+				.addData("material", &ECS::Node2d::material)
+				.addData("rigidbody", &ECS::Node2d::rigidbody)
+				.addData("alive", &ECS::Node2d::alive)
+				.addData("enabled", &ECS::Node2d::enabled)
+				.addData("visible", &ECS::Node2d::visible)
+				.addData("direction", &ECS::Node2d::direction)
+				.addData("speed", &ECS::Node2d::speed)
+				.addData("solid", &ECS::Node2d::solid)
+				.addData("textureScale", &ECS::Node2d::textureScale)
+				.addFunction("setPosition", setPosition)
+				.addFunction("GetID", &ECS::Node2d::GetID)
+			.endClass()
+		.endNamespace();
 }

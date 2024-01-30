@@ -3,7 +3,7 @@ function onSceneStart()
 	TextureManager.Add("Assets/Textures/dummy", "dummy")
 	genMap();
 
-	description_text = "Course 1: door [-] | lift [-] | pulley [-] | switches [-] | NPCs [ ] | trap floor [ ]"
+	description_text = "Course 1: door [-] | lift [-] | pulley [-] | switches [-] | NPCs [-]"
 end
 
 function onSceneEnd() 
@@ -75,9 +75,11 @@ function genObjects()
 	Switches ={};
 	objects = {
           {name="blue door", x = 12.5, y = -2.5, w=1, h=5, color = 0x6ca3c3ff, prismaticDef = {x = 0, y = 1, motorSpeed = -1.0, maxMotorForce = 10000.0, enableMotor = false, enableLimit = true, lowerTranslation = -3, upperTranslation = 0},
-			switch = {x = 32.5, y = -13, w = 1, h = 2}			
+			switch = {x = 32.5, y = -13, w = 1, h = 2}, switchContactFunc = ToggleMotorAndRecordState		
 		  }
-        , {name="red door", x = 28.5, y = -13.5, w=1, h=3, color = 0xc36c6cff, prismaticDef = {x = 0, y = 1, motorSpeed = -1.0, maxMotorForce = 10000.0, enableMotor = false, enableLimit = true, lowerTranslation = -3, upperTranslation = 0}}
+        , {name="red door", x = 28.5, y = -13.5, w=1, h=3, color = 0xc36c6cff, prismaticDef = {x = 0, y = 1, motorSpeed = -1.0, maxMotorForce = 10000.0, enableMotor = false, enableLimit = true, lowerTranslation = -3, upperTranslation = 0},
+			switch = {x = -22.5, y = -51, w = 1, h = 2}			
+		  }
         , {	name="elevator", x = -14.5, y = -25, w=4.75, h=1, color = 0x6c6ca3ff, 
 			prismaticDef = {x = 0, y = 1, motorSpeed = -7.0, maxMotorForce = 10000.0, enableMotor = false, enableLimit = true, lowerTranslation = -25, upperTranslation = 3},
 			switch = {x = -17.5, y = -26, w = 1, h= 2}
@@ -108,7 +110,7 @@ function genObjects()
 		if(v.prismaticDef) then
 			v.joint = b2d.CreatePrismaticJoint(Scene.GetWorld(), map, e, v.prismaticDef)
 			if v.switch then
-				genSwitch(e,v.joint, v.prismaticDef, v.switch )
+				genSwitch(e,v.joint, v.prismaticDef, v.switch , v.switchContactFunc)
 			end
 		end
 
@@ -124,7 +126,7 @@ function genObjects()
 	);
 
 end
-function genSwitch(c_object, joint, joint_settings, config)
+function genSwitch(c_object, joint, joint_settings, config, beginFunction)
 	TextureManager.Add("Assets/Textures/kenny/inputs", "inputs")
 
 	local mSwitch = {};
@@ -165,7 +167,10 @@ function genSwitch(c_object, joint, joint_settings, config)
 
 	mSwitch.node = e;
 	mSwitch.Activation_key = 69; -- KEY_E
-	mSwitch.onBeginContact = toggleMotor;
+	mSwitch.onBeginContact = beginFunction or toggleMotor;
+	mSwitch.joint = joint;
+	mSwitch.joint_settings = joint_settings;
+
 	table.insert(Switches, mSwitch)
 end
 
@@ -197,7 +202,7 @@ end
 function listenForSwitchStateChange(key)
 	for k, v in ipairs(Switches) do
 		if v.isActivated and key == v.Activation_key and v.onBeginContact ~= nil then
-			v.onBeginContact();
+			v.onBeginContact(v);
 		end
 	end
 end
@@ -282,9 +287,20 @@ function genCharacters()
 	local icon = {alias = "inputs", frame = {x=323, y= 170, w= 16,h= 16}};
 	NPCS = {
 		{
-			name = "Handy Man", pos = {x= 1, y = 0}, size = {x = 0.5, y = 1}, alias = "dummy", 
-			text  = {string = "Can you Please open that red door?", fontSize = 32, fontAlias = "comic", contactRadius = 1.0}
-		}
+			name = "Blue-door man", pos = {x= 1, y = 0}, size = {x = 0.5, y = 1}, alias = "dummy", 
+			text  = {string = "Hey can you open that blue door for me?", fontSize = 32, fontAlias = "comic", contactRadius = 1.0},
+			DialogueFunc = instructionset_openBlueDoor
+		},
+		{
+			name = "Red-door Man", pos = {x = -20, y = -27}, size = {x = 0.5, y = 1}, alias = "dummy", 
+			text  = {string = "Oh did blue-door man send you my way?\nWell, the red door has to be opened first.\nGo hit the switch upstairs.", fontSize = 32, fontAlias = "comic", contactRadius = 1.0},
+			DialogueFunc = instructionset_openRedDoor
+		},
+		{
+			name = "Switch-Switch Man", pos = {x= -38, y = -7}, size = {x = 0.5, y = 1}, alias = "dummy", 
+			text  = {string = "You can interact with the door the same way you interact with me n my brothers.", fontSize = 32, fontAlias = "comic", contactRadius = 1.0},
+			DialogueFunc = instructionset_OperateSwitches
+		},
 	}
 
 	for k, v in ipairs(NPCS) do
@@ -306,5 +322,81 @@ function genCharacters()
 		e.text:SetFont(v.text.fontAlias)
 		b2d.AddCircleSensor(e.rigidbody, v.text.contactRadius)
 		v.node = e;
+		v.d_index = 1;
 	end
+end
+
+function onDialogueStart(character, player )
+	for k,v in ipairs(NPCS) do
+		if character:GetID() == v.node:GetID() then
+			v.DialogueFunc(v, true);
+		end
+	end
+end
+
+
+function onDialogueEnd(character, player )
+	for k,v in ipairs(NPCS) do
+		if character:GetID() == v.node:GetID() then
+			v.DialogueFunc(v, false);
+		end
+	end
+end
+
+function instructionset_openBlueDoor(NPC, isBegin) 
+	local dialogue = {
+		"You might need to talk to my brother over there to learn more.",
+		"He can teach you how to operate a switch. It's real easy."
+	}
+
+	if blue_door_up then
+		
+		dialogue = {"Hey Thanks!\nNow we can procceed to the next zone!", "I wonder what's out there..."}
+	end
+
+	if( not isBegin) then
+		NPC.node.text:setText(dialogue[NPC.d_index], true);
+		NPC.d_index = NPC.d_index + 1;
+		if(NPC.d_index > #dialogue) then
+			NPC.d_index	= 1;
+		end
+	end
+end
+function instructionset_openRedDoor(NPC, isBegin) 
+
+	local dialogue = {
+		"It'll open your path and then you can be on your way.",
+		"What'da'ya want kid?"
+	}
+	if( not isBegin) then
+		NPC.node.text:setText(dialogue[NPC.d_index], true);
+		if(NPC.d_index < #dialogue) then
+			NPC.d_index = NPC.d_index + 1;
+		end
+	end
+end
+function instructionset_OperateSwitches(NPC, isBegin) 
+	local dialogue = {
+		"Just press the interact key.\nI mean, you already did it to speak to me.",
+		"Try to make that platform fall down, and take it back up to my other brother.\n He'll tell you more."
+	}
+	if( not isBegin) then
+		NPC.node.text:setText(dialogue[NPC.d_index], true);
+		NPC.d_index = NPC.d_index + 1;
+		if(NPC.d_index > #dialogue) then
+			NPC.d_index	= 1;
+		end
+	end
+end
+
+blue_door_up = false;
+function ToggleMotorAndRecordState(switch)
+
+		if not switch.joint:IsMotorEnabled() then
+			switch.joint:EnableMotor(true);
+		end
+		switch.joint:SetMotorSpeed(switch.joint_settings.motorSpeed);
+		switch.joint_settings.motorSpeed = -1 * switch.joint_settings.motorSpeed;
+		blue_door_up = not blue_door_up;
+		print("Blue door is?", blue_door_up)
 end

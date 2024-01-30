@@ -23,6 +23,8 @@ namespace ECS
 
 		void Inspect();
 		virtual void inspect();
+		unsigned int GetID() const { return this->id; }
+		static void Extend(lua_State* L);
 	public:
 		std::string Name = "Node";
 		bool enabled, visible, alive;
@@ -36,5 +38,8 @@ namespace ECS
 		bool solid;
 		bool _inspected = false;
 
+	private:
+		unsigned int id;
+		static unsigned Instances;
 	};
 }

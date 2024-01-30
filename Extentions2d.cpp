@@ -133,35 +133,6 @@ namespace ECS
 			.endClass()
 			.endNamespace();
 	}
-	void ExtendNode2d(lua_State* L) {
-		std::function<void(ECS::Node2d*, float, float)> setPosition = [](ECS::Node2d* n, float x, float y) {
-			n->transform.position.x = x;
-			n->transform.position.y = y;
-			if (n->rigidbody.enabled())
-			{
-				n->rigidbody.body->SetTransform(b2Vec2{ x, y }, n->rigidbody.body->GetAngle());
-			}
-		};
-
-
-		luabridge::getGlobalNamespace(L)
-			.beginNamespace("ECS")
-			.beginClass<ECS::Node2d>("Node2d")
-			.addData("Name", &ECS::Node2d::Name)
-			.addData("transform", &ECS::Node2d::transform)
-			.addData("material", &ECS::Node2d::material)
-			.addData("rigidbody", &ECS::Node2d::rigidbody)
-			.addData("alive", &ECS::Node2d::alive)
-			.addData("enabled", &ECS::Node2d::enabled)
-			.addData("visible", &ECS::Node2d::visible)
-			.addData("direction", &ECS::Node2d::direction)
-			.addData("speed", &ECS::Node2d::speed)
-			.addData("solid", &ECS::Node2d::solid)
-			.addData("textureScale", &ECS::Node2d::textureScale)
-			.addFunction("setPosition", setPosition)
-			.endClass()
-			.endNamespace();
-	}
 
 	static void mCreatePullyJoint(b2World* world, 
 		ECS::Node2d* body1, ECS::Node2d* body2,
@@ -299,11 +270,10 @@ void ECS::ExtendAll(lua_State* L){
 	ECS::ExtendRigidBody(L);
 	ECS::ExtendMaterial(L);
 	ECS::ExtendInput(L);
-	ECS::ExtendNode2d(L);
 	ECS::ExtendCamera(L);
 	ECS::ExtendBox2d(L);
 	ECS::ExtendText(L);
-
+	Node2d::Extend(L);
 	ExtensionManager::Run(L);
 }
 
