@@ -28,6 +28,7 @@ function onKeyPress(key)
 	end
 
 	listenForSwitchStateChange(key);
+	listenForPortalActivation(key);
 end
 
 function onBeginContact(A, B)
@@ -61,6 +62,10 @@ function SpawnPlayer()
 	for k, v in ipairs(NPCS) do
 		v.node.prompter = mPlayer;
 	end
+
+	for k, v in ipairs(Portals) do
+		v.node:setObserver(mPlayer);
+	end
 end
 
 function genMap()
@@ -69,6 +74,7 @@ function genMap()
 	map:LoadData("./Assets/Textures/tileset.json");
 	genObjects();
 	genCharacters();
+	genEntranceAndExit();
 	App.GetCamera().zoom = 7.0;
 end
 function genObjects()
@@ -399,4 +405,43 @@ function ToggleMotorAndRecordState(switch)
 		switch.joint_settings.motorSpeed = -1 * switch.joint_settings.motorSpeed;
 		blue_door_up = not blue_door_up;
 		print("Blue door is?", blue_door_up)
+end
+
+function genEntranceAndExit()
+	local icon ={texture="inputs", frame = {x=323, y= 170, w= 16,h= 16}}
+	Portals = {
+		{Name = "exit portal", x = 28, y = -4.5, w = 10, h = 9 , destination = "MissionGivingCourse"}
+	}
+
+	for k, v in ipairs(Portals) do
+	
+		local e = Scene.CreateInteractableNode(v.Name);
+			e.transform.position:set(v.x, v.y);
+			e.transform.size:set(v.w, v.h)
+			e.transform:Center();
+			e.rigidbody.bdyDef.type = 1;
+			e.rigidbody.fixDef.isSensor = true;
+			e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
+			e:setIconDestination(0, 0, 2.0, 2.0)
+			e:setIconTexture(icon.texture)
+			e:setIconFrame(icon.frame.x, icon.frame.y, icon.frame.w, icon.frame.h)
+			e.visible = false;
+
+			local function TransitionToScene()
+				App.GoToScene(v.destination or "obstacleCourse")
+				
+			end
+			v.node = e;
+			v.Activation_key = 69; -- KEY_E
+			v.onBeginContact = TransitionToScene;
+
+	end
+end
+
+function listenForPortalActivation(key)
+	for k, v in ipairs(Portals) do
+		if v.node.isInteractive and key == v.Activation_key then
+			v.onBeginContact(v);
+		end
+	end
 end
