@@ -123,12 +123,6 @@ void Scene2d::Debug()
 	ImGui::SliderInt("resolution x", &sceneScreenWidth, 10, GetScreenWidth());
 	ImGui::SliderInt("resolution y", &sceneScreenHeight, 10, GetScreenHeight());
 
-	if (ImGui::TreeNode("Nodes"))
-	{
-		for (auto&& node : Nodes) node->Inspect();
-
-		ImGui::TreePop();
-	}
 
 	if (ImGui::BeginCombo("Node A", NodeA >= 0 ? Nodes[NodeA]->Name.c_str() : "- Select a Node -"))
 	{
@@ -173,6 +167,13 @@ void Scene2d::Debug()
 	{
 		DebugNode(Nodes[NodeB].get(), "Node Inspector (2)");
 	}
+
+	if (ImGui::TreeNode("Nodes"))
+	{
+		for (auto&& node : Nodes) node->Inspect();
+
+		ImGui::TreePop();
+	} 
 }
 
 void Scene2d::DebugNode(ECS::Node2d* Node, const char* title)

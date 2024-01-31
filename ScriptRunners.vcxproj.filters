@@ -58,6 +58,9 @@
     <Filter Include="Scripts\Scenes\scriptRunners">
       <UniqueIdentifier>{83b9b34f-a5c4-4158-b1ba-a323abddb9b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ScriptRunner">
+      <UniqueIdentifier>{4442d891-566a-473d-931c-eb69750ad0f9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -279,6 +282,15 @@
     <ClCompile Include="Tilemap.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Mission.cpp">
+      <Filter>Source Files\ScriptRunner</Filter>
+    </ClCompile>
+    <ClCompile Include="MissionManager.cpp">
+      <Filter>Source Files\ScriptRunner</Filter>
+    </ClCompile>
+    <ClCompile Include="GFile.cpp">
+      <Filter>Source Files\ScriptRunner</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -495,6 +507,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Tilemap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mission.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MissionManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

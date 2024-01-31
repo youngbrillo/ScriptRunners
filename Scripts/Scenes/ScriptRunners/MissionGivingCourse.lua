@@ -34,6 +34,7 @@ end
 
 function createHub()
 	TextureManager.Add("Assets/Textures/dummy", "dummy");
+	TextureManager.Add("Assets/Textures/kenny/inputs", "inputs")
 	-- // create ground
 		ground = Scene.CreateNode2d("ground");
 		ground.transform.position:set(0, 1);
@@ -64,7 +65,7 @@ end
 function genEntranceAndExit()
 	local icon ={texture="inputs", frame = {x=323, y= 170, w= 16,h= 16}}
 	Portals = {
-		{Name = "exit portal", x = -30, y = -4, w = 3, h = 9 }
+		{Name = "entrance portal", x = -30, y = -4, w = 3, h = 9 }
 		,{Name = "exit portal", x = 30, y = -4, w = 3, h = 9 , destination = "obstacleCourse"}
 	}
 
