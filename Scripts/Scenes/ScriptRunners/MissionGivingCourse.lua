@@ -19,10 +19,14 @@ end
 
 function onKeyPress(key)
 	listenForPortalActivation(key)
+	
+	if(TaskMaster.do_generate) then
+		GenerateTask( {x1 = -30, x2 = -10, y1 = -10, y2 =1}, { obj = platforms[math.random(1, #platforms)], xoff = 0, yoff = -1} );
+	end
 end
 
 function onBeginContact(A, B)
-
+	handleLetterDelivery(A,B);
 end
 
 
@@ -45,13 +49,33 @@ function createHub()
 		ground.rigidbody.fixDef.density = 1.0;
 		ground.rigidbody:SetBody(Scene.GetWorld(), ground.transform, 0)
 
+	-- //create platforms
+	local origin = -15
+	platforms = {
+		{name = "center platform", x = 0 + origin, y = -1,  w = 5, h = 0.1, color = 0x00ff00ff},
+		{name = "left platform", x = -5 + origin, y = -1.5, w = 5, h = 0.1, color = 0x00ff00ff},
+		{name = "right platform", x = 5 + origin, y = -2, w = 5, h = 0.1, color = 0x00ff00ff},
+	}
+	for k, v in ipairs(platforms) do
+		e = Scene.CreateNode2d(v.name);
+			e.transform.position:set(v.x,v.y);
+			e.transform.size:set(v.w, v.h);
+			e.transform:Center();
+			e.material:SetColor(v.color)
+			e.rigidbody.bdyDef.type = 0
+			e.rigidbody.fixDef.density = 1.0;
+			e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
+
+	end
+
 	--// create player
 
 	mPlayer = Scene.CreatePlayerController("Player Controller", "dummy");
 	mPlayer.textureScale:set(4, 2)
 	mPlayer:setPosition(-27, 0)
 
-
+	--// create characters
+	genCharacters();
 	--//create entrance portal and exit portal
 	genEntranceAndExit()
 
@@ -59,7 +83,7 @@ function createHub()
 	genCameraControllers();
 
 	--//set default zoom
-	App.GetCamera().zoom = 35.0;
+	App.GetCamera().zoom = 20.0;
 end
 
 function genEntranceAndExit()
@@ -101,6 +125,7 @@ function listenForPortalActivation(key)
 			v.onBeginContact(v);
 		end
 	end
+
 end
 
 
@@ -108,7 +133,7 @@ function genCameraControllers( )
 
 	camControllers = 
 	{
-		   {pos = {x = 0, y = -2}, size = {x=80, y=6}, onEnter = 45, onExit = 20, name  = "Street Cam"}
+	--	   {pos = {x = 0, y = -2}, size = {x=80, y=6}, onEnter = 45, onExit = 20, name  = "Street Cam"}
 	}
 
 	for k, v in ipairs(camControllers) do
@@ -128,3 +153,146 @@ function genCameraControllers( )
 	end
 end
 
+function genCharacters()
+	local icon = {alias = "inputs", frame = {x=323, y= 170, w= 16,h= 16}};
+	-- Gen Task Master
+	local e = Scene.CreateNPCNode("Task Master", "dummy", icon.alias, "no script");
+
+		e.transform.position:set(-25, -3);
+		e.transform.size:set(0.5, 1);
+		e.transform:Center();
+		e.textureScale:set(4, 2)
+		e.rigidbody.bdyDef.type = 2;
+		e.rigidbody.bdyDef.fixedRotation = true;
+		e.rigidbody.fixDef.density = 1.0;
+		e.rigidbody.fixDef.friction = 1.0;
+		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
+		e.icon.frame:set(icon.frame.x,icon.frame.y,icon.frame.w, icon.frame.h)
+		e.text:setText("Here.\nHave a Task!", true)
+		e.text.fontSize = 32
+		e.text:SetFont("comic")
+		b2d.AddCircleSensor(e.rigidbody, 1.25)
+		e.prompter = mPlayer;
+
+	TaskMaster = 
+	{
+		node = e,
+		id = e:GetID(),
+		task_given = false,
+		task_completed = false,
+		not_done_strings = {"Finish your current task, then I'll give you another.", "My my, You are eager for work eh?\nStart by on Finishing #your_current_task first", "Have you completed that little 'thing' yet?"},
+		completion_strings = {
+			"Bravo!!\nThe reward for hard work is...\n you guessed it! More work.",
+			"Why thank you for the quick turnaround! Here's another job, as a treat..",
+			"Ahh now that you have finished your #place_here delivery\nHere is another task for you!"
+		}
+	}
+
+	math.randomseed(os.time());
+end
+
+
+
+
+-- Task 
+
+
+
+function onDialogueStart(character, player ) 
+	if character:GetID() == TaskMaster.id and TaskMaster.task_completed then
+		TaskMaster.task_given = false;
+		TaskMaster.task_completed = false;
+		local nextString = TaskMaster.completion_strings[math.random(1, #TaskMaster.completion_strings)];
+		character.text:setText(nextString, true);
+	end
+end
+function onDialogueEnd(character, player ) 
+	-- the only npc is the task master, here but....[but what..?]
+	if character:GetID() == TaskMaster.id then
+		if(not TaskMaster.task_given) then 
+			TaskMaster.task_given = true;
+			character.text:setText(TaskMaster.not_done_strings[1], true);
+			TaskMaster.do_generate = true;
+		else
+			local nextString = TaskMaster.not_done_strings[math.random(1, #TaskMaster.not_done_strings)];
+			character.text:setText(nextString, true);
+		end
+
+		print("Dialogue Ended with character: ", character.Name)
+	end
+end
+
+
+TaskManager = {
+	mail = nil,
+	mail_box = nil,
+	in_proggress = false,
+	task_counter = 0,
+	Activation_key = 69
+};
+
+
+function GenerateTask(spawnBounds, goalBounds)
+	TaskMaster.do_generate = false;
+
+	local x = math.random(spawnBounds.x1, spawnBounds.x2);
+	local y = math.random(spawnBounds.y1, spawnBounds.y2);
+	local w =1-- math.random(1, 8);
+	local h =1-- math.random(1, w);
+
+	TaskManager.task_counter = TaskManager.task_counter + 1;
+	task_name = "Mail-"..TaskManager.task_counter;
+
+	local r = math.random();
+	local g = math.random();
+	local b = math.random();
+
+	local e = Scene.CreateNode2d(task_name);
+		e.transform.position:set(x, y);
+		e.transform.size:set(w, h);
+		e.transform:Center();
+		e.material:SetColorVec(r, g, b, 1.0)
+		e.rigidbody.bdyDef.type = 2
+		e.rigidbody.fixDef.density = 1--math.random(1, 10);
+		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
+
+
+	TaskManager.mail = e;
+
+	mail_box_name = "Mailbox-"..TaskManager.task_counter;
+	local icon = {alias = "inputs", frame = {x=323, y= 170, w= 16,h= 16}};
+
+	x = goalBounds.obj.x + goalBounds.xoff
+	y = goalBounds.obj.y + goalBounds.yoff
+	w = goalBounds.obj.w
+	h = 1
+
+	local i = Scene.CreateInteractableNode(mail_box_name);
+		i.transform.position:set(x, y );
+		i.transform.size:set(w,h)
+		i.transform:Center();
+		i.rigidbody.bdyDef.type = 1;
+		i.rigidbody.fixDef.isSensor = true;
+		i.rigidbody:SetBody(Scene.GetWorld(), i.transform, 0)
+		i.material:SetColorVec(r, g, b, 0.55)
+		i:setIconDestination(0, 0, 0.0, 0.0)
+		i:setIconTexture(icon.alias)
+		i:setIconFrame(icon.frame.x, icon.frame.y, icon.frame.w, icon.frame.h)
+		i.visible = true;
+		i:setObserver(e);
+
+	TaskManager.mail_box = i;
+
+	TaskManager.in_proggress = true;
+
+	print("Generated task ", TaskManager.task_counter, TaskManager.in_proggress);
+end
+
+function handleLetterDelivery(A, B)
+	if TaskManager.in_proggress and TaskManager.mail_box.isInteractive then
+		TaskManager.mail.alive = false;
+		TaskManager.mail_box.alive = false;
+		TaskManager.in_proggress = false;
+		TaskMaster.task_completed = true;
+	end
+end
