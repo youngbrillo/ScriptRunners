@@ -185,8 +185,8 @@ function genCharacters()
 			"My my, You are eager for work eh?\nStart by on Finishing your #your_current_task task, then come and talk to me again.", 
 			"Still on your #your_current_task task?\nHow long until you wrap that up huh?"},
 		completion_strings = {
-			--"Bravo!!\nThe reward for hard work is...\n you guessed it! More work.",
-			--"Why thank you for the quick turnaround!\nHere's another job, as a treat..",
+			"Bravo!!\nThe reward for hard work is...\n you guessed it! More work.",
+			"Why thank you for the quick turnaround!\nHere's another job, as a treat..",
 			"Ahh now that you have finished your #your_current_task delivery\nHere is another task for you!"
 		}
 	}
