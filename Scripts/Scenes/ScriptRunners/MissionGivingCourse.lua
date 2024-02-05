@@ -180,11 +180,14 @@ function genCharacters()
 		id = e:GetID(),
 		task_given = false,
 		task_completed = false,
-		not_done_strings = {"Finish your current task, then I'll give you another.", "My my, You are eager for work eh?\nStart by on Finishing #your_current_task first", "Have you completed that little 'thing' yet?"},
+		not_done_strings = {
+			"Finish your current task, then I'll give you another.", 
+			"My my, You are eager for work eh?\nStart by on Finishing your #your_current_task task, then come and talk to me again.", 
+			"Still on your #your_current_task task?\nHow long until you wrap that up huh?"},
 		completion_strings = {
-			"Bravo!!\nThe reward for hard work is...\n you guessed it! More work.",
-			"Why thank you for the quick turnaround! Here's another job, as a treat..",
-			"Ahh now that you have finished your #place_here delivery\nHere is another task for you!"
+			--"Bravo!!\nThe reward for hard work is...\n you guessed it! More work.",
+			--"Why thank you for the quick turnaround!\nHere's another job, as a treat..",
+			"Ahh now that you have finished your #your_current_task delivery\nHere is another task for you!"
 		}
 	}
 
@@ -196,13 +199,24 @@ end
 
 -- Task 
 
-
+function ordinal_numbers(n)
+	  local ordinal, digit = {"st", "nd", "rd"}, string.sub(n, -1)
+		  if tonumber(digit) > 0 and tonumber(digit) <= 3 and string.sub(n,-2) ~= 11 and string.sub(n,-2) ~= 12 and string.sub(n,-2) ~= 13 then
+			return n .. ordinal[tonumber(digit)]
+		  else
+			return n .. "th"
+	  end
+end
 
 function onDialogueStart(character, player ) 
 	if character:GetID() == TaskMaster.id and TaskMaster.task_completed then
 		TaskMaster.task_given = false;
 		TaskMaster.task_completed = false;
 		local nextString = TaskMaster.completion_strings[math.random(1, #TaskMaster.completion_strings)];
+		
+		local replacementString = ordinal_numbers(TaskManager.task_counter);
+		nextString = string.gsub(nextString, "#your_current_task", replacementString)
+
 		character.text:setText(nextString, true);
 	end
 end
@@ -215,6 +229,10 @@ function onDialogueEnd(character, player )
 			TaskMaster.do_generate = true;
 		else
 			local nextString = TaskMaster.not_done_strings[math.random(1, #TaskMaster.not_done_strings)];
+
+			local i, j = string.find(nextString, "#your_current_task")
+			local replacementString = ordinal_numbers(TaskManager.task_counter);
+			nextString = string.gsub(nextString, "#your_current_task", replacementString)
 			character.text:setText(nextString, true);
 		end
 
