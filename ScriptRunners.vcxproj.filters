@@ -291,6 +291,12 @@
     <ClCompile Include="GFile.cpp">
       <Filter>Source Files\ScriptRunner</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerController.cpp">
+      <Filter>Source Files\ScriptRunner</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files\ScriptRunner</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -519,6 +525,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

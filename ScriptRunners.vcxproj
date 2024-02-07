@@ -201,6 +201,8 @@
     <ClCompile Include="Node2d.cpp" />
     <ClCompile Include="NPCNode.cpp" />
     <ClCompile Include="PlatformerController.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerController.cpp" />
     <ClCompile Include="Scene2dExample.cpp" />
     <ClCompile Include="RayExtend.cpp" />
     <ClCompile Include="rlImGui.cpp" />
@@ -273,6 +275,8 @@
     <ClInclude Include="Node2d.h" />
     <ClInclude Include="NPCNode.h" />
     <ClInclude Include="PlatformerController.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerController.h" />
     <ClInclude Include="RayExtend.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="rlights.h" />
