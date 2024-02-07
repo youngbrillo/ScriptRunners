@@ -21,7 +21,7 @@ function onKeyPress(key)
 	listenForPortalActivation(key)
 	
 	if(TaskMaster.do_generate) then
-		GenerateTask( {x1 = -30, x2 = -10, y1 = -10, y2 =1}, { obj = platforms[math.random(1, #platforms)], xoff = 0, yoff = -1} );
+		GenerateTask( {x1 = -19-1, x2 = -19 + 1, y1 = -15, y2 =-10}, { obj = platforms[math.random(1, #platforms)], xoff = 0, yoff = -1} );
 	end
 end
 
@@ -35,6 +35,18 @@ function onEndContact(A, B)
 end
 
 --/ ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function _joinTables(t1, t2)
+	local ttable = {};
+	for i = 1, #t1 do
+		ttable[#ttable + 1] = t1[i];
+	end
+	
+	for i = 1, #t2 do
+		ttable[#ttable + 1] = t2[i];
+	end
+	return ttable
+end
 
 function createHub()
 	TextureManager.Add("Assets/Textures/dummy", "dummy");
@@ -50,13 +62,20 @@ function createHub()
 		ground.rigidbody:SetBody(Scene.GetWorld(), ground.transform, 0)
 
 	-- //create platforms
-	local origin = -15
+	local origin = 4
 	platforms = {
-		{name = "center platform", x = 0 + origin, y = -1,  w = 5, h = 0.1, color = 0x00ff00ff},
-		{name = "left platform", x = -5 + origin, y = -1.5, w = 5, h = 0.1, color = 0x00ff00ff},
-		{name = "right platform", x = 5 + origin, y = -2, w = 5, h = 0.1, color = 0x00ff00ff},
+		{name = "center platform",	x = 0 + origin,		y = -3,   w = 10, h = 0.1, color = 0x00ff00ff},
+		{name = "left platform",	x = -15 + origin,	y = -4, w = 10, h = 0.1, color = 0x00ff00ff},
+		{name = "right platform",	x = 15 + origin,	y = -4,   w = 10, h = 0.1, color = 0x00ff00ff},
 	}
-	for k, v in ipairs(platforms) do
+
+	local otherPlatforms = {
+		{name = "tower wall",	    x = -20, y = -4, w = 0.1, h = 10, color = 0x00ff00ff},
+		{name = "tower platform",	x = -19, y = -9, w = 2, h = 0.1, color = 0x00ff00ff},
+		{name = "tower stair",		x = -21, y = -4, w = 2, h = 0.1, color = 0x00ff00ff},
+	}
+
+	for k, v in ipairs(_joinTables(platforms, otherPlatforms)) do
 		e = Scene.CreateNode2d(v.name);
 			e.transform.position:set(v.x,v.y);
 			e.transform.size:set(v.w, v.h);
