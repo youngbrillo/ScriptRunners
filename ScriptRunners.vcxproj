@@ -307,6 +307,7 @@
     <None Include="Scripts\Scenes\platformerIII.lua" />
     <None Include="Scripts\Scenes\ScriptRunners\MissionGivingCourse.lua" />
     <None Include="Scripts\Scenes\ScriptRunners\obstacleCourse.lua" />
+    <None Include="Scripts\Scenes\ScriptRunners\ObstaclePark.lua" />
     <None Include="Scripts\Scenes\ScriptRunners\todo.lua" />
     <None Include="Scripts\Scenes\tilemaps.lua" />
   </ItemGroup>

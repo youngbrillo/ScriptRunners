@@ -571,6 +571,11 @@
     <None Include="Scripts\Scenes\ScriptRunners\todo.lua">
       <Filter>Scripts\Scenes\scriptRunners</Filter>
     </None>
-    <None Include="Scripts\Scenes\ScriptRunners\MissionGivingCourse.lua" />
+    <None Include="Scripts\Scenes\ScriptRunners\MissionGivingCourse.lua">
+      <Filter>Scripts\Scenes\scriptRunners</Filter>
+    </None>
+    <None Include="Scripts\Scenes\ScriptRunners\ObstaclePark.lua">
+      <Filter>Scripts\Scenes\scriptRunners</Filter>
+    </None>
   </ItemGroup>
 </Project>
