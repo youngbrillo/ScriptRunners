@@ -2,12 +2,18 @@
 #include "Sprite2d.h"
 #include "PlatformerController.h"
 #include "Player.h";
+
+namespace Player
+{
+
+
+}
 namespace ECS
 {
 	class PlayerController : public ECS::Sprite2d
 	{
 	public:
-		PlayerController(const char* name, const char* alias);
+		PlayerController(const char* name, const char* alias, const char* config);
 		~PlayerController();
 
 		//virtual overrides
