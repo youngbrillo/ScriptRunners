@@ -28,13 +28,15 @@ namespace ECS
 		void handleMovement(const float& dt);
 		void handleXmovement(const float& dt);
 		void handleYmovement(const float& dt);
-		void handleAnimState(const float& dt);
+		void handleAnimations(const float& dt);
 		void handleActions(const float& dt);
 
 	public:
 		static void Extend(lua_State* L);
 		SR::Player mPlayerConfig;
 		Player::Inputs mInputs;
+		ECS::RayCastCallback rayCaster;
+
 	};
 }
 

@@ -3,6 +3,7 @@ function onSceneStart()
 	genMap();
 
 	description_text = "Course 2: movement [ ] | everything else [ ]"
+	SpawnPlayer(0, -15)
 end
 
 function onSceneEnd() 
@@ -23,7 +24,7 @@ end
 spawn_player_key = 81; --//Q
 function onKeyPress(key)
 	if key == spawn_player_key then
-		SpawnPlayer(0, -10);
+		SpawnPlayer(0, -8);
 	end
 end
 
@@ -48,8 +49,8 @@ function SpawnPlayer(x, y )
 		mPlayer.alive = false;
 	end
 
-	mPlayer = Scene.CreatePlayerController("Player Controller", "dummy");
-	--mPlayer = Scene.CreatePlayerController2("Player Controller", "dummy", "Player.ini");
+	--mPlayer = Scene.CreatePlayerController("Player Controller", "dummy");
+	mPlayer = Scene.CreatePlayerController2("Player Controller", "dummy", "Player.ini");
 	mPlayer.textureScale:set(4, 2)
 	mPlayer:setPosition(x,y)
 end
