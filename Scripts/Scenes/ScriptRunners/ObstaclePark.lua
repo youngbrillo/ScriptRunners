@@ -49,6 +49,7 @@ function SpawnPlayer(x, y )
 	end
 
 	mPlayer = Scene.CreatePlayerController("Player Controller", "dummy");
+	--mPlayer = Scene.CreatePlayerController2("Player Controller", "dummy", "Player.ini");
 	mPlayer.textureScale:set(4, 2)
 	mPlayer:setPosition(x,y)
 end

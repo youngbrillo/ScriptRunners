@@ -33,7 +33,8 @@ namespace ECS
 
 	public:
 		static void Extend(lua_State* L);
-		SR::Player mPlayer;
+		SR::Player mPlayerConfig;
+		Player::Inputs mInputs;
 	};
 }
 

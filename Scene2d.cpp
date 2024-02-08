@@ -377,6 +377,8 @@ static ECS::NPCNode* CreateNPCNode(const char* name, const char* alias, const ch
 
 
 #include "FontManager.h"
+#include "PlayerController.h"
+
 void Scene2d::Extend(lua_State* L)
 {
 	auto getCameraFunction = std::function<Camera2D* (void)>([]() {return &Scene2d::Instance()->camera.cam; });
@@ -409,4 +411,5 @@ void Scene2d::Extend(lua_State* L)
 	ECS::CameraController2d::Extend(L);
 	ECS::InteractableNode::Extend(L);
 	ECS::NPCNode::Extend(L);
+	ECS::PlayerController::Extend(L);
 }

@@ -2,7 +2,7 @@
 
 ECS::PlayerController::PlayerController(const char* name, const char* alias, const char* config)
 	: Sprite2d(name, alias)
-	, mPlayer(config)
+	, mPlayerConfig(config)
 {
 }
 
@@ -40,6 +40,7 @@ void ECS::PlayerController::Poll()
 void ECS::PlayerController::inspect()
 {
 	Sprite2d::inspect();
+	mInputs.Debug();
 }
 
 void ECS::PlayerController::handleMovement(const float& dt)
@@ -76,7 +77,7 @@ void ECS::PlayerController::Extend(lua_State* L)
 {
 	luabridge::getGlobalNamespace(L)
 		.beginNamespace("Scene")
-			.addFunction("CreateTilemapNode", CreatePlayerController)
+			.addFunction("CreatePlayerController2", CreatePlayerController)
 		.endNamespace()
 		.beginNamespace("ECS")
 			.deriveClass<ECS::PlayerController, ECS::Sprite2d>("PlayerController")
@@ -85,3 +86,4 @@ void ECS::PlayerController::Extend(lua_State* L)
 }
 
 //static int kc = ExtensionManager::Register(ECS::PlayerController::Extend);
+
