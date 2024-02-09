@@ -113,16 +113,21 @@ void ECS::PlayerController::handleXmovement(const float& dt)
 
 void ECS::PlayerController::handleYmovement(const float& dt)
 {
+	float currentSpeed = mInputs.direction * (mInputs.sprint.isDown ? mPlayerConfig.run_speed : mPlayerConfig.walk_speed);
+
+
 	if (mPlayerConfig.isGrounded && mInputs.up.just_pressed)
 	{
-		rigidbody.body->ApplyLinearImpulseToCenter(b2Vec2(0, -1.0f * mPlayerConfig.jump_launch_mag), true);
+		rigidbody.body->ApplyLinearImpulseToCenter(b2Vec2(currentSpeed *0.5f, -1.0f * mPlayerConfig.jump_launch_mag), true);
 		mPlayerConfig.canDoubleJump = true;
 		return;
 	}
 
 	if(!mPlayerConfig.isGrounded && mPlayerConfig.canDoubleJump && mInputs.up.just_pressed)
 	{
-		rigidbody.body->ApplyLinearImpulseToCenter(b2Vec2(0, -1.0f * mPlayerConfig.jump_launch_mag), true);
+		rigidbody.body->SetLinearVelocity(b2Vec2(rigidbody.body->GetLinearVelocity().x, 0.0f));
+		
+		rigidbody.body->ApplyLinearImpulseToCenter(b2Vec2( currentSpeed * 0.5f, -1.0f * mPlayerConfig.jump_launch_mag), true);
 		mPlayerConfig.canDoubleJump = false;
 		return;
 	}
