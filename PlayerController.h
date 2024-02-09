@@ -24,8 +24,8 @@ namespace ECS
 		virtual void Poll() override;
 		virtual void inspect() override;
 
-
 		void handleMovement(const float& dt);
+		void handleCrouching(const float& dt);
 		void handleXmovement(const float& dt);
 		void handleYmovement(const float& dt);
 		void handleAnimations(const float& dt);

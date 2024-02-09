@@ -29,13 +29,20 @@ void ECS::PlayerController::Update(const float& dt)
 void ECS::PlayerController::FixedUpdate(const float& dt)
 {
 	Sprite2d::FixedUpdate(dt);
-
+	//bottom contact
 	rayCaster.evaluate(rigidbody.body, 0.0f, transform.size.y * 0.55);
 	mPlayerConfig.isGrounded = rayCaster.contact;
+	//head contact
+	rayCaster.evaluate(rigidbody.body, 0.0f, -transform.size.y * 0.75);
+	mPlayerConfig.head_contact = rayCaster.contact;
+	//front contact
+	//rayCaster.evaluate(rigidbody.body, mInputs.lastDirection * transform.size.x * 0.55, 0.0f);
+	//mPlayerConfig.front_contact = rayCaster.contact;
 
 
 	this->handleMovement(dt);
 	mInputs.up.canDefer = false;
+	mInputs.down.canDefer = false;
 }
 
 void ECS::PlayerController::Draw()
@@ -57,6 +64,7 @@ void ECS::PlayerController::Poll()
 	mInputs.Poll();
 
 	if (mInputs.up.just_pressed) mInputs.up.canDefer = true;
+	if (mInputs.down.just_pressed || mInputs.down.just_released) mInputs.down.canDefer = true;
 }
 
 void ECS::PlayerController::inspect()
@@ -81,13 +89,60 @@ static float moveValueToward(float target, float value, float force)
 }
 void ECS::PlayerController::handleMovement(const float& dt)
 {
+	this->handleCrouching(dt);
 	this->handleXmovement(dt);
 	this->handleYmovement(dt);
 }
 
+void ECS::PlayerController::handleCrouching(const float& dt)
+{
+	bool lastCrouchVal = mPlayerConfig.isCrouching;
+	if (lastCrouchVal && !mInputs.down.isDown && mPlayerConfig.head_contact && mPlayerConfig.isGrounded)
+	{
+		mPlayerConfig.isCrouching = true;
+	}
+	else
+		mPlayerConfig.isCrouching = mInputs.down.isDown && mPlayerConfig.isGrounded;
+
+	if (lastCrouchVal != mPlayerConfig.isCrouching)
+	{
+		if (mPlayerConfig.isCrouching)
+		{
+			//constrict fixture
+			printf("gen. crouch fixture\n");
+
+			this->rigidbody.body->DestroyFixture(this->rigidbody.fixture);
+			this->rigidbody.fixture = NULL;
+			b2FixtureDef fd = this->rigidbody.fixDef;
+			b2Vec2 crouchSize(b2Vec2_zero), crouchOrigin(b2Vec2_zero);
+			crouchSize.x = transform.size.x * 0.5f;
+			crouchSize.y = transform.size.y * 0.25f;
+
+			crouchOrigin.y = transform.size.y * 0.25f;
+
+			b2PolygonShape box;
+			box.SetAsBox(crouchSize.x, crouchSize.y, crouchOrigin, 0.0f);
+			fd.shape = &box;
+			fd.density = this->rigidbody.fixDef.density * 2.0f;
+			this->rigidbody.fixture = this->rigidbody.body->CreateFixture(&fd);
+
+		}
+		else
+		{
+			//unconstrict fixture
+			printf("destroy. crouch fixture, regen std. fixture\n");
+			//rigidbody.SetBody(Scene2d::Instance()->world, this->transform, this->material.shape);
+
+			this->rigidbody.body->DestroyFixture(this->rigidbody.fixture);
+			this->rigidbody.fixture = NULL;
+			this->rigidbody.fixture = rigidbody.createFixture(this->rigidbody.fixDef, this->transform, this->material.shape);
+		}
+	}
+}
+
 void ECS::PlayerController::handleXmovement(const float& dt)
 {
-	bool isRunning = mInputs.sprint.isDown;
+	bool isRunning = mInputs.sprint.isDown && mPlayerConfig.isCrouching == false;
 	float speed = !isRunning ? mPlayerConfig.walk_speed : mPlayerConfig.run_speed;
 	float accelleration = !isRunning ? mPlayerConfig.walk_acceleration : mPlayerConfig.run_acceleration;
 	float deceleration = !isRunning ? mPlayerConfig.walk_deceleration : mPlayerConfig.run_deceleration;
@@ -142,6 +197,7 @@ void ECS::PlayerController::handleAnimations(const float& dt)
 
 	this->SetState("grounded", mPlayerConfig.isGrounded);
 	this->SetState("speed", speed);
+	this->SetState("crouch", mPlayerConfig.isCrouching);
 }
 
 void ECS::PlayerController::handleActions(const float& dt)

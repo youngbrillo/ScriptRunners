@@ -27,6 +27,12 @@ void SR::Player::Inspect(const char* title)
 		ImGui::InputFloat("jump launch magnitude", &jump_launch_mag, 1.0f, 10.0f);
 		ImGui::SliderFloat("Ground Friction", &ground_fric, 0, 1);
 		ImGui::SliderFloat("Ramp Friction", &ramp_fric, 0, 1);
+
+		ImGui::Checkbox("isGrounded", &isGrounded); ImGui::SameLine(); ImGui::Checkbox("can Double Jump", &canDoubleJump);
+		ImGui::Checkbox("head contact", &head_contact); ImGui::SameLine(); ImGui::Checkbox("front contact", &front_contact);
+		//ImGui::Checkbox("isGrounded", &isGrounded); ImGui::SameLine(); ImGui::Checkbox("canDoubleJump", &canDoubleJump);
+		//ImGui::Checkbox("isGrounded", &isGrounded); ImGui::SameLine(); ImGui::Checkbox("canDoubleJump", &canDoubleJump);
+
 		ImGui::TreePop();
 	}
 }

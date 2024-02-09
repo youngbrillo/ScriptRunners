@@ -25,6 +25,10 @@ namespace SR
 		bool isGrounded = false, canDoubleJump = false;
 		//climbing
 		bool isClimbing = false, canClimb = false, isMantling = false;
+		//crouching
+		bool isCrouching = false;
+		//contacts
+		bool front_contact = false, back_contact = false, head_contact = false;
 	};
 }
 
