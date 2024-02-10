@@ -1,10 +1,11 @@
 
 function onSceneStart()
+	CreateBackGrounds();
 	createHub();
 end
 
 function onSceneEnd() 
-
+	RemoveBackGroundTextures();
 end
 function Update(dt) 
 
@@ -33,7 +34,33 @@ end
 function onEndContact(A, B)
 
 end
+--/ ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function CreateBackGrounds() 
+	bgTextures = {};
+	local base_path = "Assets/Textures/";
+	local folder_path = "clouds_craft-pixel/Clouds/Clouds 7/"
+		table.insert(bgTextures, {id = TextureManager.Add(base_path..folder_path.."1", "bg_1"), name = "bg_1"});
+		table.insert(bgTextures, {id = TextureManager.Add(base_path..folder_path.."2", "bg_2"), name = "bg_2"});
+		table.insert(bgTextures, {id = TextureManager.Add(base_path..folder_path.."3", "bg_3"), name = "bg_3"});
+		table.insert(bgTextures, {id = TextureManager.Add(base_path..folder_path.."4", "bg_4"), name = "bg_4"});
+	for k, v in ipairs(bgTextures)
+	do
+		local p = Scene.CreateNode2d("Background-"..v.name);
+		p.transform.position.y = -10
+		p.transform.size.x = 100;
+		p.transform.size.y = 40;
+		p.transform:Center();
+		p.material:SetTextureByAlias(v.name)
+		p.material.uv_scroll:set(2 * (k-1), 0)
+	end
+end
 
+function RemoveBackGroundTextures()
+	for k, v in ipairs(bgTextures)
+	do
+		TextureManager.Remove(v.id);
+	end
+end
 --/ ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function _joinTables(t1, t2)
