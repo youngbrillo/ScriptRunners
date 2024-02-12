@@ -313,6 +313,7 @@
     <None Include="Scripts\Scenes\ScriptRunners\obstacleCourse.lua" />
     <None Include="Scripts\Scenes\ScriptRunners\ObstaclePark.lua" />
     <None Include="Scripts\Scenes\ScriptRunners\todo.lua" />
+    <None Include="Scripts\Scenes\ScriptRunners\town.lua" />
     <None Include="Scripts\Scenes\tilemaps.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
