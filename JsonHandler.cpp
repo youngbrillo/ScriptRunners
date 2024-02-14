@@ -11,7 +11,7 @@ bool JSONParse::LoadFile(char*& data, int& size, const char* file_path)
 	FILE* file = fopen(file_path, "rb");
 	if (file == nullptr)
 	{
-		printf("%s (%d)\t cannot open file '%s'", __FILE__, __LINE__, file_path);
+		//printf("%s (%d)\t cannot open file '%s'", __FILE__, __LINE__, file_path);
 		return false;
 	}
 
@@ -37,7 +37,7 @@ bool JSONParse::ParseJSONFile(jsonObjects& data, const char* file_path, jsonStat
 {
 	int dataSize;
 	char* rawdata;
-	if (!LoadFile(rawdata, dataSize, file_path)) { printf("\n\tcould not read file and could not initialize data.\n"); return false; }
+	if (!LoadFile(rawdata, dataSize, file_path)) { /*printf("\n\tcould not read file and could not initialize data.\n");*/ return false; }
 
 	const sajson::document& document = sajson::parse(sajson::dynamic_allocation(), sajson::mutable_string_view(dataSize, rawdata));
 	if (!document.is_valid())
