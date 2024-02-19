@@ -18,7 +18,12 @@ end
 function UIDraw() 
 	Raylib.DrawTextEx("arial", "Town Hub", 25, Raylib.GetScreenHeight()-60, 40 ,1.0, 0xffffffff)
 end
+
+spawn_player_key = 81; --//Q
 function onKeyPress(key)
+	if key == spawn_player_key then
+		SpawnPlayer(-40, 12);
+	end
 end
 function onBeginContact(A, B)
 
@@ -26,7 +31,17 @@ end
 function onEndContact(A, B)
 
 end
+mPlayer = nil
+function SpawnPlayer(x, y )
+	if(mPlayer ~= nil) then
+		mPlayer.alive = false;
+	end
 
+	--mPlayer = Scene.CreatePlayerController("Player Controller", "dummy");
+	mPlayer = Scene.CreatePlayerController2("Player Controller", "dummy", "Player.ini");
+	mPlayer.textureScale:set(4, 2)
+	mPlayer:setPosition(x,y)
+end
 
 --/ ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function CreateBackGrounds() 
@@ -47,12 +62,15 @@ function CreateBackGrounds()
 		--table.insert(bgTextures, {id = TextureManager.Add(base_path..folder_path.."Pixelcity"..cityNumber.."_layer" .. "04", "cityLayer4"), name = "cityLayer4", uv_x = 6});
 		--table.insert(bgTextures, {id = TextureManager.Add(base_path..folder_path.."Pixelcity"..cityNumber.."_layer" .. "05", "cityLayer5"), name = "cityLayer5", uv_x = 0});
 		--table.insert(bgTextures, {id = TextureManager.Add(base_path..folder_path.."Pixelcity"..cityNumber.."_layer" .. "06", "cityLayer6"), name = "cityLayer6", uv_x = 8});
+
+	table.insert(bgTextures, {id = TextureManager.Add(base_path.."city/street", "m_city_street"), name = "m_city_street", uv_x = 0, x = 0, y = -4.5, w = 100, h = 50});
+
 	for k, v in ipairs(bgTextures)
 	do
 		local p = Scene.CreateNode2d("Background-"..v.name);
-		p.transform.position.y =0
-		p.transform.size.x = 100;
-		p.transform.size.y = 40;
+		p.transform.position.y = v.y or 0
+		p.transform.size.x = v.w or 100;
+		p.transform.size.y = v.h or 40;
 		p.transform:Center();
 		p.material:SetTextureByAlias(v.name)
 		p.material.uv_scroll:set(v.uv_x, 0)
@@ -68,6 +86,6 @@ end
 --/ ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function createTown()
-	--map = Scene.CreateTilemapNode("tile map")
-	--map:Import('./Assets/Textures/ruins/tiles.png', './Assets/Textures/ruins/ruins.json')
+	map = Scene.CreateTilemapNode("tile map")
+	map:LoadData("./Assets/Textures/city/Town.json");
 end
