@@ -1,10 +1,10 @@
 
 function onSceneStart()
 	TextureManager.Add("Assets/Textures/dummy", "dummy");
+	TextureManager.Add("Assets/Textures/kenny/inputs", "inputs")
 	CreateBackGrounds();
 	createTown();
 	App.GetCamera().zoom = 25.0;
-	SpawnPlayer(-40, 12);
 end
 
 function onSceneEnd() 
@@ -34,6 +34,7 @@ function onEndContact(A, B)
 
 end
 mPlayer = nil
+npcs = {};
 function SpawnPlayer(x, y )
 	if(mPlayer ~= nil) then
 		mPlayer.alive = false;
@@ -43,6 +44,10 @@ function SpawnPlayer(x, y )
 	mPlayer = Scene.CreatePlayerController2("Player Controller", "dummy", "Player.ini");
 	mPlayer.textureScale:set(4, 2)
 	mPlayer:setPosition(x,y)
+
+	for k, v in ipairs(npcs) do
+		v.node.prompter = mPlayer;
+	end
 end
 
 --/ ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87,7 +92,39 @@ function RemoveBackGroundTextures()
 end
 --/ ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 function createTown()
 	map = Scene.CreateTilemapNode("tile map")
 	map:LoadData("./Assets/Textures/city/Town.json");
+	SpawnPlayer(-40, 12);
+
+	--//generate characters
+		local icon = {alias = "inputs", frame = {x=323, y= 170, w= 16,h= 16}};
+
+	npcs = {
+		{name = "man a", text = "H-Hello, I can tell you what to do...\nI-I mean I can give you assignements!", font = "comic", x = -37, y = 12},
+		{name = "man b", text = "Ahem! If you need directions look no further!", font = "comic", x = -18, y = 12},
+		{name = "man c", text = "O-Ohhhh! I believe I need some mail. \nDo you have any mail?", font = "comic", x = -9, y = 12},
+	}
+	-- Gen Task Master
+	for k, v in ipairs(npcs) do
+		local e = Scene.CreateNPCNode(v.name, "dummy", icon.alias, "npc.script.lua");
+			e.transform.position:set(v.x, v.y);
+			e.transform.size:set(0.5, 1);
+			e.transform:Center();
+			e.textureScale:set(4, 2)
+			e.rigidbody.bdyDef.type = 2;
+			e.rigidbody.bdyDef.fixedRotation = true;
+			e.rigidbody.fixDef.density = 1.0;
+			e.rigidbody.fixDef.friction = 1.0;
+			e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
+			e.icon.frame:set(icon.frame.x,icon.frame.y,icon.frame.w, icon.frame.h)
+			e.text:setText(v.text)
+			e.text.fontSize = 32
+			e.text:SetFont(v.font)
+			e.prompter = mPlayer;
+			print(e.Name)
+			v.node = e;
+			b2d.AddCircleSensor(e.rigidbody, 1.25)
+	end
 end
