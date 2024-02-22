@@ -1,8 +1,10 @@
 
 function onSceneStart()
+	TextureManager.Add("Assets/Textures/dummy", "dummy");
 	CreateBackGrounds();
 	createTown();
 	App.GetCamera().zoom = 25.0;
+	SpawnPlayer(-40, 12);
 end
 
 function onSceneEnd() 
