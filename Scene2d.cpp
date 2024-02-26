@@ -28,6 +28,14 @@ Scene2d::Scene2d(const char* path)
 	SetTextureFilter(target.texture, TEXTURE_FILTER_BILINEAR);  // Texture scale filter to use
 	drawToTarget = App::Settings().drawToTargetTexture;
 
+
+	//load scene settings
+	b2drawer.e_shape = App::Settings().b2dDebug_shape;
+	b2drawer.e_joint = App::Settings().b2dDebug_joint;
+	b2drawer.e_aabb = App::Settings().b2dDebug_aabb;
+	b2drawer.e_pair = App::Settings().b2dDebug_pair;
+	b2drawer.e_centerOfMass = App::Settings().b2dDebug_centerOfMass;
+	b2drawer.setInternalFlags();
 }
 
 Scene2d::~Scene2d()
@@ -40,6 +48,12 @@ Scene2d::~Scene2d()
 	world = NULL;
 	delete boxMouse;
 	boxMouse = NULL;
+
+	App::Settings().b2dDebug_shape = b2drawer.e_shape;
+	App::Settings().b2dDebug_joint = b2drawer.e_joint;
+	App::Settings().b2dDebug_aabb = b2drawer.e_aabb;
+	App::Settings().b2dDebug_pair = b2drawer.e_pair;
+	App::Settings().b2dDebug_centerOfMass = b2drawer.e_centerOfMass;
 
 	UnloadRenderTexture(target);
 }

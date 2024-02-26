@@ -24,6 +24,12 @@ public: //scene settings
 	std::string last_scene_cat = "";
 	std::string configPath = "./Configs/window.json";
 	bool drawToTargetTexture = false;
+	bool b2dDebug_shape = true;
+	bool b2dDebug_joint = true;
+	bool b2dDebug_aabb = true;
+	bool b2dDebug_pair = true;
+	bool b2dDebug_centerOfMass = true;
+
 public:
 
 public: //pause settings
