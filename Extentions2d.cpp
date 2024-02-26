@@ -71,6 +71,7 @@ namespace ECS
 			.addFunction("SetColorVec", &ECS::Material::SetColorf)
 			.addData("source", &ECS::Material::source)
 			.addData("uv_scroll", &ECS::Material::uv_scroll)
+			.addData("direction", &ECS::Material::direction)
 			.addProperty("shape", getShapeFunc, setShapeFunc)
 			.endClass()
 			.endNamespace();
