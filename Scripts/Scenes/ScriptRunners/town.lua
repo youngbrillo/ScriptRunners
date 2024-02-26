@@ -70,7 +70,7 @@ function CreateBackGrounds()
 		--table.insert(bgTextures, {id = TextureManager.Add(base_path..folder_path.."Pixelcity"..cityNumber.."_layer" .. "05", "cityLayer5"), name = "cityLayer5", uv_x = 0});
 		--table.insert(bgTextures, {id = TextureManager.Add(base_path..folder_path.."Pixelcity"..cityNumber.."_layer" .. "06", "cityLayer6"), name = "cityLayer6", uv_x = 8});
 
-	table.insert(bgTextures, {id = TextureManager.Add(base_path.."city/street", "m_city_street"), name = "m_city_street", uv_x = 0, x = 0, y = -4.5, w = 100, h = 50});
+	--table.insert(bgTextures, {id = TextureManager.Add(base_path.."city/street", "m_city_street"), name = "m_city_street", uv_x = 0, x = 0, y = -4.5, w = 100, h = 50});
 
 	for k, v in ipairs(bgTextures)
 	do
@@ -96,15 +96,18 @@ end
 function createTown()
 	map = Scene.CreateTilemapNode("tile map")
 	map:LoadData("./Assets/Textures/city/Town.json");
-	SpawnPlayer(-40, 12);
+	--SpawnPlayer(-40, 12);
+
+	CreateBuildings();
 
 	--//generate characters
 		local icon = {alias = "inputs", frame = {x=323, y= 170, w= 16,h= 16}};
 
 	npcs = {
 		{name = "man a", text = "H-Hello, I can tell you what to do...\nI-I mean I can give you assignements!", font = "comic", x = -37, y = 12},
-		{name = "man b", text = "Ahem! If you need directions look no further!", font = "comic", x = -18, y = 12},
-		{name = "man c", text = "O-Ohhhh! I believe I need some mail. \nDo you have any mail?", font = "comic", x = -9, y = 12},
+		{name = "Upmonger", text = "I'll trade you power if you give me money", font = "comic", x = -18, y = 13},
+		{name = "man b", text = "Ahem! If you need directions look no further!", font = "comic", x = -18, y = 9},
+		{name = "man c", text = "O-Ohhhh! I believe I need some mail. \nDo you have any mail?", font = "comic", x = -9, y = 0},
 	}
 	-- Gen Task Master
 	for k, v in ipairs(npcs) do
@@ -123,8 +126,54 @@ function createTown()
 			e.text.fontSize = 32
 			e.text:SetFont(v.font)
 			e.prompter = mPlayer;
-			print(e.Name)
-			v.node = e;
+			e.material.direction.x = -1;
 			b2d.AddCircleSensor(e.rigidbody, 1.25)
+			v.node = e;
+	end
+
+	CreateBuildingInteriors();
+end
+
+function CreateBuildings()
+-- simple blockout for where the buildings will go
+	local interior_color = 0x5E5E5EFF
+	building_blockout = {
+		{x = -37, y = 11.0, w = 6.0, h = 10.0},
+		{x = -37, y = 14, w = 6, h = 4.0, c = interior_color , is_interior = true, iw = 3, ih = 0.45, ic = 0xa8a8a8ff },
+		{x = -18, y = 11.0, w = 6.0, h = 10.0 },
+		{x = -18, y = 9, w = 6, h = 4.0, c = interior_color , is_interior = true, ic = 0xa8a8a8ff, ih = 0.4, iw=5 },
+		{x = -18, y = 14, w = 6, h = 4.0, c = interior_color, is_interior = true, ic = 0xa8a8a8ff, ih = 0.4, iw=5},
+		{x = -10, y = 6.0, w = 6.0, h = 20.0 },
+		{x = -10, y = -1, w = 6, h = 4.0, c = interior_color  , is_interior = true, ic = 0xa8a8a8ff,ih = 0.33},
+		{x = 28, y = 11.0, w = 35, h = 10.0, c = 0x5E5E5EFF  },
+		{x = 11, y = 14.50, w = 1, h = 3.0 }, {x = 16, y = 14.50, w = 1, h = 3.0 },
+		{x = 21, y = 14.50, w = 1, h = 3.0 }, {x = 26, y = 14.50, w = 1, h = 3.0 },
+		{x = 31, y = 14.50, w = 1, h = 3.0 }, {x = 36, y = 14.50, w = 1, h = 3.0 },
+		{x = 41, y = 14.50, w = 1, h = 3.0 },
+		{x = 45, y = 11, w = 1, h = 10.0 }
+	}
+	for k, v in ipairs(building_blockout) do
+		local e = Scene.CreateNode2d("Building::"..k)
+		e.transform.position:set(v.x, v.y);
+		e.transform.size:set(v.w, v.h);
+		e.material:SetColor(v.c or 0xa8a8a8ff)
+		e.transform:Center();
+		
+		v.node = e;
+	end
+
+end
+
+function CreateBuildingInteriors()
+	for k, v in ipairs(building_blockout) do
+		if v.is_interior then
+			local e = Scene.CreateNode2d("Building_interor::"..k);
+			local height = v.ih or 0.5;
+			e.transform.position:set(v.x, v.y + v.h/2 - height/2);
+			e.transform.size:set(v.iw or v.w, height);
+			e.material:SetColor(v.ic or 0x000000ff);
+			e.transform:Center();
+			v.interior_node = e;
+		end
 	end
 end
