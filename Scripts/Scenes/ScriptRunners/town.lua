@@ -40,8 +40,8 @@ function SpawnPlayer(x, y )
 		mPlayer.alive = false;
 	end
 
-	--mPlayer = Scene.CreatePlayerController("Player Controller", "dummy");
-	mPlayer = Scene.CreatePlayerController2("Player Controller", "dummy", "Player.ini");
+	mPlayer = Scene.CreatePlayerController("Player Controller", "dummy");
+	--mPlayer = Scene.CreatePlayerController2("Player Controller", "dummy", "Player.ini");
 	mPlayer.textureScale:set(4, 2)
 	mPlayer:setPosition(x,y)
 
@@ -105,7 +105,7 @@ function createTown()
 
 	npcs = {
 		{name = "man a", text = "H-Hello, I can tell you what to do...\nI-I mean I can give you assignements!", font = "comic", x = -37, y = 12},
-		{name = "Upmonger", text = "I'll trade you power if you give me money", font = "comic", x = -18, y = 13},
+		{name = "man d", text = "I'll Teach you new skills!", font = "comic", x = -18, y = 13},
 		{name = "man b", text = "Ahem! If you need directions look no further!", font = "comic", x = -18, y = 9},
 		{name = "man c", text = "O-Ohhhh! I believe I need some mail. \nDo you have any mail?", font = "comic", x = -9, y = 0},
 	}
@@ -132,6 +132,7 @@ function createTown()
 	end
 
 	CreateBuildingInteriors();
+	CreateInteractableObjects(map);
 end
 
 function CreateBuildings()
@@ -143,8 +144,8 @@ function CreateBuildings()
 		{x = -18, y = 11.0, w = 6.0, h = 10.0 },
 		{x = -18, y = 9, w = 6, h = 4.0, c = interior_color , is_interior = true, ic = 0xa8a8a8ff, ih = 0.4, iw=5 },
 		{x = -18, y = 14, w = 6, h = 4.0, c = interior_color, is_interior = true, ic = 0xa8a8a8ff, ih = 0.4, iw=5},
-		{x = -10, y = 6.0, w = 6.0, h = 20.0 },
-		{x = -10, y = -1, w = 6, h = 4.0, c = interior_color  , is_interior = true, ic = 0xa8a8a8ff,ih = 0.33},
+		{x = -11, y = 6.0, w = 8.0, h = 20.0 },
+		{x = -11, y = -1, w = 8, h = 4.0, c = interior_color  , is_interior = true, ic = 0xa8a8a8ff,ih = 0.33},
 		{x = 28, y = 11.0, w = 35, h = 10.0, c = 0x5E5E5EFF  },
 		{x = 11, y = 14.50, w = 1, h = 3.0 }, {x = 16, y = 14.50, w = 1, h = 3.0 },
 		{x = 21, y = 14.50, w = 1, h = 3.0 }, {x = 26, y = 14.50, w = 1, h = 3.0 },
@@ -176,4 +177,59 @@ function CreateBuildingInteriors()
 			v.interior_node = e;
 		end
 	end
+end
+
+function CreateInteractableObjects(anchor)
+	CreatePullyObject(anchor, 
+		{ name = "elevator", x = -14, y = 6, w = 2, h = 0.5},
+		{	x = 0, y = 1, 
+			motorSpeed = -3.0, maxMotorForce = 1000.0, enableMotor = false, enableLimit = true, 
+			lowerTranslation = -4.75, upperTranslation = 9.75
+		},
+		{
+			{name="switch on", x = -12, y = 15.5, w = .5, h = 1, color = 0xffffffff},
+			{name="switch off", x = -8, y = .5, w = .5, h = 1, color = 0x000000ff},
+		}
+	);
+
+	--[[
+		local e = Scene.CreateNode2d("test")
+		e.transform.position:set(-14, 10);
+		e.transform.size:set(1, 1);
+		e.material:SetColor(0xa8a833ff)
+		e.transform:Center();
+	]]
+end
+
+function CreatePullyObject(anchor, v, prismaticDef, switches)
+	local e = Scene.CreateNode2d(v.name);
+
+	e.transform.position:set(v.x, v.y);
+	e.transform.size:set(v.w, v.h);
+	e.transform:Center();
+	e.material:SetColor(v.color or 0x000000ff);
+	e.rigidbody.bdyDef.type = 2
+	e.rigidbody.fixDef.density = 1.0;
+	e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
+	--joint creation
+	v.joint = b2d.CreatePrismaticJoint(Scene.GetWorld(), anchor, e, prismaticDef);
+
+	for k, s in ipairs(switches) do
+		local d = CreatePullyControl(e, v.joint, s);
+	end
+end
+
+function CreatePullyControl(observer, joint, switch) 
+	local icon ={texture="inputs", frame = {x=323, y= 170, w= 16,h= 16}}
+	local e = Scene.CreateInteractableNode(observer.Name.."_"..switch.name);
+		e.transform.position:set(switch.x, switch.y);
+		e.transform.size:set(switch.w, switch.h)
+		e.transform:Center();
+		e.material:SetColor(switch.color or 0xffff00ff);
+		e.rigidbody.bdyDef.type = 1;
+		e.rigidbody.fixDef.isSensor = true;
+		e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
+		e:setIconDestination(0, -(e.transform.size.y + 0.5), 1.0, 1.0)
+		e:setIconTexture(icon.texture)
+		e:setIconFrame(icon.frame.x, icon.frame.y, icon.frame.w, icon.frame.h)
 end
