@@ -80,6 +80,6 @@ SR::Mission* MissionManager::getMission(std::string name)
 {
 	return nullptr;
 }
-static int gManagerInstance = RegisterManager("Mission Manager", "", "", MissionManager::Register);
+//static int gManagerInstance = RegisterManager("Mission Manager", "", "", MissionManager::Register);
 #include "Extentions2d.h"
-static int ck = ExtensionManager::Register(MissionManager::Extend);
+//static int ck = ExtensionManager::Register(MissionManager::Extend);
