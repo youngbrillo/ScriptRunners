@@ -4,6 +4,7 @@
 #include "App.h"
 #include "Extentions2d.h"
 #include "TextureManager.h"
+#include "AppSave.h"
 
 Scene2d::Scene2d(const char* path)
 	: scriptPath(path)
@@ -426,4 +427,5 @@ void Scene2d::Extend(lua_State* L)
 	ECS::InteractableNode::Extend(L);
 	ECS::NPCNode::Extend(L);
 	ECS::PlayerController::Extend(L);
+	AppSave::Extend(L);
 }

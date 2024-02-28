@@ -297,6 +297,9 @@
     <ClCompile Include="Player.cpp">
       <Filter>Source Files\ScriptRunner</Filter>
     </ClCompile>
+    <ClCompile Include="AppSave.cpp">
+      <Filter>Source Files\ScriptRunner</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h">
@@ -531,6 +534,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AppSave.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

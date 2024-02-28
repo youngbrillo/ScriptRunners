@@ -139,6 +139,7 @@
     <ClCompile Include="AnimationHelper.cpp" />
     <ClCompile Include="AnimationStateManager.cpp" />
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="AppSave.cpp" />
     <ClCompile Include="AppSettings.cpp" />
     <ClCompile Include="BoxMouse.cpp" />
     <ClCompile Include="CameraController2d.cpp" />
@@ -220,6 +221,7 @@
     <ClInclude Include="AnimationHelper.h" />
     <ClInclude Include="AnimationStateManager.h" />
     <ClInclude Include="App.h" />
+    <ClInclude Include="AppSave.h" />
     <ClInclude Include="AppSettings.h" />
     <ClInclude Include="BoxMouse.h" />
     <ClInclude Include="CameraController2d.h" />
