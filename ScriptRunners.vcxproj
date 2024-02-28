@@ -212,6 +212,8 @@
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Script2d.cpp" />
     <ClCompile Include="Sprite2d.cpp" />
+    <ClCompile Include="Task.cpp" />
+    <ClCompile Include="TaskManagerNode.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Tilemap.cpp" />
     <ClCompile Include="TilemapNode2d.cpp" />
@@ -293,6 +295,8 @@
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Script2d.h" />
     <ClInclude Include="Sprite2d.h" />
+    <ClInclude Include="Task.h" />
+    <ClInclude Include="TaskManagerNode.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Tilemap.h" />
     <ClInclude Include="TilemapNode2d.h" />

@@ -29,30 +29,29 @@ void AppSave::SaveFile(std::string path)
 
 bool AppSave::AddParameter_string(std::string k , std::string v)
 {
-	bool r = &data == &data.find(k.c_str());
-	if (!r) data.SetStringAt(k.c_str(), v);
-	
+	bool r = &data != &data.find(k.c_str());
+	data.SetStringAt(k.c_str(), v);
 	return r;
 }
 
 bool AppSave::AddParameter_int(std::string k, int v)
 {
-	bool r = &data == &data.find(k.c_str());;
-	if (!r) data.SetIntegerAt(k.c_str(), v);
+	bool r = &data != &data.find(k.c_str());;
+	data.SetIntegerAt(k.c_str(), v);
 	return r;
 }
 
 bool AppSave::AddParameter_float(std::string k, float v)
 {
-	bool r = &data == &data.find(k.c_str());;
-	if (!r) data.SetNumberAt(k.c_str(), v);
+	bool r = &data != &data.find(k.c_str());;
+	data.SetNumberAt(k.c_str(), v);
 	return r;
 }
 
 bool AppSave::AddParameter_bool(std::string k, bool v)
 {
-	bool r = &data == &data.find(k.c_str());;
-	if (!r) data.SetBooleanAt(k.c_str(), v);
+	bool r = &data != &data.find(k.c_str());;
+	data.SetBooleanAt(k.c_str(), v);
 	return r;
 }
 

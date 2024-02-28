@@ -364,3 +364,4 @@ FodyWeavers.xsd
 /Configs/window.ini
 /Configs/window.json
 /imgui.ini
+/Configs/autoSave.json

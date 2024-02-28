@@ -1,14 +1,32 @@
 
+
 function onSceneStart()
 	TextureManager.Add("Assets/Textures/dummy", "dummy");
 	TextureManager.Add("Assets/Textures/kenny/inputs", "inputs")
 	CreateBackGrounds();
+	save_file = File.AppSave("./configs/autoSave.json");
 	createTown();
+	createTasks();
+	if (save_file ~= nil) then
+		SpawnPlayer(
+			save_file:GetParameterfloat("player_position_x"),
+			save_file:GetParameterfloat("player_position_y")
+			);
+	end
 	App.GetCamera().zoom = 25.0;
+
 end
 
 function onSceneEnd() 
 	RemoveBackGroundTextures();
+	if save_file ~= nil then
+		save_file:AddParameter_string("current_location", "town.lua")
+		if mPlayer ~= nil then
+			save_file:AddParameter_float("player_position_x", mPlayer.transform.position.x)
+			save_file:AddParameter_float("player_position_y", mPlayer.transform.position.y)
+		end
+		save_file:SaveFile("./configs/autoSave.json");
+	end
 end
 function Update(dt) 
 
@@ -24,8 +42,11 @@ end
 spawn_player_key = 81; --//Q
 function onKeyPress(key)
 	if key == spawn_player_key then
-		SpawnPlayer(-40, 12);
+		--SpawnPlayer(-40, 12);
+		SpawnPlayer(0, 12);
 	end
+
+	listenForSwitchStateChange(key);
 end
 function onBeginContact(A, B)
 
@@ -47,6 +68,10 @@ function SpawnPlayer(x, y )
 
 	for k, v in ipairs(npcs) do
 		v.node.prompter = mPlayer;
+	end
+
+	for k, v in ipairs(interactables) do
+		v.node:setObserver(mPlayer);
 	end
 end
 
@@ -104,10 +129,10 @@ function createTown()
 		local icon = {alias = "inputs", frame = {x=323, y= 170, w= 16,h= 16}};
 
 	npcs = {
-		{name = "man a", text = "H-Hello, I can tell you what to do...\nI-I mean I can give you assignements!", font = "comic", x = -37, y = 12},
-		{name = "man d", text = "I'll Teach you new skills!", font = "comic", x = -18, y = 13},
-		{name = "man b", text = "Ahem! If you need directions look no further!", font = "comic", x = -18, y = 9},
-		{name = "man c", text = "O-Ohhhh! I believe I need some mail. \nDo you have any mail?", font = "comic", x = -9, y = 0},
+		{name = "Vize", text = "I've got some work for ya.\nGo talk to Boss", font = "comic", x = -37, y = 12},
+		{name = "Boss", text = "Ready to Learn kid?\nThen move ya butt up to the navigator!", font = "comic", x = -18, y = 13},
+		{name = "Navi", text = "Ahem! If you need directions look no further!", font = "comic", x = -18, y = 9},
+		{name = "Elevator Attendent", x = -11,  y = 0,  text = ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .\n. . . I wonder if Navi is upset with me. . .", font = "comic"},
 	}
 	-- Gen Task Master
 	for k, v in ipairs(npcs) do
@@ -145,16 +170,16 @@ function CreateBuildings()
 		{x = -18, y = 9, w = 6, h = 4.0, c = interior_color , is_interior = true, ic = 0xa8a8a8ff, ih = 0.4, iw=5 },
 		{x = -18, y = 14, w = 6, h = 4.0, c = interior_color, is_interior = true, ic = 0xa8a8a8ff, ih = 0.4, iw=5},
 		{x = -11, y = 6.0, w = 8.0, h = 20.0 },
-		{x = -11, y = -1, w = 8, h = 4.0, c = interior_color  , is_interior = true, ic = 0xa8a8a8ff,ih = 0.33},
+		{x = -11, y = -1, w = 8, h = 4.0, c = interior_color  , is_interior = true, ic = 0xa8a8a8ff,ih = 0.33, iw=3},
 		{x = 28, y = 11.0, w = 35, h = 10.0, c = 0x5E5E5EFF  },
-		{x = 11, y = 14.50, w = 1, h = 3.0 }, {x = 16, y = 14.50, w = 1, h = 3.0 },
-		{x = 21, y = 14.50, w = 1, h = 3.0 }, {x = 26, y = 14.50, w = 1, h = 3.0 },
-		{x = 31, y = 14.50, w = 1, h = 3.0 }, {x = 36, y = 14.50, w = 1, h = 3.0 },
-		{x = 41, y = 14.50, w = 1, h = 3.0 },
-		{x = 45, y = 11, w = 1, h = 10.0 }
+		{name = "apt 1", x = 13, y = 12.50, w = 6, h = 7.0} ,-- c = 0xA8A8A878}, 
+		{name = "apt 2", x = 21, y = 8.5, w = 6, h = 15.0 },
+		{name = "apt 3", x = 30.5, y = 10.50, w = 9, h = 11.0 }, 
+		{name = "apt 4", x = 40, y = 1.50, w = 6, h = 29.0 },
+		{name = "wall", x = 45, y = 11, w = 1, h = 10.0 }
 	}
 	for k, v in ipairs(building_blockout) do
-		local e = Scene.CreateNode2d("Building::"..k)
+		local e = Scene.CreateNode2d(v.name or "Building::"..k)
 		e.transform.position:set(v.x, v.y);
 		e.transform.size:set(v.w, v.h);
 		e.material:SetColor(v.c or 0xa8a8a8ff)
@@ -180,15 +205,40 @@ function CreateBuildingInteriors()
 end
 
 function CreateInteractableObjects(anchor)
+
+	interactables = {};
+
+	elevator_persistence = save_file:GetParameterBool("elevator_is_up")
+
 	CreatePullyObject(anchor, 
 		{ name = "elevator", x = -14, y = 6, w = 2, h = 0.5},
 		{	x = 0, y = 1, 
-			motorSpeed = -3.0, maxMotorForce = 1000.0, enableMotor = false, enableLimit = true, 
+			motorSpeed = -3.0, maxMotorForce = 1000.0, enableMotor = elevator_persistence, enableLimit = true, 
 			lowerTranslation = -4.75, upperTranslation = 9.75
 		},
 		{
-			{name="switch on", x = -12, y = 15.5, w = .5, h = 1, color = 0xffffffff},
-			{name="switch off", x = -8, y = .5, w = .5, h = 1, color = 0x000000ff},
+			{name="switch on", x = -12.75, y = 15.5, w = .5, h = 1, color = 0xffffffa7, 
+				func = function(joint)
+					if joint:IsMotorEnabled() then
+						joint:EnableMotor(false);
+						save_file:AddParameter_bool("elevator_is_up", false)
+					else
+						joint:EnableMotor(true);
+						save_file:AddParameter_bool("elevator_is_up", true)
+					end
+				end
+			},
+			{name="switch off", x = -15.25, y = .5, w = .5, h = 1, color = 0x000000a7,
+				func = function(joint)
+					if joint:IsMotorEnabled() then
+						joint:EnableMotor(false);
+						save_file:AddParameter_bool("elevator_is_up", false)
+					else
+						joint:EnableMotor(true);
+						save_file:AddParameter_bool("elevator_is_up", true)
+					end
+				end
+			},
 		}
 	);
 
@@ -232,4 +282,27 @@ function CreatePullyControl(observer, joint, switch)
 		e:setIconDestination(0, -(e.transform.size.y + 0.5), 1.0, 1.0)
 		e:setIconTexture(icon.texture)
 		e:setIconFrame(icon.frame.x, icon.frame.y, icon.frame.w, icon.frame.h)
+
+		switch.Activation_key = 69; -- KEY_E
+		switch.joint = joint;
+		switch.node = e;
+
+	table.insert(interactables, switch)
+end
+
+function listenForSwitchStateChange(key)
+	for k, v in ipairs(interactables) do
+		if v.node.isInteractive and key == v.Activation_key then
+			v.func(v.joint);
+		end
+	end
+end
+
+function createTasks()
+	local bounds = { min = {x = -10, y = -10}, max = {x = 10, y = 10}};
+
+	jobs = {
+		{title = "Unlock Merchant", Description = "Go Talk to the boss"},
+	}
+
 end
