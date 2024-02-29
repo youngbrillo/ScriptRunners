@@ -9,6 +9,7 @@ namespace Job
 	class Task
 	{
 	public:
+		Task();
 		Task(std::string title, std::string desc);
 		virtual ~Task();
 
@@ -19,6 +20,10 @@ namespace Job
 		virtual void Update(const float& dt) = 0;
 		virtual void BeginContact(b2Contact* contact, ECS::Node2d* other) = 0;
 		virtual void EndContact(b2Contact * contact, ECS::Node2d * other) = 0;
+		
+		void Inspect();
+	protected:
+		virtual void inspect();
 
 	public:
 		std::string title = "task title";
@@ -38,6 +43,7 @@ namespace Job
 	class Delivery : public Task
 	{
 	public:
+		Delivery();
 		Delivery(std::string title, std::string desc);
 		virtual ~Delivery();
 		virtual void BeginDelivery(float destination_x, float destination_y);

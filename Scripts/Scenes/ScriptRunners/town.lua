@@ -14,7 +14,7 @@ function onSceneStart()
 			);
 	end
 	App.GetCamera().zoom = 25.0;
-
+	math.randomseed(os.time());
 end
 
 function onSceneEnd() 
@@ -129,8 +129,8 @@ function createTown()
 		local icon = {alias = "inputs", frame = {x=323, y= 170, w= 16,h= 16}};
 
 	npcs = {
-		{name = "Vize", text = "I've got some work for ya.\nGo talk to Boss", font = "comic", x = -37, y = 12},
-		{name = "Boss", text = "Ready to Learn kid?\nThen move ya butt up to the navigator!", font = "comic", x = -18, y = 13},
+		{name = "Vize", text = "I've got some work for ya.\nGo talk to Boss", font = "comic", x = -37, y = 12, handleDialogueStart = TalkStart_SuperVizer},
+		{name = "Boss", text = "Whatcha Talking to me for go see Vize'!", font = "comic", x = -18, y = 13,  handleDialogueStart = TalkStart_Boss},
 		{name = "Navi", text = "Ahem! If you need directions look no further!", font = "comic", x = -18, y = 9},
 		{name = "Elevator Attendent", x = -11,  y = 0,  text = ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .\n. . . I wonder if Navi is upset with me. . .", font = "comic"},
 	}
@@ -154,6 +154,9 @@ function createTown()
 			e.material.direction.x = -1;
 			b2d.AddCircleSensor(e.rigidbody, 1.25)
 			v.node = e;
+			v.id = e:GetID();
+
+			v.handleDialogueStart = v.handleDialogueStart or function()  end
 	end
 
 	CreateBuildingInteriors();
@@ -301,8 +304,61 @@ end
 function createTasks()
 	local bounds = { min = {x = -10, y = -10}, max = {x = 10, y = 10}};
 
-	jobs = {
-		{title = "Unlock Merchant", Description = "Go Talk to the boss"},
-	}
+	jobs = {}
+
+	jobs["unlock_merchant"] = {title = "Unlock Merchant", Description = "Go Talk to the boss", isCurrentParam = "unlock_merchant_assigned", reset = true};
+	
+
+	JobManager = Scene.CreateTaskManagerNode("job manager");
+	
+	--for k, v in ipairs(jobs) do // use pairs b/c I don't want to iterate over ONLY integer keys
+	for k, v in pairs(jobs) do
+		v.job_id = JobManager:CreateDeliveryTask(v.title, v.Description);
+		if(v.reset) then
+			save_file:AddParameter_bool(v.isCurrentParam, false);
+		end
+		if(save_file:GetParameterBool(v.isCurrentParam)) then 
+			JobManager.currentObjective = v.job_id; 
+		end
+		print("Job id is: "..v.job_id)
+	end
+end
+function TalkStart_SuperVizer(npc, node)
+	-- // does the player have unlock_merchant unlocked? 
+	if not save_file:GetParameterBool("unlock_merchant_assigned") then
+		save_file:AddParameter_bool("unlock_merchant_assigned", true);
+		-- // make the current objective the unlock merchant objective
+		JobManager.currentObjective = jobs["unlock_merchant"].job_id;
+	else
+
+		local dialogue = 
+		{
+			"Go see the boss.",
+			"Find yerself in front of the boss.\nHe's right down the hall, you don't even gotta jump!",
+			"You still here?",
+			"If you wanna make it here I sure hope you can follow directions better than this."
+		}
+		local choice = math.random(1, #dialogue);
+		node.text:setText(dialogue[choice], true);
+	end
+end
+
+function TalkStart_Boss (npc, node)
+	if(save_file:GetParameterBool("unlock_merchant_assigned")) then
+		node.text:setText("heh\nI got something for ya.", true);
+	end
+end
+
+
+function onDialogueStart(npc, npc_talk_target)
+
+	for k, v in ipairs(npcs) do
+		if(v.id == npc:GetID()) then
+			v.handleDialogueStart(v, npc);
+		end
+	end
+end
+
+function onDialogueEnd(npc, npc_talk_target)
 
 end

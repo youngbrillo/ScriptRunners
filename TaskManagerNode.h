@@ -22,11 +22,20 @@ namespace ECS
         int CreateDeliveryTask(std::string t, std::string d);
         Job::Delivery* GetDelivery(int);
 
+        void SetCurrentObjective(int id);
+        int getCurrentObjective() const;
+
         virtual void inspect() override;
         static void Extend(lua_State* L);
 
     public:
         std::map<int, Job::Delivery> Deliveries;
+        int DeliveryIndex;
+        int currentObjective;
+
+        Vector2 coPos = { 25, 25 };
+        float coFontSize = 20;
+        Color coColor = WHITE;
     };
 }
 

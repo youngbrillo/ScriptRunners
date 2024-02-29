@@ -1,6 +1,13 @@
 #include "Task.h"
 #include <LuaBridge/LuaBridge.h>
 #include "Extentions2d.h"
+#include <imgui.h>
+
+Job::Task::Task()
+	: title("Untitled"), description("Undescribed")
+	, subject(NULL), destinationBody(NULL), originBody(NULL)
+{
+}
 
 Job::Task::Task(std::string title, std::string desc)
 	: title(title), description(desc)
@@ -33,6 +40,24 @@ void Job::Task::DestroyBody(b2Body* b)
 {
 }
 
+void Job::Task::Inspect()
+{
+	if (ImGui::TreeNode(TextFormat("Task: %s", this->title.c_str())))
+	{
+		this->inspect();
+		ImGui::TreePop();
+	}
+}
+
+void Job::Task::inspect()
+{
+	//ImGui::LabelText("Description", this->description.c_str());
+	ImGui::Text("Description:\n\t%s", this->description.c_str());
+	ImGui::Checkbox("started", &this->started);
+	ImGui::Checkbox("succeded", &this->succeded);
+	ImGui::Checkbox("failed", &this->failed);
+}
+
 void Job::Task::Extend(lua_State* L)
 {
 	luabridge::getGlobalNamespace(L)
@@ -48,8 +73,10 @@ void Job::Task::Extend(lua_State* L)
 		.addData("originBody", &Job::Task::originBody)
 		.endClass()
 		.endNamespace();
+}
 
-	Job::Delivery::Extend(L);
+Job::Delivery::Delivery() : Job::Task()
+{
 }
 
 Job::Delivery::Delivery(std::string title, std::string desc)
@@ -96,4 +123,3 @@ void Job::Delivery::Extend(lua_State* L)
 
 
 
-static int kc = ExtensionManager::Register(Job::Task::Extend);
