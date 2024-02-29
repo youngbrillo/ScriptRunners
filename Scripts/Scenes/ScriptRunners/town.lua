@@ -7,6 +7,7 @@ function onSceneStart()
 	save_file = File.AppSave("./configs/autoSave.json");
 	createTown();
 	createTasks();
+	createCamControllers();
 	if (save_file ~= nil) then
 		SpawnPlayer(
 			save_file:GetParameterfloat("player_position_x"),
@@ -42,7 +43,6 @@ end
 spawn_player_key = 81; --//Q
 function onKeyPress(key)
 	if key == spawn_player_key then
-		--SpawnPlayer(-40, 12);
 		SpawnPlayer(0, 12);
 	end
 
@@ -72,6 +72,12 @@ function SpawnPlayer(x, y )
 
 	for k, v in ipairs(interactables) do
 		v.node:setObserver(mPlayer);
+	end
+	
+
+	for k, v in ipairs(camControllers) do
+		v.node:SetTarget(mPlayer);
+		v.node:Standardize();
 	end
 end
 
@@ -131,7 +137,7 @@ function createTown()
 	npcs = {
 		{name = "Vize", text = "I've got some work for ya.\nGo talk to Boss", font = "comic", x = -37, y = 12, handleDialogueStart = TalkStart_SuperVizer},
 		{name = "Boss", text = "Whatcha Talking to me for go see Vize'!", font = "comic", x = -18, y = 13,  handleDialogueStart = TalkStart_Boss},
-		{name = "Navi", text = "Ahem! If you need directions look no further!", font = "comic", x = -18, y = 9},
+		{name = "Navi", text = "Ahem! If you need directions look no further!", font = "comic", x = -18, y = 9,  handleDialogueStart = TalkStart_Navi},
 		{name = "Elevator Attendent", x = -11,  y = 0,  text = ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .\n. . . I wonder if Navi is upset with me. . .", font = "comic"},
 	}
 	-- Gen Task Master
@@ -300,13 +306,39 @@ function listenForSwitchStateChange(key)
 		end
 	end
 end
+function createCamControllers()
+	camControllers = 
+	{
+		{x = -27.5, y = 14, w=25, h=4, onEnter = 34, onExit = 18},
+		{x = -11, y = 6, w=8, h=17, onEnter = 34, onExit = 18},
+		--{x = 0, y = 0, w=1, h=1, onEnter = 34, onExit = 18},
+	}
 
+	for k, v in ipairs(camControllers) do
+		local e  = Scene.CreateCameraController2d(v.name or "camera-"..k);
+		e.transform.position:set(v.x, v.y);
+		e.transform.size:set(v.w, v.h);
+		e.transform:Center();
+		e.material:SetColorVec(1,1,1,0.5)
+		--e:SetTarget(mPlayer);
+		e:Standardize();
+		e.onEnter.zoom = v.onEnter;
+		e.onExit.zoom = v.onExit;
+		e.visible = false;
+		v.node = e;
+	end
+end
 function createTasks()
 	local bounds = { min = {x = -10, y = -10}, max = {x = 10, y = 10}};
 
 	jobs = {}
 
-	jobs["unlock_merchant"] = {title = "Unlock Merchant", Description = "Go Talk to the boss", isCurrentParam = "unlock_merchant_assigned", reset = true};
+	jobs["unlock_merchant"] = {
+		title = "Unlock Merchant", 
+		Description = "Go Talk to the boss", 
+		isCurrentParam = "unlock_merchant_assigned", 
+		reset = true
+	};
 	
 
 	JobManager = Scene.CreateTaskManagerNode("job manager");
@@ -343,12 +375,44 @@ function TalkStart_SuperVizer(npc, node)
 	end
 end
 
+boss_explanation = 1;
 function TalkStart_Boss (npc, node)
+	local dialogue = 
+	{
+		"heh\nI got something for ya.",
+		"I wantchu to deliver this message to the elevator man in the building over on the Eastside",
+		"Navi can tell you how to ge there",
+	}
+
 	if(save_file:GetParameterBool("unlock_merchant_assigned")) then
-		node.text:setText("heh\nI got something for ya.", true);
+		node.text:setText(dialogue[boss_explanation], true);
+		boss_explanation = boss_explanation + 1;
+		if(boss_explanation > #dialogue) then
+			boss_explanation = 2;
+		end
 	end
 end
 
+function TalkStart_Navi(npc, node)
+	local instructions = 
+	{
+		"Oh! Are you trying to reach the elevator man?\nBoss sent you?\nOkay here's a Key its for the elevator.",
+		"Use the Key on the elevator by pressing the".."[E]".."key",
+		"It'll Make the Lift come up if it's down\nor go down if its up.",
+		"See ya later!"
+	}
+	local missionStarted = save_file:GetParameterBool("unlock_merchant_assigned");
+	if(missionStarted) then
+		if(npc.instructionProg == nil) then npc.instructionProg = 1 end;
+
+		node.text:setText(instructions[npc.instructionProg], true);
+		npc.instructionProg = npc.instructionProg + 1;
+		if(npc.instructionProg > #instructions) then
+			npc.instructionProg = 2;
+		end
+
+	end
+end
 
 function onDialogueStart(npc, npc_talk_target)
 
