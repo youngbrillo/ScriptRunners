@@ -76,6 +76,27 @@ namespace ECS
 			.endClass()
 			.endNamespace();
 	}
+
+
+	static b2Fixture* AddTwoSidedEdge(b2Body* bdy, float x1, float y1, float x2, float y2)
+	{
+		b2EdgeShape shape;
+		shape.SetTwoSided(b2Vec2(x1, y1), b2Vec2(x2, y2));
+		return bdy->CreateFixture(&shape, 1);
+	}
+
+
+	static b2Fixture* AddOneSidedEdge(b2Body* bdy, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3)
+	{
+		b2EdgeShape shape;
+		shape.SetOneSided(b2Vec2(x0, y0), b2Vec2(x1, y1), b2Vec2(x2, y2), b2Vec2(x3, y3));
+		return bdy->CreateFixture(&shape, 1);
+	}
+	static void Init_b2Body(ECS::RigidBody* rb, b2World* w)
+	{
+		if (rb->body != NULL) return;
+		rb->body = w->CreateBody(&rb->bdyDef);
+	}
 	static void ExtendRigidBody(lua_State* L) {
 
 		auto getType = std::function<int(const b2BodyDef*)>([](const b2BodyDef* bd) { return  (int)bd->type; });
@@ -83,6 +104,7 @@ namespace ECS
 		auto setGravity = std::function<void(b2World*, float, float)>([](b2World* w, float x, float y) { w->SetGravity(b2Vec2{ x, y }); });
 		auto setBody = std::function<void(ECS::RigidBody* , b2World*, const ECS::Transform&, int)>
 			([](ECS::RigidBody* rb, b2World* w, const ECS::Transform& x, int y) { rb->SetBody(w, x, y); });
+
 		luabridge::getGlobalNamespace(L)
 			.beginClass<b2BodyDef>("b2BodyDef")
 			.addData("angle", &b2BodyDef::angle)
@@ -103,14 +125,27 @@ namespace ECS
 			.beginClass<b2World>("b2World")
 				.addFunction("SetGravity", setGravity)	
 			.endClass()
+			.beginClass<b2Fixture>("b2Fixture")
+				.addProperty("friction", &b2Fixture::GetFriction, &b2Fixture::SetFriction)
+				.addProperty("restitution", &b2Fixture::GetRestitution, &b2Fixture::SetRestitution)
+				.addProperty("restitutionThreshold", &b2Fixture::GetRestitutionThreshold, &b2Fixture::SetRestitutionThreshold)
+				.addProperty("density", &b2Fixture::GetDensity, &b2Fixture::SetDensity)
+				.addProperty("isSensor", &b2Fixture::IsSensor, &b2Fixture::SetSensor)
+			.endClass()
+			.beginClass<b2Body>("b2Body")
+				.addFunction("AddTwoSidedEdge", AddTwoSidedEdge)
+				.addFunction("AddOneSidedEdge", AddOneSidedEdge)
+			.endClass()
 			.beginNamespace("ECS")
 			.beginClass<ECS::RigidBody>("RigidBody")
 				.addFunction("configureBodyDef", &ECS::RigidBody::configureBodyDef)
 				.addFunction("configureFixtureDef", &ECS::RigidBody::configureFixtureDef)
 				.addFunction("enabled", &ECS::RigidBody::enabled)
 				.addFunction("SetBody", setBody)
+				.addFunction("Init", Init_b2Body)
 				.addData("bdyDef", &ECS::RigidBody::bdyDef)
 				.addData("fixDef", &ECS::RigidBody::fixDef)
+				.addData("body", &ECS::RigidBody::body)
 			.endClass()
 			.endNamespace();
 	}
