@@ -37,6 +37,10 @@ void ECS::TaskManagerNode::UIDraw()
 			1,
 			coColor
 		);
+		Vector2 coDPos = coPos;
+		coDPos.y += coFontSize * 1.5f;
+		coDPos.x += 25;
+		DrawTextEx( GetFontDefault(), Deliveries.at(currentObjective).description.c_str(), coDPos, coFontSize,1, coColor);
 	}
 }
 

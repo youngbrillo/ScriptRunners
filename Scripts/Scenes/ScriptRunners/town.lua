@@ -137,8 +137,8 @@ function createTown()
 	npcs = {
 		{name = "Vize", text = "I've got some work for ya.\nGo talk to Boss", font = "comic", x = -37, y = 12, handleDialogueStart = TalkStart_SuperVizer},
 		{name = "Boss", text = "Whatcha Talking to me for go see Vize'!", font = "comic", x = -18, y = 13,  handleDialogueStart = TalkStart_Boss},
-		{name = "Navi", text = "Ahem! If you need directions look no further!", font = "comic", x = -18, y = 9,  handleDialogueStart = TalkStart_Navi},
-		{name = "Elevator Attendent", x = -11,  y = 0,  text = ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .\n. . . I wonder if Navi is upset with me. . .", font = "comic"},
+		{name = "Navi", text = "Ahem! If you need directions look no further!", font = "comic", x = -18, y = 9,  handleDialogueStart = TalkStart_Navi, instructionProg = 1},
+		{name = "Elevator Man", handleDialogueStart = TalkStart_ElevatorMan, iCount = 1, isYearningExpressed = false, x = -11,  y = 0,  text = ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .\n. . . I wonder if Navi is upset with me. . .", font = "comic"},
 	}
 	-- Gen Task Master
 	for k, v in ipairs(npcs) do
@@ -315,7 +315,7 @@ function createCamControllers()
 	}
 
 	for k, v in ipairs(camControllers) do
-		local e  = Scene.CreateCameraController2d(v.name or "camera-"..k);
+		local e  = Scene.CreateCameraController2d(v.name or "camera-controller-"..k);
 		e.transform.position:set(v.x, v.y);
 		e.transform.size:set(v.w, v.h);
 		e.transform:Center();
@@ -337,7 +337,7 @@ function createTasks()
 		title = "Unlock Merchant", 
 		Description = "Go Talk to the boss", 
 		isCurrentParam = "unlock_merchant_assigned", 
-		reset = true
+		reset = false
 	};
 	
 
@@ -380,7 +380,7 @@ function TalkStart_Boss (npc, node)
 	local dialogue = 
 	{
 		"heh\nI got something for ya.",
-		"I wantchu to deliver this message to the elevator man in the building over on the Eastside",
+		"I wantchu to deliver this Package to the elevator man in the building over on the Eastside",
 		"Navi can tell you how to ge there",
 	}
 
@@ -396,15 +396,14 @@ end
 function TalkStart_Navi(npc, node)
 	local instructions = 
 	{
-		"Oh! Are you trying to reach the elevator man?\nBoss sent you?\nOkay here's a Key its for the elevator.",
-		"Use the Key on the elevator by pressing the".."[E]".."key",
-		"It'll Make the Lift come up if it's down\nor go down if its up.",
+		"You NEED to make a 'box' dispenser somewhere above me, okay???\n Thank you!",
+		"Oh Did Boss send you? Are you looking for Elevator man?\nWell take this elevator key.",
+		"Use the Key on the elevator by pressing the ".."[E]".." key",
+		"It'll Make the Lift come up if it's down.\nOr go down if its already up.",
 		"See ya later!"
 	}
 	local missionStarted = save_file:GetParameterBool("unlock_merchant_assigned");
 	if(missionStarted) then
-		if(npc.instructionProg == nil) then npc.instructionProg = 1 end;
-
 		node.text:setText(instructions[npc.instructionProg], true);
 		npc.instructionProg = npc.instructionProg + 1;
 		if(npc.instructionProg > #instructions) then
@@ -414,11 +413,40 @@ function TalkStart_Navi(npc, node)
 	end
 end
 
+function TalkStart_ElevatorMan(npc, node, jobNode)
+	local dialouge = 
+	{
+		"Hey",
+		"Got something for me?",
+		"Can I help you?"
+	}
+	local d = jobNode:GetDelivery(JobManager.currentObjective).description
+	
+	local instructions = {
+		"Bring the package and throw it in the area behind me.",
+		"I think you're supposed to \""..d .. "\" or something",
+	}
+	local missionStarted = save_file:GetParameterBool("unlock_merchant_assigned");
+	
+	if missionStarted then
+		node.text:setText(instructions[npc.iCount], true);
+		npc.iCount = npc.iCount + 1;
+		if (npc.iCount > #instructions) then
+			npc.iCount = 1;
+		end
+	elseif not npc.isYearningExpressed then
+		npc.isYearningExpressed = true;
+	else
+		node.text:setText(dialouge[math.random(1, #dialouge)], true);
+	end
+
+end
+
 function onDialogueStart(npc, npc_talk_target)
 
 	for k, v in ipairs(npcs) do
 		if(v.id == npc:GetID()) then
-			v.handleDialogueStart(v, npc);
+			v.handleDialogueStart(v, npc, JobManager);
 		end
 	end
 end
