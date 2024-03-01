@@ -1,33 +1,31 @@
 
 
 function onSceneStart()
+	-- Add default textures
 	TextureManager.Add("Assets/Textures/dummy", "dummy");
 	TextureManager.Add("Assets/Textures/kenny/inputs", "inputs")
-	CreateBackGrounds();
+	-- initialize variables
 	save_file = File.AppSave("./configs/autoSave.json");
-	createTown();
-	createTasks();
-	createCamControllers();
-	if (save_file ~= nil) then
-		SpawnPlayer(
-			save_file:GetParameterfloat("player_position_x"),
-			save_file:GetParameterfloat("player_position_y")
-			);
-	end
+	mPlayer = nil
+	npcs = {};
+
+	-- initialize environment and objects
+
+	CreateBackGrounds();	-- add back ground pngs
+	createTown();			-- add town structures
+	createTasks();			-- add objectives
+	createCamControllers();	-- add cam controllers
+	loadSaveData();			-- load other save Data
+	
 	App.GetCamera().zoom = 25.0;
 	math.randomseed(os.time());
 end
 
+
+
 function onSceneEnd() 
 	RemoveBackGroundTextures();
-	if save_file ~= nil then
-		save_file:AddParameter_string("current_location", "town.lua")
-		if mPlayer ~= nil then
-			save_file:AddParameter_float("player_position_x", mPlayer.transform.position.x)
-			save_file:AddParameter_float("player_position_y", mPlayer.transform.position.y)
-		end
-		save_file:SaveFile("./configs/autoSave.json");
-	end
+	uploadSaveData();
 end
 function Update(dt) 
 
@@ -42,10 +40,7 @@ end
 
 spawn_player_key = 81; --//Q
 function onKeyPress(key)
-	if key == spawn_player_key then
-		SpawnPlayer(0, 12);
-	end
-
+	--if key == spawn_player_key then SpawnPlayer(0, 12); end
 	listenForSwitchStateChange(key);
 end
 function onBeginContact(A, B)
@@ -54,8 +49,27 @@ end
 function onEndContact(A, B)
 
 end
-mPlayer = nil
-npcs = {};
+
+-- ///////////////////////////////////////////////////////////////////////////////////////////
+function loadSaveData()
+	if (save_file ~= nil) then
+		SpawnPlayer(
+			save_file:GetParameterfloat("player_position_x"),
+			save_file:GetParameterfloat("player_position_y")
+			);
+	end
+end
+function uploadSaveData()
+	if save_file ~= nil then
+		save_file:AddParameter_string("current_location", "town.lua")
+		if mPlayer ~= nil then
+			save_file:AddParameter_float("player_position_x", mPlayer.transform.position.x)
+			save_file:AddParameter_float("player_position_y", mPlayer.transform.position.y)
+		end
+		save_file:SaveFile("./configs/autoSave.json");
+	end
+end
+
 function SpawnPlayer(x, y )
 	if(mPlayer ~= nil) then
 		mPlayer.alive = false;
@@ -127,50 +141,18 @@ end
 function createTown()
 	map = Scene.CreateTilemapNode("tile map")
 	map:LoadData("./Assets/Textures/city/Town.json");
-	--SpawnPlayer(-40, 12);
-
 	CreateBuildings();
-
 	--//generate characters
-		local icon = {alias = "inputs", frame = {x=323, y= 170, w= 16,h= 16}};
-
-	npcs = {
-		{name = "Vize", text = "I've got some work for ya.\nGo talk to Boss", font = "comic", x = -37, y = 12, handleDialogueStart = TalkStart_SuperVizer},
-		{name = "Boss", text = "Whatcha Talking to me for go see Vize'!", font = "comic", x = -18, y = 13,  handleDialogueStart = TalkStart_Boss},
-		{name = "Navi", text = "Ahem! If you need directions look no further!", font = "comic", x = -18, y = 9,  handleDialogueStart = TalkStart_Navi, instructionProg = 1},
-		{name = "Elevator Man", handleDialogueStart = TalkStart_ElevatorMan, iCount = 1, isYearningExpressed = false, x = -11,  y = 0,  text = ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .\n. . . I wonder if Navi is upset with me. . .", font = "comic"},
-	}
-	-- Gen Task Master
-	for k, v in ipairs(npcs) do
-		local e = Scene.CreateNPCNode(v.name, "dummy", icon.alias, "npc.script.lua");
-			e.transform.position:set(v.x, v.y);
-			e.transform.size:set(0.5, 1);
-			e.transform:Center();
-			e.textureScale:set(4, 2)
-			e.rigidbody.bdyDef.type = 2;
-			e.rigidbody.bdyDef.fixedRotation = true;
-			e.rigidbody.fixDef.density = 1.0;
-			e.rigidbody.fixDef.friction = 1.0;
-			e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
-			e.icon.frame:set(icon.frame.x,icon.frame.y,icon.frame.w, icon.frame.h)
-			e.text:setText(v.text)
-			e.text.fontSize = 32
-			e.text:SetFont(v.font)
-			e.prompter = mPlayer;
-			e.material.direction.x = -1;
-			b2d.AddCircleSensor(e.rigidbody, 1.25)
-			v.node = e;
-			v.id = e:GetID();
-
-			v.handleDialogueStart = v.handleDialogueStart or function()  end
-	end
-
+	AddNPCs();
 	CreateBuildingInteriors();
 	CreateInteractableObjects(map);
+	-- add package dispenser
+	--package_manager = Scene.CreateNode2d("Package Manager"); package_manager.transform.position:set(-20.5, 6.5); package_manager.material:SetColor(0xffff007a);
+
 end
 
 function CreateBuildings()
--- simple blockout for where the buildings will go
+	-- simple blockout for where the buildings will go
 	local interior_color = 0x5E5E5EFF
 	building_blockout = {
 		{x = -37, y = 11.0, w = 6.0, h = 10.0},
@@ -196,9 +178,7 @@ function CreateBuildings()
 		
 		v.node = e;
 	end
-
 end
-
 function CreateBuildingInteriors()
 	for k, v in ipairs(building_blockout) do
 		if v.is_interior then
@@ -328,31 +308,67 @@ function createCamControllers()
 		v.node = e;
 	end
 end
+
+function AddNPCs()
+	local icon = {alias = "inputs", frame = {x=323, y= 170, w= 16,h= 16}};
+	npcs = {
+		{name = "Vize", text = "I've got some work for ya.\nGo talk to Boss", font = "comic", x = -37, y = 12, handleDialogueStart = TalkStart_SuperVizer},
+		{name = "Boss", text = "Whatcha Talking to me for go see Vize'!", font = "comic", x = -18, y = 13,  handleDialogueStart = TalkStart_Boss, tIndex = 1},
+		{name = "Navi", text = "Ahem! If you need directions look no further!", font = "comic", x = -18, y = 9,  handleDialogueStart = TalkStart_Navi, instructionProg = 1, dispensed_package = false},
+		{name = "Elevator Man", handleDialogueStart = TalkStart_ElevatorMan, iCount = 1, isYearningExpressed = false, x = -11,  y = 0,  text = ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .\n. . . I wonder if Navi is upset with me. . .", font = "comic"},
+	}
+	-- Gen Task Master
+	for k, v in ipairs(npcs) do
+		local e = Scene.CreateNPCNode(v.name, "dummy", icon.alias, "npc.script.lua");
+			e.transform.position:set(v.x, v.y);
+			e.transform.size:set(0.5, 1);
+			e.transform:Center();
+			e.textureScale:set(4, 2)
+			e.rigidbody.bdyDef.type = 2;
+			e.rigidbody.bdyDef.fixedRotation = true;
+			e.rigidbody.fixDef.density = 1.0;
+			e.rigidbody.fixDef.friction = 1.0;
+			e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0)
+			e.icon.frame:set(icon.frame.x,icon.frame.y,icon.frame.w, icon.frame.h)
+			e.text:setText(v.text)
+			e.text.fontSize = 32
+			e.text:SetFont(v.font)
+			e.prompter = mPlayer;
+			e.material.direction.x = -1;
+			b2d.AddCircleSensor(e.rigidbody, 1.25)
+			v.node = e;
+			v.id = e:GetID();
+
+			v.handleDialogueStart = v.handleDialogueStart or function()  end
+	end
+end
 function createTasks()
 	local bounds = { min = {x = -10, y = -10}, max = {x = 10, y = 10}};
-
 	jobs = {}
-
 	jobs["unlock_merchant"] = {
 		title = "Unlock Merchant", 
 		Description = "Go Talk to the boss", 
-		isCurrentParam = "unlock_merchant_assigned", 
-		reset = false
+		mapVal = "unlock_merchant_assigned", 
+		reset = true,
+		questLine = quest_line_unlock_merchant,
+		flags = {
+			talked_to_quest_giver = false, 
+			talked_to_boss = false, 
+			got_package = false, 
+			lost_package = false,
+			delivered	= false
+		}
 	};
-	
-
 	JobManager = Scene.CreateTaskManagerNode("job manager");
-	
-	--for k, v in ipairs(jobs) do // use pairs b/c I don't want to iterate over ONLY integer keys
-	for k, v in pairs(jobs) do
+	for k, v in pairs(jobs) do -- use pairs instead of ipairs to iterate over non integer fields
 		v.job_id = JobManager:CreateDeliveryTask(v.title, v.Description);
-		if(v.reset) then
-			save_file:AddParameter_bool(v.isCurrentParam, false);
+		if(v.reset and v.mapVal) then
+			save_file:AddParameter_bool(v.mapVal, false);
 		end
-		if(save_file:GetParameterBool(v.isCurrentParam)) then 
+		if(save_file:GetParameterBool(v.mapVal)) then 
 			JobManager.currentObjective = v.job_id; 
 		end
-		print("Job id is: "..v.job_id)
+		print("Job '".. k .. "' id is: "..v.job_id)
 	end
 end
 function TalkStart_SuperVizer(npc, node)
@@ -375,20 +391,30 @@ function TalkStart_SuperVizer(npc, node)
 	end
 end
 
-boss_explanation = 1;
 function TalkStart_Boss (npc, node)
 	local dialogue = 
 	{
-		"heh\nI got something for ya.",
+		"Yo, I got something for ya.",
 		"I wantchu to deliver this Package to the elevator man in the building over on the Eastside",
-		"Navi can tell you how to ge there",
+		"Navi can tell you how to ge there.\nYou can Find him upstairs.",
 	}
 
 	if(save_file:GetParameterBool("unlock_merchant_assigned")) then
-		node.text:setText(dialogue[boss_explanation], true);
-		boss_explanation = boss_explanation + 1;
-		if(boss_explanation > #dialogue) then
-			boss_explanation = 2;
+		if save_file:GetParameterBool("unlock_merchant_talkedToBoss") then
+			npc.tIndex =2
+			JobManager:GetDelivery(jobs["unlock_merchant"].job_id).description = "Get Boss's package from Navi."
+		end
+
+		node.text:setText(dialogue[npc.tIndex], true);
+		if npc.tIndex == 2 then 
+			save_file:AddParameter_bool("unlock_merchant_talkedToBoss", true) 
+			
+		end
+
+		npc.tIndex = npc.tIndex + 1;
+
+		if(npc.tIndex > #dialogue) then
+			npc.tIndex = 3;
 		end
 	end
 end
@@ -396,21 +422,39 @@ end
 function TalkStart_Navi(npc, node)
 	local instructions = 
 	{
-		"You NEED to make a 'box' dispenser somewhere above me, okay???\n Thank you!",
-		"Oh Did Boss send you? Are you looking for Elevator man?\nWell take this elevator key.",
-		"Use the Key on the elevator by pressing the ".."[E]".." key",
+		"Oh Did Boss send you? Here's the package!",
+		"Now I bet you are looking for Elevator man.",
+		"Use the elevator call box next to the boss to call the lift.",
 		"It'll Make the Lift come up if it's down.\nOr go down if its already up.",
 		"See ya later!"
 	}
 	local missionStarted = save_file:GetParameterBool("unlock_merchant_assigned");
 	if(missionStarted) then
-		node.text:setText(instructions[npc.instructionProg], true);
-		npc.instructionProg = npc.instructionProg + 1;
-		if(npc.instructionProg > #instructions) then
-			npc.instructionProg = 2;
-		end
 
+		if(npc.dispensed_package == false) then
+			node.text:setText(instructions[npc.instructionProg], true);
+			npc.instructionProg = npc.instructionProg + 1;
+			npc.dispensed_package = true;	
+
+			generate_package();
+			JobManager:GetDelivery(jobs["unlock_merchant"].job_id).description = "Deliver Package to Elevator Man"
+
+		else
+			node.text:setText(instructions[npc.instructionProg], true);
+			npc.instructionProg = npc.instructionProg + 1;
+			if(npc.instructionProg > #instructions) then npc.instructionProg = 2; end
+		end
 	end
+end
+
+function generate_package()
+	local spawn_loc = {x = -20.5, y = 6.5}
+	local e = Scene.CreateNode2d("Package"); 
+	e.transform.position:set(spawn_loc.x, spawn_loc.y); 
+	e.material:SetColor(0xffff007a);
+	e.rigidbody.bdyDef.type = 2;
+	e.rigidbody.fixDef.density = 1.0;
+	e.rigidbody:SetBody(Scene.GetWorld(), e.transform, 0 );
 end
 
 function TalkStart_ElevatorMan(npc, node, jobNode)
@@ -439,7 +483,6 @@ function TalkStart_ElevatorMan(npc, node, jobNode)
 	else
 		node.text:setText(dialouge[math.random(1, #dialouge)], true);
 	end
-
 end
 
 function onDialogueStart(npc, npc_talk_target)
@@ -453,4 +496,27 @@ end
 
 function onDialogueEnd(npc, npc_talk_target)
 
+end
+
+
+--[[
+		flags = {
+			hasStarted = false
+			talked_to_quest_giver = false, 
+			talked_to_boss = false, 
+			got_package = false, 
+			lost_package = false,
+			delivered	= false
+		}
+]]
+function quest_line_unlock_merchant(flags, npc)
+	if flags.hasStarted then
+		if flags.has_talked_to_quest_giver then end
+		if flags.talked_to_boss then end
+		if flags.got_package then end
+		if flags.lost_package then end
+		if flags.delivered then end
+	else
+		-- do nothing, b/c quest hasn't started..
+	end
 end

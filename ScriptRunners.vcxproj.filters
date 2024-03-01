@@ -610,5 +610,8 @@
     <None Include="Scripts\Scenes\ScriptRunners\town.lua">
       <Filter>Scripts\Scenes\scriptRunners</Filter>
     </None>
+    <None Include="Scripts\Scenes\ScriptRunners\ObjectiveTestScene.lua">
+      <Filter>Scripts\Scenes\scriptRunners</Filter>
+    </None>
   </ItemGroup>
 </Project>
