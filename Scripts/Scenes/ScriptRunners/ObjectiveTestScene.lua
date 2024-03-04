@@ -149,7 +149,7 @@ function buildTriggers()
 		end
 	end
 	triggers = {
-		--{name = "mission Start", x = 1.5, y = -4, w = 1, h = 2,  began = false, finished = false, onTrigger = beginMission,  onBeginContact = missionBeginContact, spawn = {x = -9.5, y = -3, w = 1, h = 1}, bounds = {minX = 0, minY = -1, maxX = 15, maxY = -1}},
+		{name = "mission Start", x = 1.5, y = -4, w = 1, h = 2,  began = false, finished = false, onTrigger = beginMission,  onBeginContact = missionBeginContact, spawn = {x = -9.5, y = -3, w = 1, h = 1}, bounds = {minX = 0, minY = -1, maxX = 15, maxY = -1}},
 	}
 	for i, v in ipairs(triggers) do
 		v.node = CreateObject_Interactable(v.name, v, icon, nil);
