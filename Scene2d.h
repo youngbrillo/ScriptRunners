@@ -8,7 +8,8 @@
 #include "BoxMouse.h"
 #include <box2d/box2d.h>
 #include "Script2d.h"
-
+#include <string>
+#include <map>
 class Scene2d : public Scene, public b2ContactListener
 {
 public:
@@ -63,5 +64,11 @@ public:
     int sceneScreenWidth = 640;
     int sceneScreenHeight = 480;
     bool drawToTarget = true;
+
+public:
+    //lua inspection
+
+    std::map<std::string, float> inspectionNumber;
+    std::map<std::string, bool> inspectionBool;
 };
 

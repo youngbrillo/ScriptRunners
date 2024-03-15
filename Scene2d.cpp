@@ -189,6 +189,37 @@ void Scene2d::Debug()
 
 		ImGui::TreePop();
 	} 
+
+	for (auto&& k : inspectionNumber)
+	{
+		if (ImGui::InputFloat(k.first.c_str(), &k.second) && !!script.L )
+		{
+			try {
+				luabridge::LuaRef func = luabridge::getGlobal(script.L, "InspectNumber");
+				func(k.first, k.second);
+			}
+			catch (luabridge::LuaException const& e)
+			{
+				printf("error in '%s'\t%s\n", "InspectNumber", e.what());
+			}
+		}
+	}
+
+	for (auto&& k : inspectionBool)
+	{
+		if (ImGui::Checkbox(k.first.c_str(), &k.second) && !!script.L)
+		{
+			try {
+				luabridge::LuaRef func = luabridge::getGlobal(script.L, "InspectBoolean");
+				func(k.first, k.second);
+			}
+			catch (luabridge::LuaException const& e)
+			{
+				printf("error in '%s'\t%s\n", "InspectBoolean", e.what());
+			}
+		}
+	}
+
 }
 
 void Scene2d::DebugNode(ECS::Node2d* Node, const char* title)
@@ -400,6 +431,9 @@ void Scene2d::Extend(lua_State* L)
 	auto isPausedFunction = std::function<bool(void)>([]() {return App::GetState() != AppState_::AppState_Play; });
 	auto setScreenResolution = std::function<void(int, int)>([](int x, int y) { Scene2d::Instance()->sceneScreenWidth = x;Scene2d::Instance()->sceneScreenHeight = y;});
 	auto setDrawToTarget = std::function<void(bool)>([](bool v) { Scene2d::Instance()->drawToTarget = v;});
+	auto AddNumberForInspection = std::function<void(std::string, float)>([](std::string k, float v) {Scene2d::Instance()->inspectionNumber[k] = v; });
+	auto AddBooleanForInspection = std::function<void(std::string, bool)>([](std::string k, bool v) {Scene2d::Instance()->inspectionBool[k] = v; });
+
 
 	ECS::ExtendAll(L);
 	luabridge::getGlobalNamespace(L)
@@ -420,6 +454,8 @@ void Scene2d::Extend(lua_State* L)
 			.addFunction("GetWorld", GetWorld)
 			.addFunction("SetScreenResolution", setScreenResolution)
 			.addFunction("setDrawToTarget", setDrawToTarget)
+			.addFunction("InspectNumber", AddNumberForInspection)
+			.addFunction("InspectBoolean", AddBooleanForInspection)
 		.endNamespace();
 
 	ECS::Sprite2d::Extend(L);
